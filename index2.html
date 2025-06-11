@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学数学实验探究式学习中心</title>
+    <style>
+        :root {
+            --primary: #3f51b5;
+            --secondary: #ff4081;
+            --accent: #4caf50;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: 
+                linear-gradient(rgba(255,255,255,0.9), rgba(245,245,255,0.95)),
+                url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--primary), #2196f3);
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::after {
+            content: "∫∑∏∇∂∮";
+            position: absolute;
+            bottom: -30px;
+            left: 0;
+            width: 100%;
+            font-size: 80px;
+            opacity: 0.1;
+            color: white;
+        }
+        h1 {
+            font-size: 3rem;
+            margin: 0 0 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+        .subtitle {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .section-title {
+            color: var(--primary);
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+        .intro-text {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        .team-card {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .team-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .team-info {
+            flex: 1;
+        }
+        .team-name {
+            font-size: 1.5rem;
+            margin: 0 0 10px;
+            color: var(--primary);
+        }
+        .team-title {
+            font-weight: bold;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        .contact-list {
+            list-style: none;
+            padding: 0;
+        }
+        .contact-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .contact-list i {
+            margin-right: 10px;
+            color: var(--primary);
+            width: 25px;
+            text-align: center;
+        }
+        .resource-card {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .resource-item {
+            background: #f5f7ff;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s;
+            border-left: 4px solid var(--accent);
+        }
+        .resource-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .resource-title {
+            font-size: 1.3rem;
+            margin: 0 0 15px;
+            color: var(--primary);
+        }
+        .resource-desc {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(90deg, var(--primary), #2196f3);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(63, 81, 181, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(63, 81, 181, 0.4);
+            background: linear-gradient(90deg, #3949ab, #1976d2);
+        }
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #263238;
+            color: white;
+            margin-top: 50px;
+        }
+        @media (max-width: 768px) {
+            .team-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .header {
+                padding: 40px 0;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>欢迎来到大学数学实验探究式学习中心</h1>
+        <p class="subtitle">探索数学之美，体验探究之趣</p>
+    </div>
+    
+    <div class="container">
+        <div class="section">
+            <h2 class="section-title">中心简介</h2>
+            <p class="intro-text">
+                大学数学实验探究式学习中心致力于为全校师生提供高等数学、线性代数、概率论与数理统计等课程的实验探究式学习平台。我们通过数学建模、数值计算、可视化实验等方式，帮助学生深入理解数学概念，培养数学思维能力和创新意识。
+            </p>
+            <p class="intro-text">
+                中心配备先进的数学软件实验室，包括MATLAB、Mathematica、Python科学计算等工具，支持各类数学实验项目的开展。我们定期举办数学建模竞赛、数学实验工作坊等活动，促进师生交流与合作。
+            </p>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">团队负责人</h2>
+            <div class="team-card">
+                <img src="https://example.com/professor.jpg" alt="郝教授" class="team-photo">
+                <div class="team-info">
+                    <h3 class="team-name">郝庆一 </h3>
+                    <p class="team-title">数学系教授 | 硕士生导师</p>
+                    <p>中国科学计算大学工学博士，主要从事计算数学、复杂系统、交通流理论和博弈论等研究，发表SCI论文30余篇。从事高等代数、数学分析、高等数学、线性代数、数值分析、
+                      数学实验、数学软件、数学建模、随机过程、元胞自动机方法、智能计算等本科生和研究生课程的主讲工作，主持省级、校级教学研究项目多项。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">联系我们</h2>
+            <ul class="contact-list">
+                <li><i>📍</i> 地址：I楼314室</li>
+                <li><i>✉️</i> 邮箱：haoqyi@126.com</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">大学数学学习资源</h2>
+            <div class="resource-card">
+                <div class="resource-item">
+                    <h3 class="resource-title">高等数学实验项目</h3>
+                    <p class="resource-desc">包含微积分、多元函数、级数等模块的交互式实验</p>
+                    <a href="advanced_math.html" class="btn">查看资源</a>
+                </div>
+                <div class="resource-item">
+                    <h3 class="resource-title">线性代数可视化</h3>
+                    <p class="resource-desc">矩阵运算、特征值、线性变换的图形化展示</p>
+                    <a href="linear_algebra.html" class="btn">建设中...</a>
+                </div>
+                <div class="resource-item">
+                    <h3 class="resource-title">概率统计模拟实验</h3>
+                    <p class="resource-desc">随机变量、分布函数、假设检验的计算机模拟</p>
+                    <a href="probability.html" class="btn">建设中...</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 AQNU大学数学实验探究式学习中心 | 更新时间: 2025-06-11</p>
+    </footer>
+</body>
+</html>
