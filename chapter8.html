@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>高数第八章：向量与空间几何の欢乐课堂</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff6b6b;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #4ecdc4;
+            border-bottom: 3px dashed #4ecdc4;
+            padding-bottom: 5px;
+        }
+        .concept {
+            background-color: #fff;
+            border-left: 5px solid #ff9e7d;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            transition: transform 0.3s;
+        }
+        .concept:hover {
+            transform: translateX(10px);
+        }
+        .formula {
+            font-family: 'Courier New', monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .joke {
+            font-style: italic;
+            color: #6c757d;
+            margin: 10px 0;
+        }
+        .test {
+            background-color: #e9f5ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        .question {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px dotted #aaa;
+        }
+        .answer {
+            color: #28a745;
+            font-weight: bold;
+            display: none;
+        }
+        button {
+            background-color: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #3dbeb5;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="emoji">📐</span> 高数第八章：向量与空间几何の欢乐课堂 <span class="emoji">🧮</span></h1>
+        
+        <div class="concept">
+            <h2>1. 向量的数量积 & 向量积 <span class="emoji">🤼‍♂️</span></h2>
+            <p>大家好，我是向量小A，这是我的好基友向量小B~</p>
+            
+            <div class="joke">
+                "数量积就像我们的友谊 - 越平行越亲密（值越大），垂直就归零（没共同语言）"
+            </div>
+            
+            <p><strong>数量积（点积）计算公式：</strong></p>
+            <div class="formula">
+                a·b = |a||b|cosθ = a₁b₁ + a₂b₂ + a₃b₃
+            </div>
+            <p><span class="highlight">记忆技巧：</span> 横乘横 + 竖乘竖 + 深乘深（三维时）</p>
+            
+            <p><strong>向量积（叉积）计算公式：</strong></p>
+            <div class="formula">
+                a×b = |a||b|sinθ·n = 
+                ⎛ i &nbsp;&nbsp;j &nbsp;&nbsp;k ⎞
+                ⎜ a₁ a₂ a₃ ⎟
+                ⎜ b₁ b₂ b₃ ⎟
+            </div>
+            <p><span class="highlight">记忆技巧：</span> 行列式展开，i(a₂b₃-a₃b₂) - j(a₁b₃-a₃b₁) + k(a₁b₂-a₂b₁)</p>
+            <div class="joke">
+                "叉积就像我们的孩子 - 方向垂直于父母（右手定则），大小看父母夹角（sinθ）"
+            </div>
+        </div>
+        
+        <div class="concept">
+            <h2>2. 平面的法向量 & 方程 <span class="emoji">✈️</span></h2>
+            <p>我是平面君，我的法向量n就是我的身份证~</p>
+            
+            <p><strong>法向量求法：</strong></p>
+            <ol>
+                <li>已知平面内两个向量 → 叉积得到法向量</li>
+                <li>已知三点A,B,C → AB×AC得到法向量</li>
+            </ol>
+            
+            <p><strong>平面方程形式：</strong></p>
+            <div class="formula">
+                点法式：n·(r - r₀) = 0 → A(x-x₀) + B(y-y₀) + C(z-z₀) = 0<br>
+                一般式：Ax + By + Cz + D = 0<br>
+                截距式：x/a + y/b + z/c = 1
+            </div>
+            <div class="joke">
+                "我的方程就像我的心情 - 系数A,B,C决定我的倾斜程度，D决定我离原点的距离（脾气大小）"
+            </div>
+        </div>
+        
+        <div class="concept">
+            <h2>3. 空间直线的方向向量 & 方程 <span class="emoji">🚀</span></h2>
+            <p>我是直线小王子，方向向量s就是我的指南针~</p>
+            
+            <p><strong>方向向量求法：</strong></p>
+            <ol>
+                <li>已知两点 → 两点坐标相减</li>
+                <li>作为两平面交线 → 两平面法向量的叉积</li>
+            </ol>
+            
+            <p><strong>直线方程形式：</strong></p>
+            <div class="formula">
+                对称式：(x-x₀)/m = (y-y₀)/n = (z-z₀)/p<br>
+                参数式：x=x₀+mt, y=y₀+nt, z=z₀+pt<br>
+                一般式：{A₁x+B₁y+C₁z+D₁=0; A₂x+B₂y+C₂z+D₂=0}
+            </div>
+            <div class="joke">
+                "我的参数方程就像我的行程表 - t是我的时间，m,n,p是我的速度分量"
+            </div>
+        </div>
+        
+        <div class="concept">
+            <h2>4. 特殊二次曲面 <span class="emoji">🎪</span></h2>
+            <p>我们是二次曲面马戏团！来看看我们的绝活~</p>
+            
+            <table border="1" style="width:100%; border-collapse: collapse; margin: 15px 0;">
+                <tr style="background-color: #f8f9fa;">
+                    <th>曲面名称</th>
+                    <th>标准方程</th>
+                    <th>特征</th>
+                </tr>
+                <tr>
+                    <td>椭球面</td>
+                    <td>x²/a² + y²/b² + z²/c² = 1</td>
+                    <td>三维的椭圆，像个被压扁的球</td>
+                </tr>
+                <tr style="background-color: #f8f9fa;">
+                    <td>单叶双曲面</td>
+                    <td>x²/a² + y²/b² - z²/c² = 1</td>
+                    <td>像核电站冷却塔，有"腰身"</td>
+                </tr>
+                <tr>
+                    <td>双叶双曲面</td>
+                    <td>x²/a² + y²/b² - z²/c² = -1</td>
+                    <td>像两个背对背的喇叭</td>
+                </tr>
+                <tr style="background-color: #f8f9fa;">
+                    <td>椭圆抛物面</td>
+                    <td>z = x²/a² + y²/b²</td>
+                    <td>像卫星天线，开口向上</td>
+                </tr>
+                <tr>
+                    <td>双曲抛物面</td>
+                    <td>z = x²/a² - y²/b²</td>
+                    <td>马鞍形，又被称为"马鞍面"</td>
+                </tr>
+            </table>
+            <div class="joke">
+                "我们二次曲面家族聚会时最怕遇到退化情况 - 那会让我们变成平面或者直线，太没面子了！"
+            </div>
+        </div>
+        
+        <div class="concept">
+            <h2>5. 空间曲线的方程 <span class="emoji">🎢</span></h2>
+            <p>我是空间曲线，比平面曲线多了个z坐标的乐趣~</p>
+            
+            <p><strong>表示方法：</strong></p>
+            <div class="formula">
+                一般式：{F(x,y,z)=0; G(x,y,z)=0}<br>
+                参数式：x=x(t), y=y(t), z=z(t)<br>
+                向量式：r = r(t) = x(t)i + y(t)j + z(t)k
+            </div>
+            
+            <p><strong>常见空间曲线：</strong></p>
+            <ul>
+                <li><strong>圆柱螺旋线：</strong> x=acosθ, y=asinθ, z=bθ</li>
+                <li><strong>两曲面交线：</strong> 如球面与平面的交线是圆</li>
+            </ul>
+            <div class="joke">
+                "参数方程是我的DNA，t是我的生命线 - 改变t就能看到我婀娜的身姿变化"
+            </div>
+        </div>
+        
+        <div class="test">
+            <h2 style="color: #ff6b6b;">欢乐高数模拟试题 <span class="emoji">📝</span></h2>
+            
+            <div class="question">
+                <p><strong>一、判断题（2分×3）</strong></p>
+                <p>1. 向量a=(1,2,3)和b=(2,4,6)是平行的。 <button onclick="toggleAnswer('ans1')">显示答案</button></p>
+                <p class="answer" id="ans1">✅ 正确（b=2a）</p>
+                
+                <p>2. 平面x+y+z=1的法向量是(1,1,0)。 <button onclick="toggleAnswer('ans2')">显示答案</button></p>
+                <p class="answer" id="ans2">❌ 错误（应该是(1,1,1)）</p>
+                
+                <p>3. 方程x²+y²=1在空间中表示圆柱面。 <button onclick="toggleAnswer('ans3')">显示答案</button></p>
+                <p class="answer" id="ans3">✅ 正确（z可以取任意值）</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>二、填空题（3分×3）</strong></p>
+                <p>1. 向量a=(1,0,1)和b=(0,1,1)的点积是______。 <button onclick="toggleAnswer('ans4')">显示答案</button></p>
+                <p class="answer" id="ans4">1×0 + 0×1 + 1×1 = <strong>1</strong></p>
+                
+                <p>2. 过点(1,2,3)且法向量为(2,-1,1)的平面方程是______。 <button onclick="toggleAnswer('ans5')">显示答案</button></p>
+                <p class="answer" id="ans5">2(x-1)-(y-2)+(z-3)=0 → <strong>2x-y+z-3=0</strong></p>
+                
+                <p>3. 直线(x-1)/2=(y+1)/-1=z/3的方向向量是______。 <button onclick="toggleAnswer('ans6')">显示答案</button></p>
+                <p class="answer" id="ans6"><strong>(2,-1,3)</strong></p>
+            </div>
+            
+            <div class="question">
+                <p><strong>三、选择题（4分×2）</strong></p>
+                <p>1. 下列哪个是双曲抛物面的方程？<br>
+                A) x²+y²+z²=1<br>
+                B) z=x²-y²<br>
+                C) x²/a²+y²/b²=1<br>
+                D) x²+y²=z² <button onclick="toggleAnswer('ans7')">显示答案</button></p>
+                <p class="answer" id="ans7"><strong>B) z=x²-y²</strong>（马鞍面）</p>
+                
+                <p>2. 两平面x+y+z=1和x-y+z=2的交线方向向量是：<br>
+                A) (1,1,1)<br>
+                B) (1,-1,1)<br>
+                C) (2,0,-2)<br>
+                D) (1,0,1) <button onclick="toggleAnswer('ans8')">显示答案</button></p>
+                <p class="answer" id="ans8"><strong>C) (2,0,-2)</strong>（两法向量(1,1,1)×(1,-1,1)=(2,0,-2)）</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>四、计算题（10分）</strong></p>
+                <p>已知三点A(1,0,0), B(0,1,0), C(0,0,1)，求：<br>
+                (1) 三角形ABC的面积<br>
+                (2) 过这三点的平面方程 <button onclick="toggleAnswer('ans9')">显示答案</button></p>
+                <p class="answer" id="ans9">
+                    (1) AB=(-1,1,0), AC=(-1,0,1)<br>
+                    AB×AC=(1,1,1) → 面积=½|AB×AC|=½√3<br>
+                    (2) 法向量(1,1,1)，点A代入得：x+y+z=1
+                </p>
+            </div>
+            
+            <div class="question">
+                <p><strong>五、应用题（12分）</strong></p>
+                <p>一颗卫星的运行轨迹可以表示为r(t)=(2cost, 2sint, t)，t≥0：<br>
+                (1) 描述这是什么曲线<br>
+                (2) 求t=π/2时卫星的位置和速度向量 <button onclick="toggleAnswer('ans10')">显示答案</button></p>
+                <p class="answer" id="ans10">
+                    (1) <strong>圆柱螺旋线</strong>（在x²+y²=4的圆柱上螺旋上升）<br>
+                    (2) 位置r(π/2)=(0,2,π/2)<br>
+                    速度v(t)=r'(t)=(-2sint,2cost,1) → v(π/2)=(-2,0,1)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnswer(id) {
+            var answer = document.getElementById(id);
+            if (answer.style.display === "block") {
+                answer.style.display = "none";
+            } else {
+                answer.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

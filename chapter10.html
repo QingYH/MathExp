@@ -1,0 +1,496 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学第十章：重积分 - 搞笑版</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', '楷体', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #4ecdc4;
+            border-bottom: 2px dashed #4ecdc4;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .knowledge-point {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #ff9ff3;
+            transition: transform 0.3s;
+        }
+        .knowledge-point:hover {
+            transform: translateY(-5px);
+        }
+        .point-title {
+            font-weight: bold;
+            color: #ff9ff3;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .point-content {
+            line-height: 1.6;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .warning {
+            background-color: #ffd166;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f0f8ff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .example {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #74b9ff;
+        }
+        .test {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+            border: 2px dashed #74b9ff;
+        }
+        .question {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .answer {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        .fun-fact {
+            background-color: #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>高等数学第十章：重积分 <span class="emoji">🤯</span> 搞笑版</h1>
+        
+        <div class="fun-fact">
+            <span class="emoji">💡</span> 温馨提示：重积分就像叠罗汉，一层不够就叠两层，两层不够就叠三层！
+        </div>
+
+        <!-- 知识点1 -->
+        <div class="knowledge-point">
+            <div class="point-title">1. 二重积分的概念和性质 <span class="emoji">📦</span></div>
+            <div class="point-content">
+                <p>二重积分就是"双重打击"的积分！</p>
+                <p><strong>定义：</strong></p>
+                <p class="formula">∬<sub>D</sub>f(x,y)dσ = lim<sub>λ→0</sub>Σf(ξ<sub>i</sub>,η<sub>i</sub>)Δσ<sub>i</sub></p>
+                <p><strong>几何意义：</strong> 曲顶柱体的体积（当f(x,y)≥0时）</p>
+                <p><strong>物理意义：</strong> 平面薄片的质量（f(x,y)是面密度）</p>
+                <p><strong>性质：</strong></p>
+                <ul>
+                    <li>线性性：可以拆开加减</li>
+                    <li>区域可加性：大区域积分=小区域积分和</li>
+                    <li>比较定理：大的函数积分大</li>
+                    <li>中值定理：存在一点使积分=函数值×区域面积</li>
+                </ul>
+                <div class="example">
+                    <p><strong>例子：</strong> 计算∬<sub>D</sub>1dσ 就是求区域D的面积！</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点2 -->
+        <div class="knowledge-point">
+            <div class="point-title">2. 二重积分的计算方法 <span class="emoji">🧮</span></div>
+            <div class="point-content">
+                <p>二重积分计算有两大法宝：直角坐标和极坐标！</p>
+                <p><strong>直角坐标法：</strong></p>
+                <ol>
+                    <li>X型区域：先积y后积x
+                        <p class="formula">∬<sub>D</sub>f(x,y)dxdy = ∫<sub>a</sub><sup>b</sup>dx∫<sub>φ₁(x)</sub><sup>φ₂(x)</sup>f(x,y)dy</p>
+                    </li>
+                    <li>Y型区域：先积x后积y
+                        <p class="formula">∬<sub>D</sub>f(x,y)dxdy = ∫<sub>c</sub><sup>d</sup>dy∫<sub>ψ₁(y)</sub><sup>ψ₂(y)</sup>f(x,y)dx</p>
+                    </li>
+                </ol>
+                <p><strong>极坐标法：</strong> 当区域是圆或扇形时使用</p>
+                <p class="formula">∬<sub>D</sub>f(x,y)dxdy = ∬<sub>D</sub>f(rcosθ,rsinθ)rdrdθ</p>
+                <p><strong>注意事项：</strong></p>
+                <ul>
+                    <li>先画积分区域图！</li>
+                    <li>选择合适的积分次序</li>
+                    <li>极坐标别忘记乘r！</li>
+                    <li>对称性可以简化计算</li>
+                </ul>
+                <div class="example">
+                    <p><strong>例子：</strong> 计算∬<sub>D</sub>xydxdy，D由y=x, y=1, x=0围成</p>
+                    <p>解：∫<sub>0</sub><sup>1</sup>dx∫<sub>x</sub><sup>1</sup>xydy = ∫<sub>0</sub><sup>1</sup>x(1-x²)/2dx = 1/8</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点3 -->
+        <div class="knowledge-point">
+            <div class="point-title">3. 三重积分的定义和性质 <span class="emoji">📦📦📦</span></div>
+            <div class="point-content">
+                <p>三重积分就是"三倍快乐"的积分！</p>
+                <p><strong>定义：</strong></p>
+                <p class="formula">∭<sub>Ω</sub>f(x,y,z)dv = lim<sub>λ→0</sub>Σf(ξ<sub>i</sub>,η<sub>i</sub>,ζ<sub>i</sub>)Δv<sub>i</sub></p>
+                <p><strong>性质：</strong></p>
+                <ul>
+                    <li>和二重积分类似，有线性性、区域可加性等</li>
+                    <li>物理意义：空间物体的质量（f是体密度）</li>
+                    <li>几何意义：当f≡1时就是区域Ω的体积</li>
+                </ul>
+                <div class="fun-fact">
+                    <span class="emoji">🤔</span> 思考：四重积分存在吗？当然存在！只是我们画不出四维空间而已...
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点4 -->
+        <div class="knowledge-point">
+            <div class="point-title">4. 三重积分的几何意义和物理意义 <span class="emoji">🌌</span></div>
+            <div class="point-content">
+                <p><strong>几何意义：</strong></p>
+                <ul>
+                    <li>当f(x,y,z)≥0时：四维空间"超体积"（想象不出来很正常）</li>
+                    <li>当f≡1时：空间区域Ω的体积</li>
+                </ul>
+                <p><strong>物理意义：</strong></p>
+                <ul>
+                    <li>非均匀物体的质量（f是密度函数）</li>
+                    <li>物体的重心坐标计算</li>
+                    <li>转动惯量计算</li>
+                </ul>
+                <div class="example">
+                    <p><strong>例子：</strong> 计算半径为R的球体体积：∭<sub>Ω</sub>1dv = 4/3πR³</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点5 -->
+        <div class="knowledge-point">
+            <div class="point-title">5. 三重积分的计算方法🔪✂️📦 <span class="emoji">🧮🧮</span></div>
+            <div class="point-content">
+                <p>三重积分计算有三种武器：直角坐标、柱坐标和球坐标！</p>
+                <p><strong>📦直角坐标法：</strong></p>
+                <p class="formula">∭<sub>Ω</sub>f(x,y,z)dxdydz = ∫<sub>a</sub><sup>b</sup>dx∫<sub>y₁(x)</sub><sup>y₂(x)</sup>dy∫<sub>z₁(x,y)</sub><sup>z₂(x,y)</sup>f(x,y,z)dz</p>
+                <div class="method-title"><span class="emoji">1️⃣➡️2️⃣</span> 先一后二法（投影法）</div>
+            <div class="point-content">
+                <p>就像先切蛋糕再分块！先固定x,y，对z积分，再对x,y积分</p>
+                <p class="formula">∭<sub>Ω</sub>f(x,y,z)dv = ∬<sub>D</sub>dxdy∫<sub>z₁(x,y)</sub><sup>z₂(x,y)</sup>f(x,y,z)dz</p>
+                
+                <div class="method-step">
+                    <p><strong>步骤：</strong></p>
+                    <ol>
+                        <li>把三维区域Ω投影到xy平面得D</li>
+                        <li>确定z的范围：z₁(x,y) ≤ z ≤ z₂(x,y)</li>
+                        <li>先对z积分，得到关于x,y的函数</li>
+                        <li>再在D上对x,y积分</li>
+                    </ol>
+                </div>
+                
+                <div class="example-box">
+                    <p><strong>例子：</strong> 计算∭<sub>Ω</sub>zdv，Ω由z=xy, y=x, x=1, z=0围成</p>
+                    <p>解：∫<sub>0</sub><sup>1</sup>dx∫<sub>0</sub><sup>x</sup>dy∫<sub>0</sub><sup>xy</sup>zdz = 1/48</p>
+                </div>
+            </div>
+            <div class="method-title"><span class="emoji">2️⃣➡️1️⃣</span> 先二后一法（截面法）</div>
+            <div class="point-content">
+                <p>像做CT扫描！先固定z，对x,y积分，再对z积分</p>
+                <p class="formula">∭<sub>Ω</sub>f(x,y,z)dv = ∫<sub>a</sub><sup>b</sup>dz∬<sub>D(z)</sub>f(x,y,z)dxdy</p>
+                
+                <div class="method-step">
+                    <p><strong>步骤：</strong></p>
+                    <ol>
+                        <li>确定z的范围：a ≤ z ≤ b</li>
+                        <li>对每个z，求截面区域D(z)</li>
+                        <li>先在D(z)上对x,y积分</li>
+                        <li>再对z积分</li>
+                    </ol>
+                </div>
+                
+                <div class="example-box">
+                    <p><strong>例子：</strong> 计算∭<sub>Ω</sub>(x²+y²)dv，Ω由z=√(x²+y²)和z=1围成</p>
+                    <p>解：∫<sub>0</sub><sup>1</sup>dz∬<sub>x²+y²≤z²</sub>(x²+y²)dxdy = π/6</p>
+                </div>
+            <div class="method-title"><span class="emoji">🛢️</span> <strong> 柱面坐标法</strong></div>
+            <div class="point-content">
+                <p>极坐标的升级版！适合旋转体</p>
+                <p class="formula">x = rcosθ, y = rsinθ, z = z</p>
+                <p class="formula">dv = rdrdθdz</p>
+                
+                <div class="method-step">
+                    <p><strong>步骤：</strong></p>
+                    <ol>
+                        <li>确定r,θ,z的范围</li>
+                        <li>把被积函数转换为柱坐标形式</li>
+                        <li>记得乘上r！</li>
+                        <li>从内到外依次积分</li>
+                    </ol>
+                </div>
+                
+                <div class="example-box">
+                    <p><strong>例子：</strong> 计算∭<sub>Ω</sub>zdv，Ω由z=√(x²+y²)和z=1围成</p>
+                    <p>解：∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>1</sup>rdr∫<sub>r</sub><sup>1</sup>zdz = π/6</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 球面坐标 -->
+        <div class="method-card">
+            <div class="method-title"><span class="emoji">🌐</span><strong> 球面坐标法</strong></div>
+            <div class="point-content">
+                <p>地球仪坐标系！适合球体</p>
+                <p class="formula">x = ρsinφcosθ, y = ρsinφsinθ, z = ρcosφ</p>
+                <p class="formula">dv = ρ²sinφdρdφdθ</p>
+                
+                <div class="method-step">
+                    <p><strong>步骤：</strong></p>
+                    <ol>
+                        <li>确定ρ,φ,θ的范围</li>
+                        <li>把被积函数转换为球坐标形式</li>
+                        <li>记得乘上ρ²sinφ！</li>
+                        <li>从内到外依次积分</li>
+                    </ol>
+                </div>
+                
+                <div class="example-box">
+                    <p><strong>例子：</strong> 计算半径为R的球体体积</p>
+                    <p>解：∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>π</sup>dφ∫<sub>0</sub><sup>R</sup>ρ²sinφdρ = 4/3πR³</p>
+                </div>
+            </div>
+        </div>
+
+        </div>
+
+  </div>
+
+        <!-- 知识点6 -->
+        <div class="knowledge-point">
+            <div class="point-title">6. 重积分的应用 <span class="emoji">🚀</span></div>
+            <div class="point-content">
+                <p>重积分不只是考试题，还能解决实际问题！</p>
+                <p><strong>几何应用：</strong></p>
+                <ul>
+                    <li>平面区域面积：∬<sub>D</sub>1dσ</li>
+                    <li>空间区域体积：∭<sub>Ω</sub>1dv</li>
+                    <li>曲面面积：∬<sub>D</sub>√(1+zₓ²+z_y²)dxdy</li>
+                </ul>
+                <p><strong>物理应用：</strong></p>
+                <ul>
+                    <li>质量：m = ∭<sub>Ω</sub>ρ(x,y,z)dv</li>
+                    <li>重心坐标：x̄ = (∭<sub>Ω</sub>xρdv)/m</li>
+                    <li>转动惯量：I_z = ∭<sub>Ω</sub>(x²+y²)ρdv</li>
+                </ul>
+                <div class="example">
+                    <p><strong>例子：</strong> 求半径为R的均匀半球体的重心</p>
+                    <p>由对称性x̄=ȳ=0，z̄ = (∭zρdv)/V = (3R)/8</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 模拟试题 -->
+        <div class="test">
+            <h2>第十章模拟试题 <span class="emoji">📝</span></h2>
+            
+            <div class="question">
+                <p><strong>1. 判断题</strong> (2分)：二重积分∬<sub>D</sub>f(x,y)dσ的几何意义是曲顶柱体的体积。</p>
+                <p class="answer">答案：正确（当f(x,y)≥0时）</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>2. 填空题</strong> (2分)：极坐标下二重积分的面积元素是______。</p>
+                <p class="answer">答案：rdrdθ</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>3. 选择题</strong> (3分)：计算∬x²+y²≤1√(1-x²-y²)dxdy应使用：
+                A) 直角坐标 B) 极坐标 C) 球坐标 D) 柱坐标</p>
+                <p class="answer">答案：B</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>4. 计算题</strong> (8分)：计算∬<sub>D</sub>xydxdy，D由y=x², y=0, x=1围成。</p>
+                <p class="answer">答案：∫<sub>0</sub><sup>1</sup>dx∫<sub>0</sub><sup>x²</sup>xydy = ∫<sub>0</sub><sup>1</sup>x⁵/2dx = 1/12</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>5. 应用题</strong> (10分)：求半径为R的均匀半球体的重心位置。</p>
+                <p class="answer">答案：由对称性x̄=ȳ=0，z̄ = (3R)/8</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>6. 证明题</strong> (10分)：证明球坐标的体积元素是ρ²sinφdρdφdθ。</p>
+                <p class="answer">答案：计算雅可比行列式|∂(x,y,z)/∂(ρ,φ,θ)| = ρ²sinφ</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>7. 判断题</strong> (2分)：三重积分∭<sub>Ω</sub>f(x,y,z)dv=0表示Ω的体积为零。</p>
+                <p class="answer">答案：错误（可能是f的正负部分抵消）</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>8. 填空题</strong> (2分)：球坐标中，φ的取值范围是______。</p>
+                <p class="answer">答案：[0,π]</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>9. 选择题</strong> (3分)：计算∭x²+y²+z²≤1zdv应使用：
+                A) 直角坐标 B) 柱坐标 C) 球坐标 D) 任何坐标</p>
+                <p class="answer">答案：C</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>10. 计算题</strong> (8分)：计算∭<sub>Ω</sub>zdxdydz，Ω由z=√(x²+y²)和z=1围成。</p>
+                <p class="answer">答案：用柱坐标∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>1</sup>rdr∫<sub>r</sub><sup>1</sup>zdz = π/6</p>
+            </div>
+            
+        
+                <!-- 二重积分-直角坐标 -->
+        <div class="question">
+            <div class="question-title">11. 计算∬<sub>D</sub>(x+y)dxdy，其中D由x=0,y=0,x=1,y=1围成</div>
+            <button class="show-answer" onclick="toggleAnswer(1)">显示解答过程</button>
+            <div class="answer" id="answer1">
+                <p>解：∫<sub>0</sub><sup>1</sup>dx∫<sub>0</sub><sup>1</sup>(x+y)dy = ∫<sub>0</sub><sup>1</sup>[xy+y²/2]<sub>0</sub><sup>1</sup>dx = ∫<sub>0</sub><sup>1</sup>(x+1/2)dx = [x²/2+x/2]<sub>0</sub><sup>1</sup> = 1</p>
+            </div>
+        </div>
+        
+        <!-- 二重积分-极坐标 -->
+        <div class="question">
+            <div class="question-title">12. 计算∬<sub>D</sub>√(x²+y²)dxdy，其中D为1≤x²+y²≤4</div>
+            <button class="show-answer" onclick="toggleAnswer(2)">显示解答过程</button>
+            <div class="answer" id="answer2">
+                <p>解：极坐标变换，∫<sub>0</sub><sup>2π</sup>dθ∫<sub>1</sub><sup>2</sup>r·rdr = 2π·[r³/3]<sub>1</sub><sup>2</sup> = 14π/3</p>
+            </div>
+        </div>
+        
+        <!-- 三重积分-直角坐标 -->
+        <div class="question">
+            <div class="question-title">13. 计算∭<sub>Ω</sub>xyzdv，Ω由x=1,y=1,z=1和坐标面围成</div>
+            <button class="show-answer" onclick="toggleAnswer(3)">显示解答过程</button>
+            <div class="answer" id="answer3">
+                <p>解：∫<sub>0</sub><sup>1</sup>dx∫<sub>0</sub><sup>1</sup>dy∫<sub>0</sub><sup>1</sup>xyzdz = ∫<sub>0</sub><sup>1</sup>xdx·∫<sub>0</sub><sup>1</sup>ydy·∫<sub>0</sub><sup>1</sup>zdz = (1/2)·(1/2)·(1/2) = 1/8</p>
+            </div>
+        </div>
+        
+        <!-- 三重积分-柱坐标 -->
+        <div class="question">
+            <div class="question-title">14. 计算∭<sub>Ω</sub>zdv，Ω由z=√(x²+y²)和z=1围成</div>
+            <button class="show-answer" onclick="toggleAnswer(4)">显示解答过程</button>
+            <div class="answer" id="answer4">
+                <p>解：柱坐标，∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>1</sup>rdr∫<sub>r</sub><sup>1</sup>zdz = 2π∫<sub>0</sub><sup>1</sup>r(1/2-r²/2)dr = π/6</p>
+            </div>
+        </div>
+        
+        <!-- 三重积分-球坐标 -->
+        <div class="question">
+            <div class="question-title">15. 计算半径为R的球体体积</div>
+            <button class="show-answer" onclick="toggleAnswer(5)">显示解答过程</button>
+            <div class="answer" id="answer5">
+                <p>解：球坐标，∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>π</sup>dφ∫<sub>0</sub><sup>R</sup>ρ²sinφdρ = 2π·2·R³/3 = 4πR³/3</p>
+            </div>
+        </div>
+        
+        <!-- 二重积分-换序 -->
+        <div class="question">
+            <div class="question-title">16. 计算∫<sub>0</sub><sup>1</sup>dy∫<sub>y</sub><sup>1</sup>e<sup>x²</sup>dx</div>
+            <button class="show-answer" onclick="toggleAnswer(6)">显示解答过程</button>
+            <div class="answer" id="answer6">
+                <p>解：交换积分次序，∫<sub>0</sub><sup>1</sup>dx∫<sub>0</sub><sup>x</sup>e<sup>x²</sup>dy = ∫<sub>0</sub><sup>1</sup>xe<sup>x²</sup>dx = (e-1)/2</p>
+            </div>
+        </div>
+        
+        <!-- 三重积分-应用 -->
+        <div class="question">
+            <div class="question-title">17. 求密度为1的半球体x²+y²+z²≤1, z≥0的质量</div>
+            <button class="show-answer" onclick="toggleAnswer(7)">显示解答过程</button>
+            <div class="answer" id="answer7">
+                <p>解：球坐标，∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>π/2</sup>dφ∫<sub>0</sub><sup>1</sup>ρ²sinφdρ = 2π·1·1/3 = 2π/3</p>
+            </div>
+        </div>
+        
+        <!-- 二重积分-极坐标 -->
+        <div class="question">
+            <div class="question-title">18. 计算∬<sub>D</sub>e<sup>-(x²+y²)</sup>dxdy，D为x²+y²≤a²</div>
+            <button class="show-answer" onclick="toggleAnswer(8)">显示解答过程</button>
+            <div class="answer" id="answer8">
+                <p>解：极坐标，∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>a</sup>re<sup>-r²</sup>dr = 2π·(1-e<sup>-a²</sup>)/2 = π(1-e<sup>-a²</sup>)</p>
+            </div>
+        </div>
+        
+        <!-- 三重积分-柱坐标 -->
+        <div class="question">
+            <div class="question-title">19. 计算∭<sub>Ω</sub>(x²+y²)dv，Ω由z=√(x²+y²)和z=1围成</div>
+            <button class="show-answer" onclick="toggleAnswer(9)">显示解答过程</button>
+            <div class="answer" id="answer9">
+                <p>解：柱坐标，∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>1</sup>r³dr∫<sub>r</sub><sup>1</sup>dz = 2π·(1/4)·(1/2) = π/4</p>
+            </div>
+        </div>
+        
+        <!-- 综合题 -->
+        <div class="question">
+            <div class="question-title">20. 计算∭<sub>Ω</sub>z√(x²+y²)dv，Ω由z=0和z=√(1-x²-y²)围成</div>
+            <button class="show-answer" onclick="toggleAnswer(10)">显示解答过程</button>
+            <div class="answer" id="answer10">
+                <p>解：柱坐标，∫<sub>0</sub><sup>2π</sup>dθ∫<sub>0</sub><sup>1</sup>r²dr∫<sub>0</sub><sup>√(1-r²)</sup>zdz = 2π∫<sub>0</sub><sup>1</sup>r²(1-r²)/2dr = π/15</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleAnswer(num) {
+            const answer = document.getElementById('answer'+num);
+            if(answer.style.display === 'block') {
+                answer.style.display = 'none';
+                event.target.textContent = '显示解答过程';
+            } else {
+                answer.style.display = 'block';
+                event.target.textContent = '隐藏解答过程';
+            }
+        }
+    </script>
+
+ </body>
+</html>           

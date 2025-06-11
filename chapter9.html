@@ -1,0 +1,556 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学第九章：多元函数微分学 - 搞笑版</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', '楷体', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #4ecdc4;
+            border-bottom: 2px dashed #4ecdc4;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .knowledge-point {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #ff9ff3;
+            transition: transform 0.3s;
+        }
+        .knowledge-point:hover {
+            transform: translateY(-5px);
+        }
+        .point-title {
+            font-weight: bold;
+            color: #ff9ff3;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .point-content {
+            line-height: 1.6;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .warning {
+            background-color: #ffd166;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f0f8ff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .example {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 3px solid #74b9ff;
+        }
+        .test {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+            border: 2px dashed #74b9ff;
+        }
+        .question {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .answer {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        .fun-fact {
+            background-color: #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-style: italic;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>高等数学第九章：多元函数微分学 <span class="emoji">🤪</span> 搞笑版</h1>
+        
+        <div class="fun-fact">
+            <span class="emoji">💡</span> 温馨提示：本教程适合在咖啡因作用下学习，效果更佳！如果看不懂，请多读几遍，或者...再喝一杯咖啡！
+        </div>
+
+        <!-- 知识点1 -->
+        <div class="knowledge-point">
+            <div class="point-title">1. 平面点集之内点、外点、界点和聚点 <span class="emoji">📍</span></div>
+            <div class="point-content">
+                <p>大家好，我是平面点集，今天我要介绍我的四个"人格"：</p>
+                <ul>
+                    <li><span class="highlight">内点</span>：就像宅男，完全不出门，周围全是自己的地盘。数学定义：存在邻域全含于集合内。</li>
+                    <li><span class="highlight">外点</span>：社交恐惧症患者，完全不接触集合。数学定义：存在邻域全不含于集合内。</li>
+                    <li><span class="highlight">界点</span>：社交达人，一脚门里一脚门外。数学定义：任何邻域都既含集合内点又含外点。</li>
+                    <li><span class="highlight">聚点</span>：万人迷，周围永远有人围着。数学定义：任何邻域都含有集合中无限多个点。</li>
+                </ul>
+                <div class="example">
+                    <p><strong>例子：</strong> 考虑集合A={(x,y)|x²+y²≤1}（单位圆）</p>
+                    <p>(0.5,0.5)是内点，(2,2)是外点，(1,0)是界点，(1,0)也是聚点。</p>
+                </div>
+                <div class="warning">
+                    注意：聚点可以属于集合也可以不属于集合！就像明星的粉丝，明星本人可能不在粉丝群里。
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点2 -->
+        <div class="knowledge-point">
+            <div class="point-title">2. 多元函数极限的定义和求法 <span class="emoji">🎯</span></div>
+            <div class="point-content">
+                <p>一元函数极限已经够难了，现在还要多元？别怕，其实原理差不多！</p>
+                <p><strong>定义：</strong> 当点P(x,y)以<span class="highlight">任何方式</span>趋近于P₀(x₀,y₀)时，f(x,y)都趋近于A。</p>
+                <p class="formula">lim<sub>(x,y)→(x₀,y₀)</sub> f(x,y) = A</p>
+                <p><strong>求法技巧：</strong></p>
+                <ol>
+                    <li>先试试直接代入法（如果分母不为零）</li>
+                    <li>如果直接代入不行，尝试因式分解</li>
+                    <li>可以尝试极坐标变换：令x=rcosθ, y=rsinθ，然后r→0</li>
+                    <li>如果不同路径得到不同极限，则极限不存在</li>
+                </ol>
+                <div class="example">
+                    <p><strong>例子：</strong> 求 lim<sub>(x,y)→(0,0)</sub> (x²y)/(x⁴+y²)</p>
+                    <p>沿着y=kx路径：极限为0；沿着y=x²路径：极限为1/2 → 极限不存在！</p>
+                </div>
+                <div class="fun-fact">
+                    <span class="emoji">🤔</span> 思考题：为什么多元函数极限比一元难？因为在一元中，点只能从左右两边逼近，而在多元中，点可以从无数条路径逼近！
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点3 -->
+        <div class="knowledge-point">
+            <div class="point-title">3. 多元函数连续的定义及判定方法 <span class="emoji">🌊</span></div>
+            <div class="point-content">
+                <p>连续就是没有"断点"，画图时笔不用抬起来！多元函数连续定义：</p>
+                <p class="formula">lim<sub>(x,y)→(x₀,y₀)</sub> f(x,y) = f(x₀,y₀)</p>
+                <p><strong>判定方法：</strong></p>
+                <ul>
+                    <li>初等函数在其定义域内都是连续的（就像你每天回家一样自然）</li>
+                    <li>分段函数在分界点处需要单独验证</li>
+                    <li>验证三步走：1) 函数在该点有定义 2) 极限存在 3) 极限等于函数值</li>
+                </ul>
+                <div class="warning">
+                    注意：多元函数在某点连续，必须要求从<span class="highlight">所有方向</span>逼近都连续！比一元函数严格多了！
+                </div>
+                <div class="example">
+                    <p><strong>例子：</strong> f(x,y) = { (x²y)/(x²+y²) , (x,y)≠(0,0); 0 , (x,y)=(0,0) }</p>
+                    <p>在(0,0)处连续吗？验证极限lim(x,y)→(0,0)(x²y)/(x²+y²)=0=f(0,0)，所以连续。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点4 -->
+        <div class="knowledge-point">
+            <div class="point-title">4. 偏导数的定义和求法 <span class="emoji">🧩</span></div>
+            <div class="point-content">
+                <p>偏导数就是"偏心"的导数！只对一个变量求导，其他变量当常数。</p>
+                <p><strong>定义：</strong></p>
+                <p class="formula">∂f/∂x = lim<sub>Δx→0</sub> [f(x+Δx,y)-f(x,y)]/Δx</p>
+                <p class="formula">∂f/∂y = lim<sub>Δy→0</sub> [f(x,y+Δy)-f(x,y)]/Δy</p>
+                <p><strong>求法：</strong></p>
+                <ol>
+                    <li>对x求偏导：把y当常数，然后对x求导</li>
+                    <li>对y求偏导：把x当常数，然后对y求导</li>
+                    <li>几何意义：曲面与平行于坐标面的平面的交线的斜率</li>
+                </ol>
+                <div class="example">
+                    <p><strong>例子：</strong> f(x,y) = x²y + sin(xy)</p>
+                    <p>∂f/∂x = 2xy + ycos(xy)</p>
+                    <p>∂f/∂y = x² + xcos(xy)</p>
+                </div>
+                <div class="fun-fact">
+                    <span class="emoji">😅</span> 常见错误：忘记其他变量是常数！比如∂(xy)/∂x=y，不是y+x(dy/dx)！这里不是隐函数求导！
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点5 -->
+        <div class="knowledge-point">
+            <div class="point-title">5. 混合偏导求法 <span class="emoji">🔄</span></div>
+            <div class="point-content">
+                <p>混合偏导就是先对x求偏导，再对y求偏导，记作f<sub>xy</sub>或∂²f/∂y∂x</p>
+                <p><strong>求法：</strong></p>
+                <ol>
+                    <li>先求f<sub>x</sub> = ∂f/∂x</li>
+                    <li>再对f<sub>x</sub>关于y求偏导</li>
+                </ol>
+                <p><strong>重要定理：</strong> 如果f<sub>xy</sub>和f<sub>yx</sub>都连续，那么它们相等！</p>
+                <div class="example">
+                    <p><strong>例子：</strong> f(x,y) = x³y + e<sup>xy</sup></p>
+                    <p>f<sub>x</sub> = 3x²y + ye<sup>xy</sup></p>
+                    <p>f<sub>xy</sub> = 3x² + e<sup>xy</sup> + xye<sup>xy</sup></p>
+                    <p>f<sub>y</sub> = x³ + xe<sup>xy</sup></p>
+                    <p>f<sub>yx</sub> = 3x² + e<sup>xy</sup> + xye<sup>xy</sup></p>
+                    <p>确实f<sub>xy</sub> = f<sub>yx</sub>！</p>
+                </div>
+                <div class="warning">
+                    注意顺序！∂²f/∂x∂y表示先对y求偏导再对x求偏导，与f<sub>xy</sub>顺序相反！
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点6 -->
+        <div class="knowledge-point">
+            <div class="point-title">6. 全微分定义 <span class="emoji">📈</span></div>
+            <div class="point-content">
+                <p>全微分是多元函数的"最佳线性近似"，就像给曲面贴一个小平面！</p>
+                <p><strong>定义：</strong></p>
+                <p class="formula">dz = ∂f/∂x dx + ∂f/∂y dy</p>
+                <p>或者</p>
+                <p class="formula">Δz ≈ f<sub>x</sub>(x₀,y₀)Δx + f<sub>y</sub>(x₀,y₀)Δy</p>
+                <p><strong>几何意义：</strong> 用切平面上的增量近似曲面上的增量</p>
+                <div class="example">
+                    <p><strong>例子：</strong> f(x,y) = x² + 3xy - y² 在(1,2)处的全微分</p>
+                    <p>f<sub>x</sub> = 2x + 3y → f<sub>x</sub>(1,2) = 8</p>
+                    <p>f<sub>y</sub> = 3x - 2y → f<sub>y</sub>(1,2) = -1</p>
+                    <p>dz = 8dx - dy</p>
+                </div>
+                <div class="fun-fact">
+                    <span class="emoji">🤓</span> 全微分可以用来估计函数值变化。比如当Δx和Δy很小时，Δz ≈ dz，计算量大大减少！
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点7 -->
+        <div class="knowledge-point">
+            <div class="point-title">7. 多元函数可微、连续、偏导存在之间的关系和相应的反例 <span class="emoji">🔄</span></div>
+            <div class="point-content">
+                <p>这三个概念的关系就像三角恋，复杂得很！</p>
+                <p><strong>关系图：</strong></p>
+                <p>可微 ⇒ 连续</p>
+                <p>可微 ⇒ 偏导存在</p>
+                <p>但是反过来都不成立！</p>
+                <p><strong>反例大全：</strong></p>
+                <ul>
+                    <li><span class="highlight">偏导存在但不连续</span>：f(x,y) = { 0, xy=0; 1, xy≠0 } 在(0,0)处</li>
+                    <li><span class="highlight">连续但不可微</span>：f(x,y) = |x| + |y| 在(0,0)处</li>
+                    <li><span class="highlight">偏导存在但不可微</span>：f(x,y) = { xy/√(x²+y²), (x,y)≠(0,0); 0, (x,y)=(0,0) }</li>
+                </ul>
+                <div class="warning">
+                    记住：可微的条件最强！可微要求函数在该点附近可以用一个平面很好地近似，而不仅仅是各个方向有切线。
+                </div>
+            </div>
+        </div>
+
+        
+
+        <!-- 知识点8 -->
+        <div class="knowledge-point">
+            <div class="point-title">8. 多元复合函数的求导法则和注意事项 <span class="emoji">🔗</span></div>
+            <div class="point-content">
+                <p>链式法则来啦！多元复合函数求导就像剥洋葱，一层一层来。</p>
+                <p><strong>链式法则：</strong> 如果z=f(x,y)，而x=x(t)，y=y(t)，那么</p>
+                <p class="formula">dz/dt = ∂f/∂x · dx/dt + ∂f/∂y · dy/dt</p>
+                <p>更一般的情况：如果z=f(x,y)，而x=x(u,v)，y=y(u,v)，那么</p>
+                <p class="formula">∂z/∂u = ∂f/∂x · ∂x/∂u + ∂f/∂y · ∂y/∂u</p>
+                <p class="formula">∂z/∂v = ∂f/∂x · ∂x/∂v + ∂f/∂y · ∂y/∂v</p>
+                <p><strong>注意事项：</strong></p>
+                <ol>
+                    <li>画变量关系图，搞清楚谁依赖谁</li>
+                    <li>不要漏掉任何一条路径</li>
+                    <li>注意区分∂f/∂x和∂z/∂x（前者是f对第一个变量的偏导，后者是复合后的偏导）</li>
+                </ol>
+                <div class="example">
+                    <p><strong>例子：</strong> z = e^(x²y), x = uv, y = u+v</p>
+                    <p>∂z/∂u = ∂z/∂x · ∂x/∂u + ∂z/∂y · ∂y/∂u = 2xy e^(x²y) · v + x² e^(x²y) · 1</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点9 -->
+        <div class="knowledge-point">
+            <div class="point-title">9. 隐函数求导公式和具体做法 <span class="emoji">🕵️‍♂️</span></div>
+            <div class="point-content">
+                <p>隐函数就像害羞的函数，不愿意直接表达自己！</p>
+                <p><strong>单方程情形：</strong> F(x,y)=0 确定 y=y(x)</p>
+                <p class="formula">dy/dx = -F<sub>x</sub>/F<sub>y</sub></p>
+                <p><strong>方程组情形：</strong> F(x,y,u,v)=0, G(x,y,u,v)=0 确定 u=u(x,y), v=v(x,y)</p>
+                <p>用雅可比行列式求解：</p>
+                <p class="formula">∂u/∂x = - (∂(F,G)/∂(x,v)) / (∂(F,G)/∂(u,v))</p>
+                <p><strong>具体步骤：</strong></p>
+                <ol>
+                    <li>确认隐函数存在（F<sub>y</sub>≠0）</li>
+                    <li>两边对x求导（记住y是x的函数）</li>
+                    <li>解出dy/dx</li>
+                </ol>
+                <div class="example">
+                    <p><strong>例子：</strong> x² + y² = 1 求 dy/dx</p>
+                    <p>2x + 2y dy/dx = 0 ⇒ dy/dx = -x/y</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点10 -->
+        <div class="knowledge-point">
+            <div class="point-title">10. 空间曲线的切线和法平面方程的求法 <span class="emoji">✏️</span></div>
+            <div class="point-content">
+                <p>空间曲线就像空中飞舞的彩带，我们来研究它的切线和法平面！</p>
+                <p><strong>参数方程形式：</strong> r(t) = (x(t), y(t), z(t))</p>
+                <p>切线方向向量：r'(t) = (x'(t), y'(t), z'(t))</p>
+                <p><strong>切线方程：</strong></p>
+                <p class="formula">(x-x₀)/x'(t₀) = (y-y₀)/y'(t₀) = (z-z₀)/z'(t₀)</p>
+                <p><strong>法平面方程：</strong>（垂直于切线的平面）</p>
+                <p class="formula">x'(t₀)(x-x₀) + y'(t₀)(y-y₀) + z'(t₀)(z-z₀) = 0</p>
+                <div class="example">
+                    <p><strong>例子：</strong> 螺旋线 r(t) = (cos t, sin t, t) 在 t=π/4 处</p>
+                    <p>r'(t) = (-sin t, cos t, 1) ⇒ r'(π/4) = (-√2/2, √2/2, 1)</p>
+                    <p>切线方程：(x-√2/2)/(-√2/2) = (y-√2/2)/(√2/2) = (z-π/4)/1</p>
+                    <p>法平面方程：(-√2/2)(x-√2/2) + (√2/2)(y-√2/2) + 1·(z-π/4) = 0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点11 -->
+        <div class="knowledge-point">
+            <div class="point-title">11. 曲面的切平面与法线方程的求法 <span class="emoji">🧊</span></div>
+            <div class="point-content">
+                <p>曲面就像山坡，切平面就像放在山坡上的平板！</p>
+                <p><strong>隐式方程 F(x,y,z)=0：</strong></p>
+                <p>法向量：n = (F<sub>x</sub>, F<sub>y</sub>, F<sub>z</sub>)</p>
+                <p><strong>切平面方程：</strong></p>
+                <p class="formula">F<sub>x</sub>(x₀,y₀,z₀)(x-x₀) + F<sub>y</sub>(y-y₀) + F<sub>z</sub>(z-z₀) = 0</p>
+                <p><strong>法线方程：</strong></p>
+                <p class="formula">(x-x₀)/F<sub>x</sub> = (y-y₀)/F<sub>y</sub> = (z-z₀)/F<sub>z</sub></p>
+                <div class="example">
+                    <p><strong>例子：</strong> 球面 x² + y² + z² = 1 在 (1/2, 1/2, √2/2) 处</p>
+                    <p>F<sub>x</sub>=2x=1, F<sub>y</sub>=2y=1, F<sub>z</sub>=2z=√2</p>
+                    <p>切平面：1·(x-1/2) + 1·(y-1/2) + √2(z-√2/2) = 0</p>
+                    <p>法线：(x-1/2)/1 = (y-1/2)/1 = (z-√2/2)/√2</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点12 -->
+        <div class="knowledge-point">
+            <div class="point-title">12. 方向导数定义及求法 <span class="emoji">🧭</span></div>
+            <div class="point-content">
+                <p>方向导数告诉你函数在某个方向上的变化率！</p>
+                <p><strong>定义：</strong></p>
+                <p class="formula">D<sub>u</sub>f(x₀,y₀) = lim<sub>h→0</sub> [f(x₀+hu₁, y₀+hu₂) - f(x₀,y₀)] / h</p>
+                <p>其中 u = (u₁, u₂) 是单位方向向量</p>
+                <p><strong>计算公式：</strong></p>
+                <p class="formula">D<sub>u</sub>f = f<sub>x</sub>u₁ + f<sub>y</sub>u₂ = ∇f · u</p>
+                <div class="example">
+                    <p><strong>例子：</strong> f(x,y) = x² + y² 在 (1,1) 沿 (1,1) 方向的方向导数</p>
+                    <p>∇f = (2x, 2y) = (2,2) 在 (1,1)</p>
+                    <p>单位化 u = (1/√2, 1/√2)</p>
+                    <p>D<sub>u</sub>f = 2·(1/√2) + 2·(1/√2) = 4/√2 = 2√2</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 知识点13 -->
+        <div class="knowledge-point">
+            <div class="point-title">13. 函数梯度的定义、求法和意义 <span class="emoji">📶</span></div>
+            <div class="point-content">
+                <p>梯度就像指南针，指向函数增长最快的方向！</p>
+                <p><strong>定义：</strong></p>
+                <p class="formula">∇f = (f<sub>x</sub>, f<sub>y</sub>, f<sub>z</sub>)</p>
+                <p><strong>性质：</strong></p>
+                <ul>
+                    <li>方向导数最大值 = ||∇f||，方向为梯度方向</li>
+                    <li>梯度垂直于等高线</li>
+                    <li>梯度指向函数值增长最快的方向</li>
+                </ul>
+                <div class="example">
+                    <p><strong>例子：</strong> f(x,y) = x²y</p>
+                    <p>∇f = (2xy, x²)</p>
+                    <p>在(1,2)处：∇f = (4,1)，方向导数最大值为√(16+1)=√17</p>
+                </div>
+            </div>
+        </div>
+      <!-- 知识点14 -->
+        <div class="knowledge-point">
+            <div class="point-title">14. 多元函数极值的求法，拉格朗日乘数法求条件极值 <span class="emoji">🏔️</span></div>
+            <div class="point-content">
+                <p>找极值就像在山里找最高点和最低点，只不过现在是多维的！</p>
+                
+                <p><strong>无条件极值（自由极值）：</strong></p>
+                <ol>
+                    <li>先求偏导，找驻点：
+                        <p class="formula">f<sub>x</sub> = 0, f<sub>y</sub> = 0</p>
+                    </li>
+                    <li>用二阶导数判别法：
+                        <p>计算判别式：</p>
+                        <p class="formula">D = f<sub>xx</sub>f<sub>yy</sub> - (f<sub>xy</sub>)²</p>
+                        <ul>
+                            <li>D > 0 且 f<sub>xx</sub> > 0 → 极小值（像碗底）</li>
+                            <li>D > 0 且 f<sub>xx</sub> < 0 → 极大值（像山顶）</li>
+                            <li>D < 0 → 鞍点（像马鞍，既不是最高也不是最低）</li>
+                            <li>D = 0 → 无法判断，需要其他方法</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <div class="example">
+                    <p><strong>例子：</strong> 求 f(x,y) = x³ + y³ - 3xy 的极值</p>
+                    <p>f<sub>x</sub> = 3x² - 3y = 0</p>
+                    <p>f<sub>y</sub> = 3y² - 3x = 0</p>
+                    <p>解得驻点：(0,0) 和 (1,1)</p>
+                    <p>在(0,0): D = (-3)(-3) - (-3)² = 0 → 无法判断</p>
+                    <p>在(1,1): D = (6)(6) - (-3)² = 27 > 0 且 f<sub>xx</sub>=6>0 → 极小值</p>
+                </div>
+                
+                <p><strong>拉格朗日乘数法（条件极值）：</strong></p>
+                <p>当有约束条件 g(x,y)=0 时，就像戴着镣铐跳舞！</p>
+                <ol>
+                    <li>构造拉格朗日函数：
+                        <p class="formula">L(x,y,λ) = f(x,y) - λg(x,y)</p>
+                    </li>
+                    <li>求偏导并解方程组：
+                        <p class="formula">L<sub>x</sub> = 0, L<sub>y</sub> = 0, L<sub>λ</sub> = 0</p>
+                    </li>
+                    <li>判断极值性质（通常根据实际问题判断）</li>
+                </ol>
+                
+                <div class="example">
+                    <p><strong>例子：</strong> 在 x² + y² = 1 条件下，求 f(x,y) = xy 的最大值</p>
+                    <p>构造 L = xy - λ(x² + y² - 1)</p>
+                    <p>L<sub>x</sub> = y - 2λx = 0</p>
+                    <p>L<sub>y</sub> = x - 2λy = 0</p>
+                    <p>L<sub>λ</sub> = -(x² + y² - 1) = 0</p>
+                    <p>解得：x = y = ±√2/2，最大值为 f(√2/2, √2/2) = 1/2</p>
+                </div>
+                
+                <div class="fun-fact">
+                    <span class="emoji">🤓</span> 拉格朗日乘数法中的λ可以理解为"约束条件的价格" - 它告诉你如果放松一点约束，目标函数能改善多少！
+                </div>
+                
+                <p><strong>实际应用：</strong></p>
+                <ul>
+                    <li>经济学：预算约束下的效用最大化</li>
+                    <li>工程学：材料约束下的最优设计</li>
+                    <li>物理学：约束系统的平衡位置</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 模拟试题 -->
+        <div class="test">
+            <h2>第九章模拟试题 <span class="emoji">📝</span></h2>
+            
+            <div class="question">
+                <p><strong>1. 判断题</strong> (2分)：若函数在某点可微，则在该点一定连续且偏导数存在。</p>
+                <p class="answer">答案：正确</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>2. 填空题</strong> (2分)：函数z = ln(x² + y²)在点(1,1)处的全微分dz = ______。</p>
+                <p class="answer">答案：dx + dy</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>3. 选择题</strong> (3分)：下列哪个函数在(0,0)点连续但不可微？
+                A) x² + y²  B) |x| + |y|  C) xy/(x²+y²)  D) x³y</p>
+                <p class="answer">答案：B</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>4. 计算题</strong> (8分)：求函数f(x,y) = x³ + y³ - 3xy的极值。</p>
+                <p class="answer">答案：驻点(0,0)和(1,1)；(0,0)是鞍点，(1,1)是极小值点</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>5. 应用题</strong> (10分)：用拉格朗日乘数法求表面积为6的长方体的最大体积。</p>
+                <p class="answer">答案：设长宽高为x,y,z，约束2(xy+yz+zx)=6，构造L=xyz-λ(2xy+2yz+2zx-6)，解得x=y=z=1，最大体积为1</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>6. 证明题</strong> (10分)：证明若f(x,y)在点P₀可微，则f在P₀沿任何方向的方向导数都存在。</p>
+                <p class="answer">答案：由可微定义，Δf = f<sub>x</sub>Δx + f<sub>y</sub>Δy + o(ρ)，方向导数D<sub>u</sub>f = lim(f(P₀+tu)-f(P₀))/t = f<sub>x</sub>u₁ + f<sub>y</sub>u₂</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>7. 判断题</strong> (2分)：混合偏导数f<sub>xy</sub>和f<sub>yx</sub>在任何情况下都相等。</p>
+                <p class="answer">答案：错误（需要连续条件）</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>8. 填空题</strong> (2分)：曲面z = x² + y²在点(1,1,2)处的切平面方程是______。</p>
+                <p class="answer">答案：2(x-1) + 2(y-1) - (z-2) = 0</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>9. 选择题</strong> (3分)：函数f(x,y)在点P₀沿哪个方向的方向导数最大？
+                A) (1,0)  B) (0,1)  C) 梯度方向  D) 等高线切线方向</p>
+                <p class="answer">答案：C</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>10. 计算题</strong> (8分)：设z = f(xy, x²+y²)，其中f具有二阶连续偏导数，求∂²z/∂x∂y。</p>
+                <p class="answer">答案：设u=xy, v=x²+y²，则∂z/∂x = f₁·y + f₂·2x，再对y求导得∂²z/∂x∂y = f₁ + y(f₁₁·x + f₁₂·2y) + 2x(f₂₁·x + f₂₂·2y)</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>11. 应用题</strong> (10分)：求点(1,2,3)到平面x + y + z = 1的最短距离。</p>
+                <p class="answer">答案：构造距离平方函数D²=(x-1)²+(y-2)²+(z-3)²，约束x+y+z=1，用拉格朗日乘数法解得最短距离为√14</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>12. 证明题</strong> (10分)：设u = f(x,y)可微，且在极坐标x=rcosθ, y=rsinθ下与θ无关，证明y∂u/∂x - x∂u/∂y = 0。</p>
+                <p class="answer">答案：由题意∂u/∂θ=0，而∂u/∂θ=(∂u/∂x)(-rsinθ)+(∂u/∂y)(rcosθ)=-y∂u/∂x+x∂u/∂y=0</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>13. 判断题</strong> (2分)：若函数在某点的所有方向导数都存在，则函数在该点可微。</p>
+                <p class="answer">答案：错误</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>14. 填空题</strong> (2分)：曲线x=t, y=t², z=t³在t=1处的切线方程是______。</p>
+                <p class="answer">答案：(x-1)/1 = (y-1)/2 = (z-1)/3</p>
+            </div>
+            
+            <div class="question">
+                <p><strong>15. 选择题</strong> (3分)：用拉格朗日乘数法求极值时，乘数λ的几何意义是：
+                A) 目标函数的增长率  B) 约束条件的"价格"  C) 极值点的高度  D) 切平面的斜率</p>
+                <p class="answer">答案：B</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
