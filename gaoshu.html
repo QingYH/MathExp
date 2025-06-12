@@ -4,7 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数学学习门户</title>
+    <button onclick="goBack()">返回上一页</button>
+      <script>
+        function goBack() {
+            window.history.back();
+          }
+    </script>
+        <title>数学学习门户</title>
     <style>
         body {
             font-family: 'Microsoft YaHei', sans-serif;
@@ -110,12 +116,7 @@
     </style>
 </head>
 <body>
-    <button onclick="goBack()">返回上一页</button>
-      <script>
-        function goBack() {
-            window.history.back();
-          }
-    </script>
+    
     <div class="header">
         <h1>数学学习资源中心</h1>
     </div>
