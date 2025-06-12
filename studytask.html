@@ -1,0 +1,578 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学探究式学习任务</title>
+    <style>
+        :root {
+            --primary: #4a6bdf;
+            --secondary: #ff7043;
+            --accent: #26c6da;
+            --dark: #2c3e50;
+            --light: #f5f7fa;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M30,10L50,30L70,10" fill="none" stroke="%234a6bdf22" stroke-width="1"/><path d="M10,30L30,50L10,70" fill="none" stroke="%234a6bdf22" stroke-width="1"/><path d="M30,90L50,70L70,90" fill="none" stroke="%234a6bdf22" stroke-width="1"/><path d="M90,30L70,50L90,70" fill="none" stroke="%234a6bdf22" stroke-width="1"/></svg>');
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #3a56c4 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><text x="10" y="50" font-family="Arial" font-size="14" fill="%23ffffff10">∫ ∑ ∏ ∂ ∞</text></svg>');
+            opacity: 0.3;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            position: relative;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .modules-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .module {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        
+        .module-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #f4511e 100%);
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .module-number {
+            background: white;
+            color: var(--secondary);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .module-content {
+            padding: 20px;
+        }
+        
+        .module-topic {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .module-tasks {
+            margin-top: 15px;
+        }
+        
+        .task {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.5;
+        }
+        
+        .task::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        .software-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .code-section {
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 5px 5px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .code-title {
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .code-title::before {
+            content: "{ }";
+            margin-right: 8px;
+            color: var(--primary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .modules-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>高等数学探究式学习任务</h1>
+            <div class="subtitle">基于数学软件与AI工具的交互式学习体验 · 2025</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="modules-container">
+            <!-- 模块1 -->
+            <div class="module">
+                <div class="module-header">
+                    <span>函数与极限</span>
+                    <div class="module-number">1</div>
+                </div>
+                <div class="module-content">
+                    <div class="module-topic">极限概念的动态可视化</div>
+                    <p>通过ε-δ定义探索函数极限，理解极限的严格定义。</p>
+                    
+                    <div class="module-tasks">
+                        <div class="task">使用GeoGebra绘制函数f(x)=sin(x)/x在x→0时的极限 <span class="software-badge">GeoGebra</span></div>
+                        <div class="task">用Matlab数值验证极限值，设置不同的ε值观察δ的变化 <span class="software-badge">MATLAB</span></div>
+                        <div class="task">AI辅助：询问ChatGPT解释ε-δ定义在不同函数中的应用 <span class="software-badge">AI</span></div>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-title">GeoGebra代码示例 - 极限可视化</div>
+                        <pre>
+// GeoGebra脚本
+f(x) = sin(x)/x
+a = 0
+limit = 1
+ε = Slider(0.1, 1, 0.01)
+δ = Slider(0.1, 1, 0.01)
+ShowLabel(f, true)
+ShowLabel(ε, true)
+ShowLabel(δ, true)
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模块2 -->
+            <div class="module">
+                <div class="module-header">
+                    <span>导数与微分</span>
+                    <div class="module-number">2</div>
+                </div>
+                <div class="module-content">
+                    <div class="module-topic">导数几何意义的动态理解</div>
+                    <p>通过割线到切线的变化过程，直观理解导数的几何意义。</p>
+                    
+                    <div class="module-tasks">
+                        <div class="task">在GeoGebra中创建函数曲线和动态切线 <span class="software-badge">GeoGebra</span></div>
+                        <div class="task">用Mathematica计算复杂函数的导数并验证 <span class="software-badge">Mathematica</span></div>
+                        <div class="task">AI任务：让AI解释导数在物理中的应用实例 <span class="software-badge">AI</span></div>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-title">MATLAB代码示例 - 数值导数</div>
+                        <pre>
+% MATLAB数值导数计算
+h = 0.0001;
+x = linspace(-5, 5, 100);
+f = @(x) x.^3 - 2*x + 1;
+df = (f(x+h) - f(x-h))/(2*h);
+plot(x, df, 'LineWidth', 2);
+title('Numerical Derivative of f(x) = x^3 - 2x + 1');
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模块3 -->
+            <div class="module">
+                <div class="module-header">
+                    <span>积分应用</span>
+                    <div class="module-number">3</div>
+                </div>
+                <div class="module-content">
+                    <div class="module-topic">定积分的面积累积过程</div>
+                    <p>通过黎曼和的可视化理解积分作为面积累积的过程。</p>
+                    
+                    <div class="module-tasks">
+                        <div class="task">在GeoGebra中创建动态黎曼和演示 <span class="software-badge">GeoGebra</span></div>
+                        <div class="task">用Matlab实现蒙特卡洛积分法 <span class="software-badge">MATLAB</span></div>
+                        <div class="task">AI任务：比较不同数值积分方法的优缺点 <span class="software-badge">AI</span></div>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-title">Mathematica代码示例 - 黎曼和可视化</div>
+                        <pre>
+(* Mathematica黎曼和可视化 *)
+Manipulate[
+  Show[Plot[Sin[x], {x, 0, Pi}, PlotStyle -> Thick],
+    DiscretePlot[Sin[x], {x, 0, Pi, Pi/n}, 
+     ExtentSize -> Left, PlotMarkers -> None, 
+     FillingStyle -> LightBlue], 
+    PlotLabel -> Row[{"n = ", n}]], 
+  {n, 5, 50, 1}]
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模块4 -->
+            <div class="module">
+                <div class="module-header">
+                    <span>多元函数</span>
+                    <div class="module-number">4</div>
+                </div>
+                <div class="module-content">
+                    <div class="module-topic">多元函数极值与梯度</div>
+                    <p>探索多元函数的极值问题，理解梯度下降法的几何意义。</p>
+                    
+                    <div class="module-tasks">
+                        <div class="task">用Matlab绘制三维函数曲面和等高线 <span class="software-badge">MATLAB</span></div>
+                        <div class="task">在GeoGebra中创建梯度向量场 <span class="software-badge">GeoGebra</span></div>
+                        <div class="task">AI任务：让AI解释梯度下降法在机器学习中的应用 <span class="software-badge">AI</span></div>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-title">MATLAB代码示例 - 三维函数可视化</div>
+                        <pre>
+% MATLAB三维函数绘图
+[X,Y] = meshgrid(-3:0.1:3);
+Z = X.^2 + Y.^2;
+surf(X,Y,Z);
+xlabel('x'); ylabel('y'); zlabel('z');
+title('f(x,y) = x^2 + y^2');
+colorbar;
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模块5 -->
+            <div class="module">
+                <div class="module-header">
+                    <span>微分方程</span>
+                    <div class="module-number">5</div>
+                </div>
+                <div class="module-content">
+                    <div class="module-topic">常微分方程的数值解</div>
+                    <p>通过欧拉法和龙格-库塔法理解微分方程的数值解法。</p>
+                    
+                    <div class="module-tasks">
+                        <div class="task">用Matlab实现欧拉法和龙格-库塔法比较 <span class="software-badge">MATLAB</span></div>
+                        <div class="task">在GeoGebra中创建微分方程方向场 <span class="software-badge">GeoGebra</span></div>
+                        <div class="task">AI任务：询问AI微分方程在传染病模型中的应用 <span class="software-badge">AI</span></div>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-title">MATLAB代码示例 - 欧拉法解微分方程</div>
+                        <pre>
+% MATLAB欧拉法解微分方程
+f = @(t,y) -2*y + t; % dy/dt = -2y + t
+t0 = 0; y0 = 1;      % 初始条件
+h = 0.1;             % 步长
+t = t0:h:2;          % 时间区间
+y = zeros(size(t));
+y(1) = y0;
+
+for i = 1:length(t)-1
+    y(i+1) = y(i) + h*f(t(i), y(i));
+end
+
+plot(t,y,'-o');
+title('Euler Method Solution');
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模块6 -->
+            <div class="module">
+                <div class="module-header">
+                    <span>级数</span>
+                    <div class="module-number">6</div>
+                </div>
+                <div class="module-content">
+                    <div class="module-topic">泰勒级数与函数逼近</div>
+                    <p>通过泰勒级数展开理解函数的多项式逼近过程。</p>
+                    
+                    <div class="module-tasks">
+                        <div class="task">在GeoGebra中创建动态泰勒多项式逼近 <span class="software-badge">GeoGebra</span></div>
+                        <div class="task">用Mathematica计算各种函数的泰勒展开 <span class="software-badge">Mathematica</span></div>
+                        <div class="task">AI任务：让AI解释泰勒级数在物理近似中的应用 <span class="software-badge">AI</span></div>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-title">Mathematica代码示例 - 泰勒级数展开</div>
+                        <pre>
+(* Mathematica泰勒级数展开 *)
+Manipulate[
+ Plot[{Sin[x], Normal[Series[Sin[x], {x, 0, n}]]}, {x, -2 Pi, 2 Pi},
+  PlotRange -> {-2, 2}, 
+  PlotLegends -> {"sin(x)", "Taylor Approximation"}],
+ {n, 1, 10, 1}]
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模块7 -->
+            <div class="module">
+                <div class="module-header">
+                    <span>空间解析几何</span>
+                    <div class="module-number">7</div>
+                </div>
+                <div class="module-content">
+                    <div class="module-topic">空间曲线与曲面</div>
+                    <p>探索空间曲线和曲面的参数方程表示及其几何性质。</p>
+                    
+                    <div class="module-tasks">
+                        <div class="task">用Matlab绘制螺旋线和莫比乌斯带 <span class="software-badge">MATLAB</span></div>
+                        <div class="task">在GeoGebra中创建交互式二次曲面 <span class="software-badge">GeoGebra</span></div>
+                        <div class="task">AI任务：询问AI空间几何在计算机图形学中的应用 <span class="software-badge">AI</span></div>
+                    </div>
+                    
+                    <div class="code-section">
+                        <div class="code-title">MATLAB代码示例 - 螺旋线绘制</div>
+                        <pre>
+% MATLAB绘制螺旋线
+t = linspace(0, 10*pi, 1000);
+x = cos(t);
+y = sin(t);
+z = t/(10*pi);
+plot3(x, y, z, 'LineWidth', 2);
+xlabel('x'); ylabel('y'); zlabel('z');
+title('3D Helix');
+grid on;
+axis equal;
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 模块8 -->
+            <div class="module">
+    <div class="module-header">
+        <span>向量运算</span>
+        <div class="module-number">8</div>
+    </div>
+    <div class="module-content">
+        <div class="module-topic">向量运算的几何可视化</div>
+        <p>通过动态演示理解向量的加减、点积、叉积等运算的几何意义。</p>
+        
+        <div class="module-tasks">
+            <div class="task">在GeoGebra中创建可交互的向量加减法演示 <span class="software-badge">GeoGebra</span></div>
+            <div class="task">用Matlab计算向量夹角并可视化 <span class="software-badge">MATLAB</span></div>
+            <div class="task">AI任务：让AI解释叉积在物理力矩计算中的应用 <span class="software-badge">AI</span></div>
+        </div>
+        
+        <div class="code-section">
+            <div class="code-title">MATLAB代码示例 - 向量叉积可视化</div>
+            <pre>
+% MATLAB向量叉积可视化
+v1 = [1, 2, 3];  % 向量1
+v2 = [3, 0, 2];  % 向量2
+v3 = cross(v1, v2); % 叉积结果
+
+figure;
+quiver3(0,0,0, v1(1),v1(2),v1(3), 'r', 'LineWidth', 2); hold on;
+quiver3(0,0,0, v2(1),v2(2),v2(3), 'b', 'LineWidth', 2);
+quiver3(0,0,0, v3(1),v3(2),v3(3), 'g', 'LineWidth', 2);
+legend('向量v1', '向量v2', '叉积v1×v2');
+title('向量叉积可视化');
+xlabel('x'); ylabel('y'); zlabel('z');
+grid on; axis equal;
+            </pre>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">GeoGebra代码示例 - 向量加法</div>
+            <pre>
+// GeoGebra向量加法演示
+v1 = Vector((1,2))
+v2 = Vector((3,-1))
+v3 = v1 + v2
+SetCaption(v1, "向量a")
+SetCaption(v2, "向量b")
+SetCaption(v3, "向量a+b")
+SetColor(v1, "red")
+SetColor(v2, "blue")
+SetColor(v3, "green")
+            </pre>
+        </div>
+    </div>
+</div>
+
+ <!-- 模块9 -->
+<div class="module">
+    <div class="module-header">
+        <span>傅里叶级数</span>
+        <div class="module-number">9</div>
+    </div>
+    <div class="module-content">
+        <div class="module-topic">周期函数的频谱分析与合成</div>
+        <p>通过傅里叶级数展开理解周期函数的频域表示和信号重构。</p>
+        
+        <div class="module-tasks">
+            <div class="task">在GeoGebra中创建方波的傅里叶级数逼近演示 <span class="software-badge">GeoGebra</span></div>
+            <div class="task">用Matlab实现傅里叶级数系数计算与合成 <span class="software-badge">MATLAB</span></div>
+            <div class="task">AI任务：让AI解释吉布斯现象的原理 <span class="software-badge">AI</span></div>
+        </div>
+        
+        <div class="code-section">
+            <div class="code-title">MATLAB代码示例 - 方波傅里叶合成</div>
+            <pre>
+% MATLAB方波傅里叶级数合成
+t = linspace(-pi, pi, 1000);
+f = zeros(size(t));
+N = 10; % 谐波次数
+
+for n = 1:2:N  % 只取奇数次谐波
+    f = f + (4/pi) * sin(n*t)/n;
+end
+
+plot(t, f, 'LineWidth', 2);
+hold on;
+plot(t, sign(t), '--'); % 理想方波
+title(['傅里叶级数逼近 (N=', num2str(N), ')']);
+legend('合成波形', '理想方波');
+xlabel('时间'); ylabel('幅值');
+grid on;
+            </pre>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">Mathematica代码示例 - 傅里叶系数计算</div>
+            <pre>
+(* Mathematica傅里叶系数计算 *)
+f[x_] := Piecewise[{{1, 0 <= x < Pi}, {-1, -Pi <= x < 0}}]
+a[n_] := (1/Pi) Integrate[f[x] Cos[n x], {x, -Pi, Pi}]
+b[n_] := (1/Pi) Integrate[f[x] Sin[n x], {x, -Pi, Pi}]
+FourierSeries = Table[
+   a[0]/2 + Sum[a[k] Cos[k x] + b[k] Sin[k x], {k, 1, n}], 
+   {n, 1, 5}];
+Manipulate[
+ Plot[{f[x], FourierSeries[[n]]}, {x, -Pi, Pi}, 
+  PlotRange -> {-1.5, 1.5}, 
+  PlotLegends -> {"原函数", "傅里叶逼近"}], 
+ {n, 1, 5, 1}]
+            </pre>
+        </div>
+
+        <div class="code-section">
+            <div class="code-title">Python代码示例 - 傅里叶频谱分析</div>
+            <pre>
+# Python傅里叶频谱分析
+import numpy as np
+import matplotlib.pyplot as plt
+
+def square_wave(t):
+    return np.sign(np.sin(t))
+
+t = np.linspace(-np.pi, np.pi, 1000)
+f = square_wave(t)
+
+# 计算FFT
+fft = np.fft.fft(f)
+freq = np.fft.fftfreq(len(t), t[1]-t[0])
+
+plt.figure(figsize=(12,4))
+plt.subplot(121)
+plt.plot(t, f)
+plt.title('时域信号')
+
+plt.subplot(122)
+plt.stem(freq[:20], np.abs(fft[:20]), 'r')
+plt.title('频域频谱')
+plt.tight_layout()
+            </pre>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
