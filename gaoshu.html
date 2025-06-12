@@ -2,14 +2,21 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>返回上一页示例</title>
+</head>
+<body>
     <button onclick="goBack()">返回上一页</button>
-      <script>
+    
+    <script>
         function goBack() {
             window.history.back();
-          }
+            // 或者使用 window.history.go(-1);
+        }
     </script>
+</body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>数学学习门户</title>
     <style>
         body {
