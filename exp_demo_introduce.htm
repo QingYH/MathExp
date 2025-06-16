@@ -1,0 +1,156 @@
+﻿
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学实验演示平台</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://example.com/math-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .module {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 15px;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+        }
+        a:hover {
+            background: linear-gradient(45deg, #2980b9, #8e44ad);
+        }
+        .module:nth-child(1) { background: rgba(255, 99, 132, 0.85); }
+        .module:nth-child(2) { background: rgba(54, 162, 235, 0.85); }
+        .module:nth-child(3) { background: rgba(255, 206, 86, 0.85); }
+        .module:nth-child(4) { background: rgba(75, 192, 192, 0.85); }
+        .module:nth-child(5) { background: rgba(153, 102, 255, 0.85); }
+        .module:nth-child(6) { background: rgba(255, 159, 64, 0.85); }
+        .module:nth-child(7) { background: rgba(199, 199, 199, 0.85); }
+        .module:nth-child(8) { background: rgba(83, 51, 237, 0.85); }
+        .module:nth-child(9) { background: rgba(40, 167, 69, 0.85); }
+        .module:nth-child(10) { background: rgba(108, 117, 125, 0.85); }
+        .module:nth-child(11) { background: rgba(248, 215, 218, 0.85); }
+        .module:nth-child(12) { background: rgba(209, 231, 221, 0.85); }
+        .module:nth-child(13) { background: rgba(255, 243, 205, 0.85); }
+        .module:nth-child(14) { background: rgba(222, 226, 230, 0.85); }
+        .module:nth-child(15) { background: rgba(207, 226, 255, 0.85); }
+    </style>
+</head>
+<body>
+    <h1>高等数学实验演示平台</h1>
+    <div class="container">
+        <div class="module">
+            <h2>极限与连续</h2>
+            <p>探索函数极限的概念和连续性原理</p>
+            <a href="https://example.com/limit" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>导数与微分</h2>
+            <p>理解变化率和切线斜率的数学表达</p>
+            <a href="https://example.com/derivative" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>积分应用</h2>
+            <p>面积、体积和曲线长度的计算</p>
+            <a href="https://example.com/integral" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>多元函数</h2>
+            <p>多变量函数的极限、连续与偏导数</p>
+            <a href="https://example.com/multivariable" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>重积分</h2>
+            <p>二重积分和三重积分的计算与应用</p>
+            <a href="https://example.com/multiple-integral" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>曲线积分</h2>
+            <p>第一类和第二类曲线积分的概念</p>
+            <a href="https://example.com/line-integral" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>曲面积分</h2>
+            <p>第一类和第二类曲面积分的应用</p>
+            <a href="https://example.com/surface-integral" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>无穷级数</h2>
+            <p>数项级数与函数项级数的收敛性</p>
+            <a href="https://example.com/series" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>傅里叶级数</h2>
+            <p>周期函数的三角级数展开</p>
+            <a href="https://example.com/fourier" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>常微分方程</h2>
+            <p>一阶和高阶微分方程的解法</p>
+            <a href="https://example.com/ode" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>偏微分方程</h2>
+            <p>波动方程、热传导方程和拉普拉斯方程</p>
+            <a href="https://example.com/pde" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>向量分析</h2>
+            <p>梯度、散度和旋度的几何意义</p>
+            <a href="https://example.com/vector-analysis" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>泰勒展开</h2>
+            <p>函数的多项式逼近方法</p>
+            <a href="https://example.com/taylor" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>拉格朗日乘数</h2>
+            <p>约束优化问题的求解方法</p>
+            <a href="https://example.com/lagrange" target="_blank">查看实验</a>
+        </div>
+        <div class="module">
+            <h2>格林公式</h2>
+            <p>平面区域与边界曲线积分的关系</p>
+            <a href="https://example.com/green" target="_blank">查看实验</a>
+        </div>
+    </div>
+</body>
+</html>

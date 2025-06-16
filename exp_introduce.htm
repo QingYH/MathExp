@@ -1,0 +1,103 @@
+﻿
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学实验平台</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #fff;
+            font-size: 2.8rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            margin-bottom: 10px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            width: 90%;
+            max-width: 1200px;
+        }
+        .module {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(5px);
+        }
+        .module:hover {
+            transform: translateY(-10px);
+        }
+        h2 {
+            color: #2c3e50;
+            margin: 0 0 20px 0;
+            font-size: 2rem;
+        }
+        .btn {
+            padding: 12px 30px;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .module-1 {
+            background: linear-gradient(135deg, rgba(255,107,129,0.85), rgba(255,159,67,0.85));
+        }
+        .module-1 .btn {
+            background: linear-gradient(135deg, #FF416C, #FF4B2B);
+        }
+        .module-2 {
+            background: linear-gradient(135deg, rgba(100,115,255,0.85), rgba(67,198,172,0.85));
+        }
+        .module-2 .btn {
+            background: linear-gradient(135deg, #4776E6, #8E54E9);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>高等数学实验探索平台</h1>
+    </div>
+    <div class="container">
+        <div class="module module-1">
+            <div>
+                <h2>实验演示</h2>
+                <p>相关知识点的动态可视化演示</p>
+            </div>
+            <a href="https://example.com/calculus" class="btn">进入操作或体验</a>
+        </div>
+        <div class="module module-2">
+            <div>
+                <h2>实验内容及任务</h2>
+                <p>相关知识点实验探索式学习任务和实验指南</p>
+            </div>
+            <a href="https://example.com/multivariable" class="btn">进入学习</a>
+        </div>
+    </div>
+</body>
+</html>
