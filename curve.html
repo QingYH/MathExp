@@ -7,11 +7,11 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
     <style>
-        body { 
+        body {
             margin: 0;
             overflow: hidden;
-            background: url('https://example.com/math-bg.jpg') center/cover;
-            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Microsoft YaHei', sans-serif;
             color: #fff;
         }
         #container {
@@ -19,34 +19,52 @@
             width: 100%;
             height: 100%;
         }
-        #menu {
+        #control-panel {
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 15px;
+            width: 300px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             z-index: 100;
         }
-        select, button {
-            padding: 8px 15px;
-            margin: 5px;
+        .control-group {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin: 8px 0;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
             border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        button {
             background: #4CAF50;
             color: white;
-            border: none;
+            font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s;
         }
         button:hover {
             background: #45a049;
+            transform: scale(1.05);
         }
-        #info {
+        #info-panel {
             position: absolute;
             bottom: 20px;
             left: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 10px;
-            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 15px;
             max-width: 300px;
         }
         .back-btn {
@@ -55,36 +73,76 @@
             right: 20px;
             padding: 10px 20px;
             background: #f44336;
+            z-index: 100;
+        }
+        .param-control {
+            display: flex;
+            align-items: center;
+        }
+        .param-control input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .param-control span {
+            width: 50px;
+            text-align: right;
         }
     </style>
 </head>
 <body>
     <div id="container"></div>
-    <div id="menu">
-        <h2>曲面选择</h2>
-        <select id="surface-select">
-            <option value="sphere">球面 x²+y²+z²=1</option>
-            <option value="cylinder">圆柱面 x²+y²=1</option>
-            <option value="cone">圆锥面 z²=x²+y²</option>
-            <option value="hyperboloid1">单叶双曲面 x²+y²-z²=1</option>
-            <option value="hyperboloid2">双叶双曲面 x²-y²-z²=1</option>
-            <option value="paraboloid">椭圆抛物面 z=x²+y²</option>
-            <option value="saddle">双曲抛物面 z=x²-y²</option>
-        </select>
-        <button id="draw-btn">绘制曲面</button>
-        <button id="color-btn">随机颜色</button>
+    <div id="control-panel">
+        <h2>曲面控制面板</h2>
+        <div class="control-group">
+            <label for="surface-type">曲面类型:</label>
+            <select id="surface-type">
+                <option value="sphere">球面</option>
+                <option value="ellipsoid">椭球面</option>
+                <option value="cylinder">圆柱面</option>
+                <option value="cone">圆锥面</option>
+                <option value="hyperboloid1">单叶双曲面</option>
+                <option value="hyperboloid2">双叶双曲面</option>
+                <option value="paraboloid">椭圆抛物面</option>
+                <option value="saddle">双曲抛物面</option>
+            </select>
+        </div>
+
+        <div class="control-group" id="param-controls">
+            <!-- 动态参数控制区 -->
+        </div>
+
+        <div class="control-group">
+            <label>显示设置:</label>
+            <div class="param-control">
+                <input type="color" id="surface-color" value="#ff0000">
+                <span>颜色</span>
+            </div>
+            <div class="param-control">
+                <input type="range" id="surface-opacity" min="0.1" max="1" step="0.1" value="0.8">
+                <span>透明度</span>
+            </div>
+            <div class="param-control">
+                <input type="checkbox" id="wireframe" checked>
+                <span>网格线</span>
+            </div>
+        </div>
+
+        <button id="update-btn">更新曲面</button>
     </div>
-    <div id="info">
-        <h3>操作说明：</h3>
-        <p>1. 鼠标左键拖动 - 旋转视图</p>
-        <p>2. 鼠标右键拖动 - 平移视图</p>
-        <p>3. 鼠标滚轮 - 缩放视图</p>
-        <p>4. 双击曲面 - 重置视图</p>
+
+    <div id="info-panel">
+        <h3 id="equation-display">球面方程: x² + y² + z² = r²</h3>
+        <h4>操作说明:</h4>
+        <p>• 左键拖动 - 旋转视图</p>
+        <p>• 右键拖动 - 平移视图</p>
+        <p>• 滚轮 - 缩放视图</p>
+        <p>• 双击 - 重置视图</p>
     </div>
+
     <button class="back-btn" onclick="window.history.back()">返回上一页</button>
 
     <script>
-        // 初始化场景、相机和渲染器
+        // 初始化Three.js场景
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -93,77 +151,145 @@
         document.getElementById('container').appendChild(renderer.domElement);
 
         // 添加光源
-        const light1 = new THREE.DirectionalLight(0xffffff, 1);
-        light1.position.set(1, 1, 1);
-        scene.add(light1);
-        const light2 = new THREE.AmbientLight(0x404040);
-        scene.add(light2);
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
 
         // 添加坐标轴辅助
         const axesHelper = new THREE.AxesHelper(5);
         scene.add(axesHelper);
 
-        // 添加轨道控制器
+        // 轨道控制器
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        camera.position.set(3, 3, 3);
+        camera.position.set(5, 5, 5);
         controls.update();
 
-        // 曲面参数
+        // 当前曲面对象
         let currentSurface = null;
-        const surfaces = {
-            sphere: { equation: "x² + y² + z² = 1", color: 0xff0000 },
-            cylinder: { equation: "x² + y² = 1", color: 0x00ff00 },
-            cone: { equation: "z² = x² + y²", color: 0x0000ff },
-            hyperboloid1: { equation: "x² + y² - z² = 1", color: 0xffff00 },
-            hyperboloid2: { equation: "x² - y² - z² = 1", color: 0xff00ff },
-            paraboloid: { equation: "z = x² + y²", color: 0x00ffff },
-            saddle: { equation: "z = x² - y²", color: 0xffffff }
+        
+        // 曲面参数配置
+        const surfaceParams = {
+            sphere: { r: 1 },
+            ellipsoid: { a: 1, b: 1, c: 1 },
+            cylinder: { r: 1, h: 2 },
+            cone: { r: 1, h: 2 },
+            hyperboloid1: { a: 1, b: 1, c: 1 },
+            hyperboloid2: { a: 1, b: 1, c: 1 },
+            paraboloid: { a: 1, b: 1 },
+            saddle: { a: 1, b: 1 }
         };
 
-        // 创建曲面几何体
+        // 曲面方程显示
+        const surfaceEquations = {
+            sphere: (p) => `球面方程: x² + y² + z² = ${p.r}²`,
+            ellipsoid: (p) => `椭球面方程: (x²/${p.a}²) + (y²/${p.b}²) + (z²/${p.c}²) = 1`,
+            cylinder: (p) => `圆柱面方程: x² + y² = ${p.r}²`,
+            cone: (p) => `圆锥面方程: z² = (${p.r/p.h}²)(x² + y²)`,
+            hyperboloid1: (p) => `单叶双曲面: (x²/${p.a}²) + (y²/${p.b}²) - (z²/${p.c}²) = 1`,
+            hyperboloid2: (p) => `双叶双曲面: (x²/${p.a}²) - (y²/${p.b}²) - (z²/${p.c}²) = 1`,
+            paraboloid: (p) => `椭圆抛物面: z = (x²/${p.a}²) + (y²/${p.b}²)`,
+            saddle: (p) => `双曲抛物面: z = (x²/${p.a}²) - (y²/${p.b}²)`
+        };
+
+        // 创建参数控制界面
+        function createParamControls(type) {
+            const params = surfaceParams[type];
+            const container = document.getElementById('param-controls');
+            container.innerHTML = '<h3>曲面参数:</h3>';
+            
+            for (const param in params) {
+                const div = document.createElement('div');
+                div.className = 'param-control';
+                
+                const label = document.createElement('label');
+                label.textContent = param + ':';
+                label.style.display = 'inline-block';
+                label.style.width = '60px';
+                
+                const input = document.createElement('input');
+                input.type = 'range';
+                input.id = `param-${param}`;
+                input.min = '0.1';
+                input.max = '5';
+                input.step = '0.1';
+                input.value = params[param];
+                
+                const valueSpan = document.createElement('span');
+                valueSpan.id = `value-${param}`;
+                valueSpan.textContent = params[param];
+                
+                input.addEventListener('input', (e) => {
+                    valueSpan.textContent = e.target.value;
+                });
+                
+                div.appendChild(label);
+                div.appendChild(input);
+                div.appendChild(valueSpan);
+                container.appendChild(div);
+            }
+            
+            // 更新方程显示
+            document.getElementById('equation-display').textContent = surfaceEquations[type](params);
+        }
+
+        // 创建曲面
         function createSurface(type) {
             if (currentSurface) scene.remove(currentSurface);
             
-            let geometry, material;
-            const color = surfaces[type].color;
+            // 获取参数值
+            const params = {};
+            for (const param in surfaceParams[type]) {
+                params[param] = parseFloat(document.getElementById(`param-${param}`).value);
+            }
+            
+            // 获取显示设置
+            const color = document.getElementById('surface-color').value;
+            const opacity = parseFloat(document.getElementById('surface-opacity').value);
+            const wireframe = document.getElementById('wireframe').checked;
+            
+            let geometry;
             
             switch(type) {
                 case 'sphere':
-                    geometry = new THREE.SphereGeometry(1, 32, 32);
+                    geometry = new THREE.SphereGeometry(params.r, 64, 64);
+                    break;
+                case 'ellipsoid':
+                    geometry = new THREE.SphereGeometry(1, 64, 64);
+                    geometry.scale(params.a, params.b, params.c);
                     break;
                 case 'cylinder':
-                    geometry = new THREE.CylinderGeometry(1, 1, 4, 32, 1, true);
+                    geometry = new THREE.CylinderGeometry(params.r, params.r, params.h, 64);
                     geometry.rotateX(Math.PI/2);
                     break;
                 case 'cone':
-                    geometry = new THREE.ConeGeometry(1, 2, 32);
+                    geometry = new THREE.ConeGeometry(params.r, params.h, 64);
                     geometry.rotateX(Math.PI);
                     break;
                 case 'hyperboloid1':
                     geometry = createParametricSurface((u, v, target) => {
                         u = u * Math.PI * 2;
                         v = v * 2 - 1;
-                        const scale = 1.5;
-                        target.x = scale * Math.sqrt(1 + v*v) * Math.cos(u);
-                        target.y = scale * Math.sqrt(1 + v*v) * Math.sin(u);
-                        target.z = scale * v;
-                    }, 50, 50);
+                        target.x = params.a * Math.sqrt(1 + v*v) * Math.cos(u);
+                        target.y = params.b * Math.sqrt(1 + v*v) * Math.sin(u);
+                        target.z = params.c * v;
+                    }, 64, 64);
                     break;
                 case 'hyperboloid2':
                     geometry = createParametricSurface((u, v, target) => {
                         u = u * Math.PI * 2;
                         v = v * 4 - 2;
-                        const scale = 1;
                         if (Math.abs(v) > 1) {
-                            target.x = scale * Math.sqrt(v*v - 1) * Math.cos(u);
-                            target.y = scale * Math.sqrt(v*v - 1) * Math.sin(u);
-                            target.z = scale * v;
+                            target.x = params.a * Math.sqrt(v*v - 1) * Math.cos(u);
+                            target.y = params.b * Math.sqrt(v*v - 1) * Math.sin(u);
+                            target.z = params.c * v;
                         } else {
                             target.x = 0;
                             target.y = 0;
-                            target.z = scale * v;
+                            target.z = params.c * v;
                         }
-                    }, 50, 50);
+                    }, 64, 64);
                     break;
                 case 'paraboloid':
                     geometry = createParametricSurface((u, v, target) => {
@@ -171,8 +297,8 @@
                         v = (v - 0.5) * 4;
                         target.x = u;
                         target.y = v;
-                        target.z = u*u + v*v;
-                    }, 50, 50);
+                        target.z = (u*u)/(params.a*params.a) + (v*v)/(params.b*params.b);
+                    }, 64, 64);
                     break;
                 case 'saddle':
                     geometry = createParametricSurface((u, v, target) => {
@@ -180,49 +306,39 @@
                         v = (v - 0.5) * 4;
                         target.x = u;
                         target.y = v;
-                        target.z = u*u - v*v;
-                    }, 50, 50);
+                        target.z = (u*u)/(params.a*params.a) - (v*v)/(params.b*params.b);
+                    }, 64, 64);
                     break;
             }
             
-            material = new THREE.MeshPhongMaterial({ 
-                color: color,
-                side: THREE.DoubleSide,
-                wireframe: false,
+            const material = new THREE.MeshPhongMaterial({
+                color: new THREE.Color(color),
                 transparent: true,
-                opacity: 0.9
+                opacity: opacity,
+                wireframe: wireframe,
+                side: THREE.DoubleSide
             });
             
             currentSurface = new THREE.Mesh(geometry, material);
             scene.add(currentSurface);
             
-            // 更新信息
-            document.getElementById('info').innerHTML = `
-                <h3>${type} - ${surfaces[type].equation}</h3>
-                <p>操作说明：</p>
-                <p>1. 鼠标左键拖动 - 旋转视图</p>
-                <p>2. 鼠标右键拖动 - 平移视图</p>
-                <p>3. 鼠标滚轮 - 缩放视图</p>
-                <p>4. 双击曲面 - 重置视图</p>
-            `;
+            // 更新方程显示
+            document.getElementById('equation-display').textContent = surfaceEquations[type](params);
         }
 
         // 创建参数化曲面
         function createParametricSurface(func, slices, stacks) {
-            const geometry = new THREE.ParametricGeometry(func, slices, stacks);
-            return geometry;
+            return new THREE.ParametricGeometry(func, slices, stacks);
         }
 
         // 事件监听
-        document.getElementById('draw-btn').addEventListener('click', () => {
-            const selected = document.getElementById('surface-select').value;
-            createSurface(selected);
+        document.getElementById('surface-type').addEventListener('change', (e) => {
+            createParamControls(e.target.value);
         });
 
-        document.getElementById('color-btn').addEventListener('click', () => {
-            if (currentSurface) {
-                currentSurface.material.color.setHex(Math.random() * 0xffffff);
-            }
+        document.getElementById('update-btn').addEventListener('click', () => {
+            const type = document.getElementById('surface-type').value;
+            createSurface(type);
         });
 
         // 窗口大小调整
@@ -237,7 +353,8 @@
             controls.reset();
         });
 
-        // 默认绘制球面
+        // 初始化
+        createParamControls('sphere');
         createSurface('sphere');
 
         // 动画循环
