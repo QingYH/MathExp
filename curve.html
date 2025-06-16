@@ -139,7 +139,7 @@
         <p>• 双击 - 重置视图</p>
     </div>
 
-    <button class="back-btn" onclick="window.history.back()">返回上一页</button>
+    <button class="back-btn" onclick="goBack()">返回上一页</button>
 
     <script>
         // 初始化Three.js场景
@@ -364,6 +364,15 @@
             renderer.render(scene, camera);
         }
         animate();
+        // 返回上一页功能
+        function goBack() {
+            window.history.back();
+        }
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            createPlot();
+        };
     </script>
 </body>
 </html>
