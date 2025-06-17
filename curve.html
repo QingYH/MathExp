@@ -186,7 +186,14 @@
             - 调整参数后点击"重新生成曲面"按钮更新
         </div>
 
-        <button id="back-btn">返回上一页</button>
+       // <button id="back-btn">返回上一页</button>
+        <button onclick="goBack()">返回上一页</button>
+    
+    <script>
+        function goBack() {
+            window.history.back();
+           }
+    </script>
     </div>
 
     <script>
