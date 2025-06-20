@@ -1,7 +1,7 @@
-<!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>p¼¶ÊıÊÕÁ²¿ÉÊÓ»¯</title>
+    <meta charset="UTF-8">
+    <title>pçº§æ•°æ”¶æ•›å¯è§†åŒ–</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
@@ -50,28 +50,28 @@
     </style>
 </head>
 <body>
-    <h2>p¼¶ÊıÊÕÁ²¿ÉÊÓ»¯</h2>
+    <h2>pçº§æ•°æ”¶æ•›å¯è§†åŒ–</h2>
 
     <div class="control-panel">
         <div class="slider-group">
-            <label for="p-slider">pÖµ (0.1 - 4.0):</label>
+            <label for="p-slider">på€¼ (0.1 - 4.0):</label>
             <input type="range" id="p-slider" min="0.1" max="4" step="0.1" value="1">
             <span id="p-value">1.0</span>
         </div>
 
         <div class="slider-group">
-            <label for="term-slider">ÏîÊı (1 - 1000):</label>
+            <label for="term-slider">é¡¹æ•° (1 - 1000):</label>
             <input type="range" id="term-slider" min="1" max="1000" step="1" value="100">
             <span id="term-value">100</span>
         </div>
     </div>
 
     <div class="formula" id="formula">
-        ¦²(1/n<sup>1.0</sup>) ´Ó n=1 µ½ 100
+        Î£(1/n<sup>1.0</sup>) ä» n=1 åˆ° 100
     </div>
 
     <div id="convergence-status" class="convergence">
-        µ± p=1.0 Ê±£¬¼¶Êı·¢É¢
+        å½“ p=1.0 æ—¶ï¼Œçº§æ•°å‘æ•£
     </div>
 
     <div id="chart-container">
@@ -88,7 +88,7 @@
                 data: {
                     labels: [],
                     datasets: [{
-                        label: '²¿·ÖºÍ',
+                        label: 'éƒ¨åˆ†å’Œ',
                         data: [],
                         borderColor: '#007bff',
                         backgroundColor: 'rgba(0, 123, 255, 0.1)',
@@ -105,13 +105,13 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: '²¿·ÖºÍ'
+                                text: 'éƒ¨åˆ†å’Œ'
                             }
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'ÏîÊı'
+                                text: 'é¡¹æ•°'
                             }
                         }
                     }
@@ -127,19 +127,19 @@
             document.getElementById('p-value').textContent = p.toFixed(1);
             document.getElementById('term-value').textContent = terms;
             document.getElementById('formula').innerHTML =
-                `¦²(1/n<sup>${p.toFixed(1)}</sup>) ´Ó n=1 µ½ ${terms}`;
+                `Î£(1/n<sup>${p.toFixed(1)}</sup>) ä» n=1 åˆ° ${terms}`;
 
-            // ÅĞ¶ÏÊÕÁ²ĞÔ
+            // åˆ¤æ–­æ”¶æ•›æ€§
             const convergenceElem = document.getElementById('convergence-status');
             if (p > 1) {
-                convergenceElem.textContent = `µ± p=${p.toFixed(1)} Ê±£¬¼¶ÊıÊÕÁ²`;
+                convergenceElem.textContent = `å½“ p=${p.toFixed(1)} æ—¶ï¼Œçº§æ•°æ”¶æ•›`;
                 convergenceElem.className = 'convergence convergent';
             } else {
-                convergenceElem.textContent = `µ± p=${p.toFixed(1)} Ê±£¬¼¶Êı·¢É¢`;
+                convergenceElem.textContent = `å½“ p=${p.toFixed(1)} æ—¶ï¼Œçº§æ•°å‘æ•£`;
                 convergenceElem.className = 'convergence divergent';
             }
 
-            // ¼ÆËã²¿·ÖºÍ
+            // è®¡ç®—éƒ¨åˆ†å’Œ
             const labels = [];
             const partialSums = [];
             let sum = 0;
