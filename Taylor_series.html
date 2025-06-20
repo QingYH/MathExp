@@ -1,6 +1,8 @@
+<html lang="zh-CN">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Âó¿ËÀÍÁÖ¼¶Êı¿ÉÊÓ»¯·ÖÎö</title>
+    <title>éº¦å…‹åŠ³æ—çº§æ•°å¯è§†åŒ–åˆ†æ</title>
     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
     <style>
         :root {
@@ -128,32 +130,32 @@
 </head>
 <body>
     <div class="container">
-        <h1>Âó¿ËÀÍÁÖ¼¶Êı¿ÉÊÓ»¯·ÖÎö</h1>
+        <h1>éº¦å…‹åŠ³æ—çº§æ•°å¯è§†åŒ–åˆ†æ</h1>
 
         <div class="control-panel">
             <div class="control-group">
-                <label for="functionInput">º¯Êı±í´ïÊ½ f(x):</label>
-                <input type="text" id="functionInput" value="sin(x)" placeholder="ÀıÈç: sin(x), exp(x), 1/(1+x)">
+                <label for="functionInput">å‡½æ•°è¡¨è¾¾å¼ f(x):</label>
+                <input type="text" id="functionInput" value="sin(x)" placeholder="ä¾‹å¦‚: sin(x), exp(x), 1/(1+x)">
             </div>
 
             <div class="control-group">
-                <label for="nTerms">Õ¹¿ªÏîÊı (n):</label>
+                <label for="nTerms">å±•å¼€é¡¹æ•° (n):</label>
                 <input type="number" id="nTerms" min="1" max="20" value="5">
             </div>
 
             <div class="control-group">
-                <label for="xMin">xÖá×îĞ¡Öµ:</label>
+                <label for="xMin">xè½´æœ€å°å€¼:</label>
                 <input type="number" id="xMin" value="-3" step="0.1">
             </div>
 
             <div class="control-group">
-                <label for="xMax">xÖá×î´óÖµ:</label>
+                <label for="xMax">xè½´æœ€å¤§å€¼:</label>
                 <input type="number" id="xMax" value="3" step="0.1">
             </div>
         </div>
 
         <div class="function-examples">
-            <p>³£ÓÃº¯ÊıÊ¾Àı:
+            <p>å¸¸ç”¨å‡½æ•°ç¤ºä¾‹:
                 <button class="preset-btn" onclick="setFunction('sin(x)')">sin(x)</button>
                 <button class="preset-btn" onclick="setFunction('cos(x)')">cos(x)</button>
                 <button class="preset-btn" onclick="setFunction('exp(x)')">e^x</button>
@@ -162,7 +164,7 @@
             </p>
         </div>
 
-        <button onclick="calculateMaclaurin()">¼ÆËã²¢¿ÉÊÓ»¯</button>
+        <button onclick="calculateMaclaurin()">è®¡ç®—å¹¶å¯è§†åŒ–</button>
 
         <div id="errorMessage"></div>
         <div id="seriesResult"></div>
@@ -171,10 +173,10 @@
 
     <script>
 
-        // È·±£Plotly¼ÓÔØÍê³É
+        // ç¡®ä¿PlotlyåŠ è½½å®Œæˆ
         function checkPlotlyLoaded() {
             if (typeof Plotly === 'undefined') {
-                document.getElementById('errorMessage').textContent = 'ÕıÔÚ¼ÓÔØPlotly¿â£¬ÇëÉÔºò...';
+                document.getElementById('errorMessage').textContent = 'æ­£åœ¨åŠ è½½Plotlyåº“ï¼Œè¯·ç¨å€™...';
                 document.getElementById('errorMessage').style.display = 'block';
                 setTimeout(checkPlotlyLoaded, 100);
             } else {
@@ -182,12 +184,12 @@
             }
         }
 
-        // ÉèÖÃÔ¤Éèº¯Êı
+        // è®¾ç½®é¢„è®¾å‡½æ•°
         function setFunction(func) {
             document.getElementById('functionInput').value = func;
         }
 
-        // ¼ÆËãÂó¿ËÀÍÁÖÏµÊı
+        // è®¡ç®—éº¦å…‹åŠ³æ—ç³»æ•°
         function getMaclaurinCoeff(funcStr, k, h = 0.001) {
             if (k === 0) {
                 try {
@@ -197,7 +199,7 @@
                 }
             }
 
-            // ÖĞĞÄ²î·Ö·¨¼ÆËãk½×µ¼Êı
+            // ä¸­å¿ƒå·®åˆ†æ³•è®¡ç®—ké˜¶å¯¼æ•°
             let sum = 0;
             const factorialK = math.factorial(k);
             const hPower = math.pow(h, k);
@@ -216,7 +218,7 @@
             return sum / (math.pow(2 * h, k) * factorialK);
         }
 
-        // Ö÷¼ÆËãº¯Êı
+        // ä¸»è®¡ç®—å‡½æ•°
         function calculateMaclaurin() {
             try {
                 const funcStr = document.getElementById('functionInput').value.trim();
@@ -224,20 +226,20 @@
                 const xMin = parseFloat(document.getElementById('xMin').value);
                 const xMax = parseFloat(document.getElementById('xMax').value);
 
-                // ÑéÖ¤ÊäÈë
-                if (!funcStr) throw new Error('ÇëÊäÈëÓĞĞ§µÄº¯Êı±í´ïÊ½');
-                if (isNaN(n) || n < 1 || n > 20) throw new Error('Õ¹¿ªÏîÊı±ØĞëÊÇ1-20µÄÕûÊı');
-                if (xMin >= xMax) throw new Error('x×îĞ¡Öµ±ØĞëĞ¡ÓÚx×î´óÖµ');
+                // éªŒè¯è¾“å…¥
+                if (!funcStr) throw new Error('è¯·è¾“å…¥æœ‰æ•ˆçš„å‡½æ•°è¡¨è¾¾å¼');
+                if (isNaN(n) || n < 1 || n > 20) throw new Error('å±•å¼€é¡¹æ•°å¿…é¡»æ˜¯1-20çš„æ•´æ•°');
+                if (xMin >= xMax) throw new Error('xæœ€å°å€¼å¿…é¡»å°äºxæœ€å¤§å€¼');
 
-                // ¼ÆËãÂó¿ËÀÍÁÖÏµÊı
+                // è®¡ç®—éº¦å…‹åŠ³æ—ç³»æ•°
                 const coefficients = [];
                 for (let k = 0; k < n; k++) {
                     const coeff = getMaclaurinCoeff(funcStr, k);
-                    if (coeff === null) throw new Error(`ÎŞ·¨¼ÆËãµÚ${k}½×µ¼Êı`);
+                    if (coeff === null) throw new Error(`æ— æ³•è®¡ç®—ç¬¬${k}é˜¶å¯¼æ•°`);
                     coefficients.push(coeff);
                 }
 
-                // ¹¹½¨Âó¿ËÀÍÁÖ¼¶Êı±í´ïÊ½
+                // æ„å»ºéº¦å…‹åŠ³æ—çº§æ•°è¡¨è¾¾å¼
                 let maclaurinExpr = '';
                 let seriesText = 'P(x) = ';
                 for (let k = 0; k < coefficients.length; k++) {
@@ -259,21 +261,21 @@
                 }
 
                 document.getElementById('seriesResult').innerHTML = `
-                    <strong>Âó¿ËÀÍÁÖÕ¹¿ªÊ½ (n=${n}):</strong><br>
+                    <strong>éº¦å…‹åŠ³æ—å±•å¼€å¼ (n=${n}):</strong><br>
                     ${seriesText}
                 `;
 
-                // ×¼±¸»æÍ¼Êı¾İ
+                // å‡†å¤‡ç»˜å›¾æ•°æ®
                 const step = (xMax - xMin) / 200;
                 const xValues = [];
                 const yOriginal = [];
                 const yMaclaurin = [];
 
-                // ±àÒëÂó¿ËÀÍÁÖ¼¶Êı
+                // ç¼–è¯‘éº¦å…‹åŠ³æ—çº§æ•°
                 const maclaurinNode = math.parse(maclaurinExpr);
                 const maclaurinCompiled = maclaurinNode.compile();
 
-                // ¼ÆËãº¯ÊıÖµ
+                // è®¡ç®—å‡½æ•°å€¼
                 for (let x = xMin; x <= xMax; x += step) {
                     xValues.push(x);
                     try {
@@ -288,13 +290,13 @@
                     }
                 }
 
-                // »æÖÆÍ¼ĞÎ
+                // ç»˜åˆ¶å›¾å½¢
                 const trace1 = {
                     x: xValues,
                     y: yOriginal,
                     type: 'scatter',
                     mode: 'lines',
-                    name: 'Ô­º¯Êı f(x)',
+                    name: 'åŸå‡½æ•° f(x)',
                     line: {color: '#6a1b9a', width: 3}
                 };
 
@@ -303,12 +305,12 @@
                     y: yMaclaurin,
                     type: 'scatter',
                     mode: 'lines',
-                    name: `Âó¿ËÀÍÁÖÕ¹¿ª (n=${n})`,
+                    name: `éº¦å…‹åŠ³æ—å±•å¼€ (n=${n})`,
                     line: {color: '#e91e63', width: 3, dash: 'dot'}
                 };
 
                 const layout = {
-                    title: 'º¯ÊıÓëÂó¿ËÀÍÁÖÕ¹¿ª¶Ô±È',
+                    title: 'å‡½æ•°ä¸éº¦å…‹åŠ³æ—å±•å¼€å¯¹æ¯”',
                     xaxis: {title: 'x', gridcolor: '#e1bee7'},
                     yaxis: {title: 'f(x)', gridcolor: '#e1bee7'},
                     plot_bgcolor: 'rgba(255, 255, 255, 0.9)',
@@ -328,12 +330,12 @@
                 document.getElementById('errorMessage').style.display = 'none';
 
             } catch (error) {
-                document.getElementById('errorMessage').textContent = '´íÎó: ' + error.message;
+                document.getElementById('errorMessage').textContent = 'é”™è¯¯: ' + error.message;
                 document.getElementById('errorMessage').style.display = 'block';
                 console.error(error);
             }
         }
-    // ĞŞ¸Äwindow.onload
+    // ä¿®æ”¹window.onload
         window.onload = function() {
             checkPlotlyLoaded();
         };
@@ -347,7 +349,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Âó¿ËÀÍÁÖ¼¶Êı¿ÉÊÓ»¯·ÖÎöÒÇ</title>
+    <title>éº¦å…‹åŠ³æ—çº§æ•°å¯è§†åŒ–åˆ†æä»ª</title>
     <script src="https://cdn.jsdelivr.net/npm/mathjs@11.6.0/lib/browser/math.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
@@ -367,16 +369,16 @@
             padding: 20px;
             color: var(--text);
         }
-        /* ÆäÓàÑùÊ½±£³Ö²»±ä... */
+        /* å…¶ä½™æ ·å¼ä¿æŒä¸å˜... */
     </style>
 </head>
 <body>
-    <!-- Ò³ÃæÄÚÈİ±£³Ö²»±ä... -->
+    <!-- é¡µé¢å†…å®¹ä¿æŒä¸å˜... -->
     <script>
-        // È·±£Plotly¼ÓÔØÍê³É
+        // ç¡®ä¿PlotlyåŠ è½½å®Œæˆ
         function checkPlotlyLoaded() {
             if (typeof Plotly === 'undefined') {
-                document.getElementById('errorMessage').textContent = 'ÕıÔÚ¼ÓÔØPlotly¿â£¬ÇëÉÔºò...';
+                document.getElementById('errorMessage').textContent = 'æ­£åœ¨åŠ è½½Plotlyåº“ï¼Œè¯·ç¨å€™...';
                 document.getElementById('errorMessage').style.display = 'block';
                 setTimeout(checkPlotlyLoaded, 100);
             } else {
@@ -384,12 +386,12 @@
             }
         }
 
-        // ĞŞ¸Äwindow.onload
+        // ä¿®æ”¹window.onload
         window.onload = function() {
             checkPlotlyLoaded();
         };
 
-        // ÆäÓàJavaScript´úÂë±£³Ö²»±ä...
+        // å…¶ä½™JavaScriptä»£ç ä¿æŒä¸å˜...
     </script>
 </body>
 </html>
