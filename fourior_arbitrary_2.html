@@ -1,0 +1,715 @@
+﻿
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>傅里叶级数展开可视化工具</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.7.0/math.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #4a148c;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color:#008000;
+            text-shadow: 1px 1px 2px rgba(0.5,0.2,0,0.1);
+        }
+        .input-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+        }
+        .input-group {
+            flex: 1;
+            min-width: 10px;
+            max-width: 300px
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #6a1b9a;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #9c27b0;
+            border-radius: 5px;
+            font-size: 16px;
+            field-sizing: content; /* 元素宽度自适应内容 */
+            max-width: 100%; /* 防止溢出容器 */
+            //margin: 0 15px 1px 15px; /* 上 右 下 左 */
+        }
+        button {
+            background-color: #9c27b0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #7b1fa2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #plot-container {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .math-display {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #9c27b0;
+            overflow-x: auto;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .btn-primary {
+            background-color: #9c27b0;
+        }
+        .btn-secondary {
+            background-color: #673ab7;
+        }
+        .btn-success {
+            background-color: #4caf50;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-warning {
+            background-color: #ff9800;
+        }
+        .btn-info {
+            background-color: #00bcd4;
+        }
+        #custom-extension, #piecewise-functions {
+            display: none;
+            margin-top: 10px;
+        }
+        .section-title {
+            color: #7b1fa2;
+            border-bottom: 2px solid #9c27b0;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .piecewise-row {
+            display: flex;
+            gap: 1px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .piecewise-row input {
+            flex: 1;
+        }
+        .piecewise-row button {
+            width: auto;
+        }
+        .plot-range-group {
+            display: flex;
+            gap: 10px;
+        }
+        .plot-range-group input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>傅里叶级数展开可视化工具</h1>
+        <h2>实现方法和原理：任意区间[a,b]映射到[0,b-a],然后奇偶延拓，接着周期延拓，再变量还原</h2>
+        <div class="input-section">
+            <div class="input-group">
+                <label for="function-type">函数类型:</label>
+                <select id="function-type">
+                    <option value="simple">简单函数</option>
+                    <option value="piecewise">分段函数</option>
+                </select>
+            </div>
+            
+            <div id="simple-function-group" class="input-group">
+                <label for="interval-start">区间起点 a:(若a+b=0,则直接周期延拓即可)</label>
+                <input type="number" id="interval-start" value="0" step="0.1">
+                
+                <label for="interval-end">区间终点 b:</label>
+                <input type="number" id="interval-end" value="2" step="0.1">
+                
+                <label for="function-input">函数表达式 (使用x作为变量):</label>
+                <input type="text" id="function-input" value="x">
+            </div>
+            
+            <div id="piecewise-functions" class="input-group">
+                <label>分段函数定义:</label>
+                <div id="piecewise-container">
+                    <div class="piecewise-row">
+                        <input type="number" class="piecewise-start" value="0" step="0.1" placeholder="起点" style="width:50px; padding:6px; border:1px solid #ccc">
+                        <input type="number" class="piecewise-end" value="1" step="0.1" placeholder="终点" style="width:50px; padding:6px; border:1px solid #ccc">
+                        <input type="text" class="piecewise-expr" value="x" placeholder="表达式"style="width:50px; padding:6px; border:1px solid #ccc">
+                        <button class="btn-danger" onclick="removePiecewiseRow(this)">删除</button>
+                    </div>
+                    <div class="piecewise-row">
+                        <input type="number" class="piecewise-start" value="1" step="0.1" placeholder="起点"style="width:50px; padding:6px; border:1px solid #ccc">
+                        <input type="number" class="piecewise-end" value="2" step="0.1" placeholder="终点"style="width:50px; padding:6px; border:1px solid #ccc">
+                        <input type="text" class="piecewise-expr" value="2-x" placeholder="表达式"style="width:50px; padding:6px; border:1px solid #ccc">
+                        <button class="btn-danger" onclick="removePiecewiseRow(this)">删除</button>
+                    </div>
+                </div>
+                <button class="btn-success" onclick="addPiecewiseRow()">添加分段</button>
+            </div>
+            
+            <div class="input-group">
+                <label for="extension-type">延拓方式:</label>
+                <select id="extension-type">
+                    <option value="even">偶延拓</option>
+                    <option value="odd">奇延拓</option>
+                    <option value="custom">自定义延拓</option>
+                </select>
+                <div id="custom-extension">
+                    <label for="custom-extension-function">自定义延拓函数:</label>
+                    <input type="text" id="custom-extension-function" placeholder="例如: -f(-x)">
+                </div>
+            </div>
+            
+                  
+        </div>
+
+        
+        
+        <h2 class="section-title">函数定义</h2>
+        <div class="math-display" id="function-display">
+            未定义函数
+        </div>
+
+        <h2 class="section-title">傅里叶级数展开</h2>
+        <div class="math-display" id="fourier-display">
+            未计算傅里叶级数
+        </div>
+
+        <div id="plot-container"></div>
+      <div class="input-group">
+                <label>绘图范围:</label>
+                <div class="plot-range-group">
+                    <input type="number" id="plot-start" value="-2" step="0.1" placeholder="起点">
+                    <input type="number" id="plot-end" value="4" step="0.1" placeholder="终点">
+                </div>
+      </div>
+      <div class="input-group">
+                <label for="n-terms">傅里叶级数项数:</label>
+                <input type="number" id="n-terms" value="5" min="1" max="50">
+       </div>
+      <div class="btn-group">
+            <button class="btn-primary" onclick="updateFunction()">更新函数</button>
+            <button class="btn-secondary" onclick="calculateFourier()">计算傅里叶级数</button>
+            <button class="btn-success" onclick="plotFunction()">绘制函数图形</button>
+            <button class="btn-danger" onclick="clearAll()">清除所有</button>
+        </div>
+ 
+    </div>
+
+
+
+    <script>
+        // 全局变量
+        let currentFunction1 = null;
+        let currentFunction2 = null;
+        let fourierSeries = null;
+        let extendedFunction = null;
+        let interval = { a: 0, b: 2 };
+        let piecewiseFunctions = [];
+
+        
+        // 初始化
+        document.getElementById('function-type').addEventListener('change', function() {
+            const isPiecewise = this.value === 'piecewise';
+            document.getElementById('simple-function-group').style.display = isPiecewise ? 'none' : 'block';
+            document.getElementById('piecewise-functions').style.display = isPiecewise ? 'block' : 'none';
+        });
+
+        document.getElementById('extension-type').addEventListener('change', function() {
+            const customExtensionDiv = document.getElementById('custom-extension');
+            if (this.value === 'custom') {
+                customExtensionDiv.style.display = 'block';
+            } else {
+                customExtensionDiv.style.display = 'none';
+            }
+        });
+
+
+
+        // 添加分段函数行
+        function addPiecewiseRow() {
+            const container = document.getElementById('piecewise-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'piecewise-row';
+            newRow.innerHTML = `
+                <input type="number" class="piecewise-start" value="0" step="0.1" placeholder="起点"style="width:50px; padding:6px; border:1px solid #ccc">
+                <input type="number" class="piecewise-end" value="1" step="0.1" placeholder="终点"style="width:50px; padding:6px; border:1px solid #ccc">
+                <input type="text" class="piecewise-expr" value="0" placeholder="表达式"style="width:50px; padding:6px; border:1px solid #ccc">
+                <button class="btn-danger" onclick="removePiecewiseRow(this)">删除</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        // 删除分段函数行
+        function removePiecewiseRow(button) {
+            const row = button.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        // 更新函数
+        function updateFunction() {
+            try {
+                const functionType = document.getElementById('function-type').value;
+                const plotStart = parseFloat(document.getElementById('plot-start').value);
+                const plotEnd = parseFloat(document.getElementById('plot-end').value);
+                
+                if (plotStart >= plotEnd) {
+                    alert('绘图起点必须小于终点');
+                    return;
+                }
+                
+                if (functionType === 'simple') {
+                    const funcStr = document.getElementById('function-input').value;
+                    const a = parseFloat(document.getElementById('interval-start').value);
+                    const b = parseFloat(document.getElementById('interval-end').value);
+                    
+                    if (a >= b) {
+                        alert('区间起点必须小于终点');
+                        return;
+                    }
+                    
+                    interval = { a, b };
+                    
+                    // 创建函数
+                    currentFunction1 = function(x) {
+                        try {
+                            return math.evaluate(funcStr, { x: x});
+                        } catch (e) {
+                            return NaN;
+                        }
+                    };
+                    currentFunction2 = function(x) {
+                        try {
+                            return math.evaluate(funcStr, { x: x+a });
+                        } catch (e) {
+                            return NaN;
+                        }
+                    };
+                    
+                    // 显示函数
+                    document.getElementById('function-display').innerHTML = `
+                        \\[ f(x) = ${funcStr}, \\quad x \\in [${a}, ${b}] \\]
+                    `;
+                } else {
+                    // 处理分段函数
+                    const rows = document.querySelectorAll('.piecewise-row');
+                    piecewiseFunctions = [];
+                    let funcDisplay = '';
+                    
+                    for (let i = 0; i < rows.length; i++) {
+                        const start = parseFloat(rows[i].querySelector('.piecewise-start').value);
+                        const end = parseFloat(rows[i].querySelector('.piecewise-end').value);
+                        const expr = rows[i].querySelector('.piecewise-expr').value;
+                        
+                        if (start >= end) {
+                            alert(`分段函数第 ${i+1} 段: 起点必须小于终点`);
+                            return;
+                        }
+                        
+                        if (i > 0 && start !== piecewiseFunctions[i-1].end) {
+                            alert(`分段函数第 ${i+1} 段: 起点必须等于前一段的终点`);
+                            return;
+                        }
+                        
+                        piecewiseFunctions.push({
+                            start: start,
+                            end: end,
+                            expr: expr,
+                            func: function(x) {
+                                try {
+                                    return math.evaluate(expr, { x: x });
+                                } catch (e) {
+                                    return NaN;
+                                }
+                            }
+                        });
+                        
+                       // 组装（拼接）分段函数，为显示函数表达式做准备 
+                        funcDisplay += `${expr}, \\quad x \\in [${start}, ${end}]`;
+                         if (i < rows.length - 1) funcDisplay += ' \\\\ ';
+                    }
+                    
+                    if (piecewiseFunctions.length === 0) {
+                        alert('请至少定义一个分段函数');
+                        return;
+                    }
+                    
+                    interval = { 
+                        a: piecewiseFunctions[0].start, 
+                        b: piecewiseFunctions[piecewiseFunctions.length-1].end 
+                    };
+                    
+                    // 创建分段函数
+                    currentFunction1 = function(x) {
+                        for (let i = 0; i < piecewiseFunctions.length; i++) {
+                            if (x >= piecewiseFunctions[i].start && x <= piecewiseFunctions[i].end) {
+                                return piecewiseFunctions[i].func(x);
+                            }
+                        }
+                        return NaN;
+                    };
+                    currentFunction2 = function(x) {
+                        for (let i = 0; i < piecewiseFunctions.length; i++) {
+                            zb=interval.a;
+                            if ((x+zb)>= piecewiseFunctions[i].start && (x+zb) <= piecewiseFunctions[i].end) {
+                                return piecewiseFunctions[i].func(x+zb);
+                            }
+                        }
+                        return NaN;
+                    };
+                    
+                    // 显示函数
+                    document.getElementById('function-display').innerHTML = `
+                        \\[ f(x) = \\begin{cases}
+                        ${funcDisplay}
+                        \\end{cases} \\]
+                    `;
+                }
+                
+                // 重新渲染MathJax
+                MathJax.typeset();
+                
+                plotFunction();
+            } catch (e) {
+                alert('函数定义错误: ' + e.message);
+            }
+           
+            
+        }
+
+        // 计算傅里叶级数
+        function calculateFourier() {
+            if (!currentFunction1) {
+                alert('请先定义函数');
+                return;
+            }
+            
+            const n = parseInt(document.getElementById('n-terms').value);
+            const extensionType = document.getElementById('extension-type').value;
+            
+            // 根据延拓类型创建延拓函数
+            createExtendedFunction(extensionType);
+            
+            // 计算傅里叶系数
+            const L = (interval.b-interval.a);
+            const a0 = (1/L) * integrate(x => extendedFunction(x), -L, L, 1000);
+            
+            const an = [];
+            const bn = [];
+            
+            if (extensionType === 'even') {
+                  for (let k = 1; k <= n; k++) {
+                   const ak = (1/L) * integrate(x => extendedFunction(x) * Math.cos(k * Math.PI * x / L), -L, L, 1000);
+                   an.push(ak);
+                   bn.push(0);
+                  }
+                   
+                } else if (extensionType === 'odd') {
+                     for (let k = 1; k <= n; k++) {
+                     const bk = (1/L) * integrate(x => extendedFunction(x) * Math.sin(k * Math.PI * x / L), -L, L, 1000);
+                     an.push(0);
+                     bn.push(bk);
+                     }
+                     
+                }else{
+                
+                  for (let k = 1; k <= n; k++) {
+                   const ak = (1/L) * integrate(x => extendedFunction(x) * Math.cos(k * Math.PI * x / L), -L, L, 1000);
+                   const bk = (1/L) * integrate(x => extendedFunction(x) * Math.sin(k * Math.PI * x / L), -L, L, 1000);
+                   an.push(ak);
+                   bn.push(bk);
+                  }
+                }
+            
+            
+            // 构建傅里叶级数表达式
+            let fourierExpr = `\\[ F(x) = \\frac{a_0}{2} + \\sum_{n=1}^{\\infty} \\left( a_n \\cos\\left(\\frac{n\\pi x}{L}\\right) + b_n \\sin\\left(\\frac{n\\pi x}{L}\\right) \\right) \\]`;
+            fourierExpr += `<p>其中 L = ${L.toFixed(2)}, 计算前${n}项:</p>`;
+            fourierExpr += `\\[ a_0 = ${a0.toFixed(4)} \\]`;
+            
+            for (let k = 1; k <= n; k++) {
+                fourierExpr += `\\[ a_{${k}} = ${an[k-1].toFixed(4)}, \\quad b_{${k}} = ${bn[k-1].toFixed(4)} \\]`;
+            }
+            
+            document.getElementById('fourier-display').innerHTML = fourierExpr;
+            MathJax.typeset();
+            
+            // 保存傅里叶级数信息
+            fourierSeries = { a0, an, bn, L, n };
+            
+            // 绘制傅里叶级数
+            plotFourierSeries();
+
+        }
+
+        // 创建延拓函数
+        
+        function createExtendedFunction(extensionType) {
+            const bb = (interval.b-interval.a);
+            const aa = 0;
+            const L = (bb - aa)/2;
+            const func = currentFunction2;
+            
+            switch (extensionType) {
+                
+                case 'even':
+                    extendedFunction = function(x) {
+                        const period = 2 * L;
+                        // 映射到原始区间
+                        const shiftedX = x - aa;
+                        const modX = ((shiftedX % period) + period) % period + aa;
+                        if (Math.floor(shiftedX / period) % 2 === 0) {
+                            return func(modX);
+                        } else {
+                            return func(bb - modX);
+                        }
+                   
+                    };
+                    break;
+                case 'odd':
+                    extendedFunction = function(x) {
+                        const period = 2 * L;
+                        // 映射到原始区间
+                         const shiftedX = x - aa;
+                        const modX = ((shiftedX % period) + period) % period + aa;
+                        if (Math.floor(shiftedX / period) % 2 === 0) {
+                            return func(modX);
+                        } else {
+                            return -func(bb - modX);
+                        }
+                    };
+                    break;
+                case 'custom':
+                    const customExpr = document.getElementById('custom-extension-function').value;
+                    //extendedFunction = function(x) {
+                        const period = 2 * L;
+                        // 映射到原始区间
+                        //const xMod = ((x - aa) % period + period) % period + aa;
+                        //if (xMod <= bb) return func(xMod);
+                        //try {
+                        //    return math.evaluate(customExpr, { f: func, x: xMod });
+                        //} catch (e) {
+                        //    return NaN;
+                        //}
+                    //};
+                    func2 = function(x) {
+                      return math.evaluate(customExpr, {x:x});
+                     };
+                    extendedFunction = function(x) {
+                        //const period = 2 * L;
+                        const shiftedX = x - aa;
+                        const modX = ((shiftedX % period) + period) % period + aa;
+                        if (Math.floor(shiftedX / period) % 2 === 0) {
+                            return func(modX);
+                        } else {
+                            return func2(bb-modX);
+                        }
+                    };
+                    break;
+            }
+        }
+
+        // 数值积分函数 (梯形法)
+        function integrate(f, a, b, n) {
+            const h = (b - a) / n;
+            let sum = (f(a) + f(b)) / 2;
+            
+            for (let i = 1; i < n; i++) {
+                sum += f(a + i * h);
+            }
+            
+            return sum * h;
+        }
+
+        // 绘制函数图形
+        function plotFunction() {
+            if (!currentFunction1) {
+                alert('请先定义函数');
+                return;
+            }
+            
+            const plotStart = parseFloat(document.getElementById('plot-start').value);
+            const plotEnd = parseFloat(document.getElementById('plot-end').value);
+            const nPoints = 500;
+            //const step = (plotEnd - plotStart) / nPoints;
+            const a0 = parseFloat(document.getElementById('interval-start').value);
+            const b0 = parseFloat(document.getElementById('interval-end').value);
+            const step = (b0 - a0) / nPoints;
+            
+            const xValues = [];
+            const yValues = [];
+            
+            for (let i = 0; i <= nPoints; i++) {
+                const x =a0 + i * step;
+                xValues.push(x);
+                const y = currentFunction1(x);
+                yValues.push(isNaN(y) ? null : y); // 处理NaN值
+            }
+            
+            const trace = {
+                x: xValues,
+                y: yValues,
+                mode: 'lines',
+                name: '原始函数',
+                line: { color: 'blue', width: 2 }
+            };
+            
+            const layout = {
+                title: '函数图形',
+                xaxis: { title: 'x', range: [plotStart, plotEnd] },
+                yaxis: { title: 'f(x)' },
+                showlegend: true
+            };
+            
+            Plotly.newPlot('plot-container', [trace], layout);
+        }
+
+
+        // 绘制傅里叶级数
+        function plotFourierSeries() {
+            if (!fourierSeries || !extendedFunction) {
+                alert('请先计算傅里叶级数');
+                return;
+            }
+            
+            const plotStart = parseFloat(document.getElementById('plot-start').value);
+            const plotEnd = parseFloat(document.getElementById('plot-end').value);
+            const nPoints = 500;
+            const step = (plotEnd - plotStart) / nPoints;
+            
+            // 原始函数数据
+            const xValues = [];
+            const yOriginal = [];
+            const yExtended = [];
+            const yFourier = [];
+            
+            for (let i = 0; i <= nPoints; i++) {
+                const x = plotStart + i * step;
+                xValues.push(x);
+                
+                // 原始函数 (在定义区间内)
+                if (x >= interval.a && x <= interval.b) {
+                    yOriginal.push(currentFunction1(x));
+                } else {
+                    yOriginal.push(null);
+                }
+                
+                // 延拓函数--还原回原变量（平移）
+                zz=interval.a;
+                yExtended.push(extendedFunction(x-zz));
+                
+                // 傅里叶级数近似--还原回原变量（平移）
+                let fourierValue = fourierSeries.a0 / 2;
+                for (let k = 1; k <= fourierSeries.n; k++) {
+                    fourierValue += fourierSeries.an[k-1] * Math.cos(k * Math.PI *(x-zz) / fourierSeries.L);
+                    fourierValue += fourierSeries.bn[k-1] * Math.sin(k * Math.PI *(x-zz) / fourierSeries.L);
+                }
+                yFourier.push(fourierValue);
+            }
+            
+            const traceOriginal = {
+                x: xValues,
+                y: yOriginal,
+                mode: 'lines',
+                name: '原始函数',
+                line: { color: 'blue', width: 2 }
+            };
+            
+            const traceExtended = {
+                x: xValues,
+                y: yExtended,
+                mode: 'lines',
+                name: '延拓函数',
+                line: { color: 'green', width: 2, dash: 'dot' }
+            };
+            
+            const traceFourier = {
+                x: xValues,
+                y: yFourier,
+                mode: 'lines',
+                name: `傅里叶级数 (${fourierSeries.n}项)`,
+                line: { color: 'red', width: 2 }
+            };
+            
+            const layout = {
+                title: '傅里叶级数近似',
+                xaxis: { title: 'x', range: [plotStart, plotEnd] },
+                yaxis: { title: 'f(x)' },
+                showlegend: true
+            };
+            
+            Plotly.newPlot('plot-container', [traceOriginal, traceExtended, traceFourier], layout);
+        }
+
+        // 清除所有
+        function clearAll() {
+            currentFunction1 = null;
+            currentFunction2 = null;
+            fourierSeries = null;
+            extendedFunction = null;
+            piecewiseFunctions = [];
+            
+            document.getElementById('function-display').innerHTML = '未定义函数';
+            document.getElementById('fourier-display').innerHTML = '未计算傅里叶级数';
+            
+            Plotly.purge('plot-container');
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFunction();
+        });
+
+
+    </script>
+</body>
+</html>
