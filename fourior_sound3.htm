@@ -1,0 +1,416 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>音乐频谱分析器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #4cc9f0;
+            margin-bottom: 30px;
+        }
+        .control-panel {
+            background: rgba(30, 39, 73, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        button {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #3f37c9;
+        }
+        input[type="range"] {
+            width: 200px;
+        }
+        .spectrum-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .spectrum-box {
+            background: rgba(30, 39, 73, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        canvas {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        .label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #f72585;
+        }
+        .filter-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .filter-value {
+            color: #4cc9f0;
+            font-weight: bold;
+        }
+        .file-input {
+            display: none;
+        }
+        .file-label {
+            background: #7209b7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-label:hover {
+            background: #560bad;
+        }
+        .now-playing {
+            margin-top: 10px;
+            color: #4cc9f0;
+            font-style: italic;
+        }
+         .theory-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+        .theory-section h2 {
+            color: #4a6baf;
+            border-bottom: 2px solid #4a6baf;
+            padding-bottom: 10px;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #d1d8e0;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background: #4a6baf;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>音乐(声音)频谱演示---可视化</h1>
+        
+        <div class="control-panel">
+            <button id="startBtn">麦克风分析</button>
+            <button id="stopBtn">停止分析</button>
+            
+            <label for="musicFile" class="file-label">选择本地音乐</label>
+            <input type="file" id="musicFile" class="file-input" accept="audio/*">
+            <div id="nowPlaying" class="now-playing"></div>
+            
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="lowCut">低频截止</label>
+                    <input type="range" id="lowCut" min="0" max="100" value="0">
+                    <span class="filter-value" id="lowCutValue">0%</span>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="highCut">高频截止</label>
+                    <input type="range" id="highCut" min="0" max="100" value="0">
+                    <span class="filter-value" id="highCutValue">0%</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="spectrum-container">
+            <div class="spectrum-box">
+                <div class="label">原始频谱波形</div>
+                <canvas id="originalCanvas"></canvas>
+            </div>
+            
+            <div class="spectrum-box">
+                <div class="label">滤波后频谱波形</div>
+                <canvas id="filteredCanvas"></canvas>
+            </div>
+        </div>
+        <div class="theory-section">
+            <h2>傅里叶变换与傅里叶级数理论</h2>
+            
+            <div class="tab-container">
+                <div class="tab active" data-tab="relation">关系分析</div>
+                <div class="tab active" data-tab="application">应用领域</div>
+                <div class="tab active" data-tab="math">数学原理</div>
+            </div>
+            
+            <div class="tab-content active" id="relation">
+                <p><strong>傅里叶级数与傅里叶变换的关系：</strong></p>
+                <p>傅里叶级数适用于周期信号，将周期函数分解为不同频率的正弦和余弦函数的加权和。而傅里叶变换是傅里叶级数在非周期函数上的推广，将时域信号转换为频域表示。</p>
+                <p>当周期信号的周期趋向于无穷大时，傅里叶级数就演变为傅里叶变换。两者本质都是将复杂信号分解为简单正弦波的叠加，只是适用的函数类型不同。</p>
+            </div>
+            
+            <div class="tab-content active" id="application">
+                <p><strong>主要应用领域：</strong></p>
+                <ul>
+                    <li><strong>图像压缩</strong>：通过保留主要低频成分，舍弃高频细节实现压缩</li>
+                    <li><strong>图像增强</strong>：频域滤波去除噪声，提高图像质量</li>
+                    <li><strong>音频处理</strong>：音乐合成、降噪、变声等</li>
+                    <li><strong>科学分析</strong>：行星探测、光谱分析等</li>
+                </ul>
+            </div>
+            
+            <div class="tab-content active" id="math">
+                <p><strong>数学表达式：</strong></p>
+                <p>连续傅里叶变换：</p>
+                <p>F(ω) = ∫f(t)e^(-iωt)dt</p>
+                <p>离散傅里叶变换(DFT)：</p>
+                <p>F(u,v) = ∑∑f(x,y)e^(-i2π(ux/M+vy/N))</p>
+                <p>图像处理中主要使用二维离散傅里叶变换将空域图像转换为频域表示。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const lowCutSlider = document.getElementById('lowCut');
+        const highCutSlider = document.getElementById('highCut');
+        const lowCutValue = document.getElementById('lowCutValue');
+        const highCutValue = document.getElementById('highCutValue');
+        const originalCanvas = document.getElementById('originalCanvas');
+        const filteredCanvas = document.getElementById('filteredCanvas');
+        const musicFile = document.getElementById('musicFile');
+        const nowPlaying = document.getElementById('nowPlaying');
+        
+        // 设置Canvas尺寸
+        originalCanvas.width = originalCanvas.offsetWidth;
+        originalCanvas.height = originalCanvas.offsetHeight;
+        filteredCanvas.width = filteredCanvas.offsetWidth;
+        filteredCanvas.height = filteredCanvas.offsetHeight;
+        
+        // 获取Canvas上下文
+        const originalCtx = originalCanvas.getContext('2d');
+        const filteredCtx = filteredCanvas.getContext('2d');
+        
+        // 音频相关变量
+        let audioContext;
+        let analyser;
+        let dataArray;
+        let source;
+        let isPlaying = false;
+        let animationId;
+        let audioBufferSource;
+        
+        // 初始化音频上下文
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+        }
+        
+        // 开始麦克风分析
+        startBtn.addEventListener('click', async () => {
+            if (isPlaying) return;
+            
+            try {
+                if (!audioContext) initAudio();
+                
+                // 获取麦克风输入
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                
+                isPlaying = true;
+                nowPlaying.textContent = "正在分析: 麦克风输入";
+                draw();
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                alert('无法访问麦克风: ' + err.message);
+            }
+        });
+        
+        // 停止分析
+        stopBtn.addEventListener('click', () => {
+            if (!isPlaying) return;
+            
+            stopAllAudio();
+        });
+        
+        // 处理本地音乐文件
+        musicFile.addEventListener('change', function(e) {
+            if (!audioContext) initAudio();
+            
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const audioData = e.target.result;
+                
+                audioContext.decodeAudioData(audioData)
+                    .then(buffer => {
+                        stopAllAudio();
+                        
+                        audioBufferSource = audioContext.createBufferSource();
+                        audioBufferSource.buffer = buffer;
+                        audioBufferSource.connect(analyser);
+                        analyser.connect(audioContext.destination);
+                        
+                        audioBufferSource.start(0);
+                        isPlaying = true;
+                        nowPlaying.textContent = "正在播放: " + file.name;
+                        draw();
+                    })
+                    .catch(err => {
+                        console.error('Error decoding audio:', err);
+                        alert('无法解码音频文件: ' + err.message);
+                    });
+            };
+            reader.readAsArrayBuffer(file);
+        });
+        
+        // 停止所有音频源
+        function stopAllAudio() {
+            if (source) {
+                source.disconnect();
+                const stream = source.mediaStream;
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            if (audioBufferSource) {
+                audioBufferSource.stop();
+                audioBufferSource.disconnect();
+            }
+            
+            cancelAnimationFrame(animationId);
+            isPlaying = false;
+            nowPlaying.textContent = "";
+            
+            // 清空画布
+            originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+            filteredCtx.clearRect(0, 0, filteredCanvas.width, filteredCanvas.height);
+        }
+        
+        // 更新滑块值显示
+        lowCutSlider.addEventListener('input', () => {
+            lowCutValue.textContent = lowCutSlider.value + '%';
+        });
+        
+        highCutSlider.addEventListener('input', () => {
+            highCutValue.textContent = highCutSlider.value + '%';
+        });
+        
+        // 绘制频谱
+        function draw() {
+            if (!isPlaying) return;
+            
+            animationId = requestAnimationFrame(draw);
+            
+            analyser.getByteFrequencyData(dataArray);
+            
+            // 绘制原始频谱
+            drawSpectrum(originalCtx, originalCanvas, dataArray);
+            
+            // 应用滤波器并绘制滤波后频谱
+            const filteredData = applyFilter(dataArray);
+            drawSpectrum(filteredCtx, filteredCanvas, filteredData);
+        }
+        
+        // 绘制频谱波形
+        function drawSpectrum(ctx, canvas, data) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const barWidth = canvas.width / data.length;
+            let x = 0;
+            
+            for (let i = 0; i < data.length; i++) {
+                const barHeight = data[i] / 255 * canvas.height;
+                
+                // 创建渐变颜色
+                const gradient = ctx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
+                const hue = i / data.length * 360;
+                gradient.addColorStop(0, `hsla(${hue}, 100%, 50%, 0.8)`);
+                gradient.addColorStop(1, `hsla(${hue}, 100%, 30%, 0.5)`);
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                
+                x += barWidth;
+            }
+        }
+        
+        // 应用滤波器
+        function applyFilter(data) {
+            const filteredData = new Uint8Array(data.length);
+            const lowCutIndex = Math.floor(data.length * lowCutSlider.value / 100);
+            const highCutIndex = Math.floor(data.length * (100 - highCutSlider.value) / 100);
+            
+            for (let i = 0; i < data.length; i++) {
+                if (i < lowCutIndex || i > highCutIndex) {
+                    filteredData[i] = 0; // 过滤掉截止频率之外的部分
+                } else {
+                    filteredData[i] = data[i];
+                }
+            }
+            
+            return filteredData;
+        }
+        
+        // 窗口大小改变时调整Canvas尺寸
+        window.addEventListener('resize', () => {
+            originalCanvas.width = originalCanvas.offsetWidth;
+            originalCanvas.height = originalCanvas.offsetHeight;
+            filteredCanvas.width = filteredCanvas.offsetWidth;
+            filteredCanvas.height = filteredCanvas.offsetHeight;
+        });
+    </script>
+</body>
+</html>

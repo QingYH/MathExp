@@ -1,0 +1,425 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>傅里叶变换图像压缩演示</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+         h2 {
+            text-align: center;
+            color: blue;
+            margin-bottom: 30px;
+            font-size: 26px;
+        }
+        .control-panel {
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .image-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .image-box {
+            width: 48%;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .image-box h3 {
+            text-align: center;
+            color: #3498db;
+        }
+        canvas {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        button {
+            background: linear-gradient(to right, #4776E6 0%, #8E54E9 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 10px rgba(0, 0, 0, 0.2);
+        }
+        select, input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin: 10px;
+            min-width: 150px;
+        }
+        .stats {
+            background: linear-gradient(to right, #a1c4fd 0%, #c2e9fb 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+            margin: 10px;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .frequency-chart {
+            height: 200px;
+            background-color: white;
+            border-radius: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .explanation {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 5px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>傅里叶变换图像压缩演示</h1>
+        <h2>(注意：这里是模拟傅里叶去除高频分量和低频分量而不是真正傅里叶变换，以便大家直观理解)</h2>
+        <div class="control-panel">
+            <div>
+                <label for="imageUrl">图片URL:</label>
+                <input type="text" id="imageUrl" value="https://picsum.photos/512/512" placeholder="输入图片URL">
+            </div>
+            
+            <div>
+                <label for="filterType">处理方式:</label>
+                <select id="filterType">
+                    <option value="low">去除低频分量</option>
+                    <option value="high">去除高频分量</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="cutoff">截止频率(%):</label>
+                <input type="range" id="cutoff" min="0" max="100" value="50">
+                <span id="cutoffValue">50%</span>
+            </div>
+            
+            <button id="processBtn">开始处理</button>
+        </div>
+        
+        <div class="image-container">
+            <div class="image-box">
+                <h3>原始图像</h3>
+                <canvas id="originalCanvas"></canvas>
+            </div>
+            <div class="image-box">
+                <h3>处理后图像</h3>
+                <canvas id="processedCanvas"></canvas>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div>压缩比</div>
+                <div class="stat-value" id="compressionRatio">1:1</div>
+            </div>
+            <div class="stat-item">
+                <div>保留频率分量</div>
+                <div class="stat-value" id="keptFrequencies">100%</div>
+            </div>
+            <div class="stat-item">
+                <div>图像质量</div>
+                <div class="stat-value" id="imageQuality">100%</div>
+            </div>
+        </div>
+        
+        <div class="frequency-chart">
+            <h3>频率分布</h3>
+            <canvas id="frequencyChart"></canvas>
+        </div>
+        
+        <div class="explanation">
+            <h2>傅里叶级数与傅里叶变换的关系</h2>
+            <p>傅里叶级数是将周期函数分解为一系列正弦和余弦函数的和，适用于周期信号的分析。</p>
+            <p>傅里叶变换是傅里叶级数的推广，将非周期信号表示为连续频率谱，适用于非周期信号的分析。</p>
+            <p>在图像处理中，我们使用二维离散傅里叶变换(DFT)将图像从空间域转换到频率域。低频分量对应图像的整体结构和大致轮廓，高频分量则对应图像的细节和边缘。</p>
+            <p>通过去除部分高频或低频分量，我们可以实现图像压缩，同时保持图像的主要视觉信息。</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const originalCanvas = document.getElementById('originalCanvas');
+            const processedCanvas = document.getElementById('processedCanvas');
+            const frequencyChart = document.getElementById('frequencyChart');
+            const processBtn = document.getElementById('processBtn');
+            const imageUrl = document.getElementById('imageUrl');
+            const filterType = document.getElementById('filterType');
+            const cutoff = document.getElementById('cutoff');
+            const cutoffValue = document.getElementById('cutoffValue');
+            const compressionRatio = document.getElementById('compressionRatio');
+            const keptFrequencies = document.getElementById('keptFrequencies');
+            const imageQuality = document.getElementById('imageQuality');
+            
+            // Set canvas sizes
+            originalCanvas.width = 512;
+            originalCanvas.height = 512;
+            processedCanvas.width = 512;
+            processedCanvas.height = 512;
+            frequencyChart.width = 800;
+            frequencyChart.height = 150;
+            
+            const originalCtx = originalCanvas.getContext('2d');
+            const processedCtx = processedCanvas.getContext('2d');
+            const frequencyCtx = frequencyChart.getContext('2d');
+            
+            let originalImageData = null;
+            let processedImageData = null;
+            
+            // Update cutoff value display
+            cutoff.addEventListener('input', function() {
+                cutoffValue.textContent = this.value + '%';
+            });
+            
+            // Load image from URL
+            function loadImage() {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.onload = function() {
+                    originalCtx.drawImage(img, 0, 0, originalCanvas.width, originalCanvas.height);
+                    originalImageData = originalCtx.getImageData(0, 0, originalCanvas.width, originalCanvas.height);
+                    drawFrequencyChart();
+                };
+                img.onerror = function() {
+                    alert('无法加载图像，请检查URL');
+                };
+                img.src = imageUrl.value;
+            }
+            
+            // Process image using FFT
+            function processImage() {
+                if (!originalImageData) return;
+                
+                const cutoffValue = cutoff.value / 100;
+                const isLowPass = filterType.value === 'low';
+                
+                // Convert image to grayscale for simplicity
+                const grayData = convertToGrayscale(originalImageData.data, originalCanvas.width, originalCanvas.height);
+                
+                // Perform FFT
+                const fftData = performFFT(grayData, originalCanvas.width, originalCanvas.height);
+                
+                // Filter frequencies
+                const filteredData = filterFrequencies(fftData, cutoffValue, isLowPass);
+                
+                // Perform inverse FFT
+                const ifftData = performIFFT(filteredData, originalCanvas.width, originalCanvas.height);
+                
+                // Create processed image
+                processedImageData = createImageDataFromGrayscale(ifftData, originalCanvas.width, originalCanvas.height);
+                processedCtx.putImageData(processedImageData, 0, 0);
+                
+                // Update stats
+                updateStatistics(fftData, filteredData, cutoffValue, isLowPass);
+                drawFrequencyChart();
+            }
+            
+            // Helper functions for image processing
+            function convertToGrayscale(data, width, height) {
+                const grayData = new Float32Array(width * height);
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        const idx = (y * width + x) * 4;
+                        grayData[y * width + x] = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
+                    }
+                }
+                return grayData;
+            }
+            
+            function createImageDataFromGrayscale(grayData, width, height) {
+                const imageData = originalCtx.createImageData(width, height);
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        const idx = (y * width + x) * 4;
+                        const value = Math.max(0, Math.min(255, grayData[y * width + x]));
+                        imageData.data[idx] = value;
+                        imageData.data[idx + 1] = value;
+                        imageData.data[idx + 2] = value;
+                        imageData.data[idx + 3] = 255;
+                    }
+                }
+                return imageData;
+            }
+            
+            // Simplified FFT functions (in a real app, you'd use a proper FFT library)
+            function performFFT(data, width, height) {
+                // This is a placeholder - in reality you'd use a proper 2D FFT implementation
+                // For demo purposes, we'll just return the data as is
+                return {
+                    real: new Float32Array(data),
+                    imag: new Float32Array(width * height).fill(0),
+                    width: width,
+                    height: height
+                };
+            }
+            
+            function performIFFT(fftData, width, height) {
+                // Placeholder for inverse FFT
+                return fftData.real;
+            }
+            
+            function filterFrequencies(fftData, cutoff, isLowPass) {
+                const filtered = {
+                    real: new Float32Array(fftData.real),
+                    imag: new Float32Array(fftData.imag),
+                    width: fftData.width,
+                    height: fftData.height
+                };
+                
+                const centerX = Math.floor(fftData.width / 2);
+                const centerY = Math.floor(fftData.height / 2);
+                const maxDistance = Math.sqrt(centerX * centerX + centerY * centerY);
+                const cutoffDistance = cutoff * maxDistance;
+                
+                for (let y = 0; y < fftData.height; y++) {
+                    for (let x = 0; x < fftData.width; x++) {
+                        const dx = x - centerX;
+                        const dy = y - centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if ((isLowPass && distance > cutoffDistance) || (!isLowPass && distance < cutoffDistance)) {
+                            filtered.real[y * fftData.width + x] = 0;
+                            filtered.imag[y * fftData.width + x] = 0;
+                        }
+                    }
+                }
+                
+                return filtered;
+            }
+            
+            function updateStatistics(originalFFT, filteredFFT, cutoff, isLowPass) {
+                // Calculate compression ratio (simplified)
+                const originalSize = originalFFT.real.length * 2; // real + imag
+                let filteredSize = 0;
+                
+                for (let i = 0; i < filteredFFT.real.length; i++) {
+                    if (filteredFFT.real[i] !== 0 || filteredFFT.imag[i] !== 0) {
+                        filteredSize += 2;
+                    }
+                }
+                
+                const ratio = (originalSize / filteredSize).toFixed(2);
+                compressionRatio.textContent = ratio + ':1';
+                
+                // Calculate kept frequencies percentage
+                const kept = (filteredSize / originalSize * 100).toFixed(1);
+                keptFrequencies.textContent = kept + '%';
+                
+                // Calculate image quality (simplified)
+                const quality = isLowPass ? (100 - cutoff * 50) : (50 + cutoff * 50);
+                imageQuality.textContent = Math.round(quality) + '%';
+            }
+            
+            function drawFrequencyChart() {
+                if (!originalImageData) return;
+                
+                frequencyCtx.clearRect(0, 0, frequencyChart.width, frequencyChart.height);
+                
+                // Draw a simplified frequency spectrum (in a real app, you'd use actual FFT data)
+                frequencyCtx.fillStyle = '#3498db';
+                
+                const centerX = frequencyChart.width / 2;
+                const centerY = frequencyChart.height / 2;
+                const maxRadius = Math.min(centerX, centerY) - 10;
+                
+                // Draw frequency circles
+                frequencyCtx.strokeStyle = '#e0e0e0';
+                frequencyCtx.lineWidth = 1;
+                for (let r = 0.2; r <= 1; r += 0.2) {
+                    frequencyCtx.beginPath();
+                    frequencyCtx.arc(centerX, centerY, r * maxRadius, 0, Math.PI * 2);
+                    frequencyCtx.stroke();
+                }
+                
+                // Draw frequency components (simulated)
+                for (let i = 0; i < 200; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * maxRadius;
+                    const size = Math.random() * 4 + 1;
+                    
+                    frequencyCtx.beginPath();
+                    frequencyCtx.arc(
+                        centerX + Math.cos(angle) * distance,
+                        centerY + Math.sin(angle) * distance,
+                        size, 0, Math.PI * 2
+                    );
+                    frequencyCtx.fill();
+                }
+                
+                // Draw cutoff line
+                const cutoffValue = cutoff.value / 100;
+                frequencyCtx.strokeStyle = '#e74c3c';
+                frequencyCtx.lineWidth = 2;
+                frequencyCtx.beginPath();
+                frequencyCtx.arc(centerX, centerY, cutoffValue * maxRadius, 0, Math.PI * 2);
+                frequencyCtx.stroke();
+                
+                // Add labels
+                frequencyCtx.fillStyle = '#2c3e50';
+                frequencyCtx.font = '12px Arial';
+                frequencyCtx.fillText('低频', centerX - maxRadius - 30, centerY);
+                frequencyCtx.fillText('高频', centerX + maxRadius + 10, centerY);
+            }
+            
+            // Event listeners
+            processBtn.addEventListener('click', processImage);
+            imageUrl.addEventListener('change', loadImage);
+            
+            // Initial load
+            loadImage();
+        });
+    </script>
+</body>
+</html>
