@@ -1,0 +1,953 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一元函数极限可视化教学</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            outline: none;
+            transition: 0.3s;
+            font-size: 16px;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab:hover {
+            background-color: #ddd;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            background-color: white;
+            animation: fadeEffect 1s;
+        }
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input, select, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .theory {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+        }
+        .example-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .example-btn {
+            padding: 8px 15px;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .example-btn:hover {
+            background-color: #8e44ad;
+        }
+        .example-btn.active {
+            background-color: #8e44ad;
+            box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.5);
+        }
+        .limit-info {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .math {
+            font-family: "Times New Roman", Times, serif;
+            font-style: italic;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>一元函数极限可视化教学</h1>
+        
+        <div class="theory">
+            <h2>极限定义</h2>
+            <p>设函数 \( f(x) \) 在点 \( x_0 \) 的某个去心邻域内有定义，如果存在常数 \( L \)，对于任意给定的正数 \( \varepsilon \)（无论它多么小），总存在正数 \( \delta \)，使得当 \( x \) 满足 \( 0 < |x - x_0| < \delta \) 时，对应的函数值 \( f(x) \) 都满足不等式：</p>
+            <p style="text-align: center;">\( |f(x) - L| < \varepsilon \)</p>
+            <p>那么常数 \( L \) 就称为函数 \( f(x) \) 当 \( x \to x_0 \) 时的极限，记作：</p>
+            <p style="text-align: center;">\( \lim\limits_{x \to x_0} f(x) = L \)</p>
+            
+            <h3>极限类型</h3>
+            <ul>
+                <li><strong>有限极限</strong>：函数在某点的极限值为有限数</li>
+                <li><strong>左极限</strong>：\( x \) 从左侧趋近于 \( x_0 \) 时的极限</li>
+                <li><strong>右极限</strong>：\( x \) 从右侧趋近于 \( x_0 \) 时的极限</li>
+                <li><strong>无穷极限</strong>：函数值趋近于无穷大</li>
+                <li><strong>极限不存在</strong>：左右极限不相等或函数振荡</li>
+            </ul>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab active" onclick="openTab(event, 'finite')">有限极限</button>
+            <button class="tab" onclick="openTab(event, 'left-right')">左右极限</button>
+            <button class="tab" onclick="openTab(event, 'infinite')">无穷极限</button>
+            <button class="tab" onclick="openTab(event, 'custom')">自定义函数</button>
+        </div>
+
+        <div id="finite" class="tab-content" style="display: block;">
+            <div class="example-buttons">
+                <button class="example-btn active" onclick="setExample(1, 1)">示例1: (x²-1)/(x-1)</button>
+                <button class="example-btn" onclick="setExample(2, 1)">示例2: sin(x)/x</button>
+                <button class="example-btn" onclick="setExample(3, 1)">示例3: 分段函数</button>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="finite-epsilon">ε (精度):</label>
+                    <input type="range" id="finite-epsilon" min="0.1" max="1" step="0.1" value="0.5" oninput="updateFiniteChart()">
+                    <span id="finite-epsilon-value">0.5</span>
+                </div>
+                <div class="control-group">
+                    <label for="finite-delta">δ (邻域):</label>
+                    <input type="range" id="finite-delta" min="0.1" max="1" step="0.1" value="0.5" oninput="updateFiniteChart()">
+                    <span id="finite-delta-value">0.5</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="finiteChart"></canvas>
+            </div>
+            <div id="finiteLimitInfo" class="limit-info"></div>
+        </div>
+
+        <div id="left-right" class="tab-content">
+            <div class="example-buttons">
+                <button class="example-btn active" onclick="setExample(1, 2)">示例1: 绝对值函数</button>
+                <button class="example-btn" onclick="setExample(2, 2)">示例2: 分段函数</button>
+                <button class="example-btn" onclick="setExample(3, 2)">示例3: 1/x</button>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="left-epsilon">左极限 ε:</label>
+                    <input type="range" id="left-epsilon" min="0.1" max="1" step="0.1" value="0.5" oninput="updateLeftRightCharts()">
+                    <span id="left-epsilon-value">0.5</span>
+                </div>
+                <div class="control-group">
+                    <label for="right-epsilon">右极限 ε:</label>
+                    <input type="range" id="right-epsilon" min="0.1" max="1" step="0.1" value="0.5" oninput="updateLeftRightCharts()">
+                    <span id="right-epsilon-value">0.5</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="leftChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="rightChart"></canvas>
+            </div>
+            <div id="leftRightLimitInfo" class="limit-info"></div>
+        </div>
+
+        <div id="infinite" class="tab-content">
+            <div class="example-buttons">
+                <button class="example-btn active" onclick="setExample(1, 3)">示例1: 1/x</button>
+                <button class="example-btn" onclick="setExample(2, 3)">示例2: 1/x²</button>
+                <button class="example-btn" onclick="setExample(3, 3)">示例3: tan(x)</button>
+            </div>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="infinite-approach">趋近点:</label>
+                    <input type="number" id="infinite-approach" value="0" step="0.1" onchange="updateInfiniteChart()">
+                </div>
+                <div class="control-group">
+                    <label for="infinite-range">显示范围:</label>
+                    <input type="number" id="infinite-range" value="5" step="0.5" onchange="updateInfiniteChart()">
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="infiniteChart"></canvas>
+            </div>
+            <div id="infiniteLimitInfo" class="limit-info"></div>
+        </div>
+
+        <div id="custom" class="tab-content">
+            <div class="controls">
+                <div class="control-group" style="flex-grow: 1;">
+                    <label for="custom-function">函数表达式 (使用JavaScript语法):</label>
+                    <input type="text" id="custom-function" value="x => Math.sin(x)/x" style="width: 100%;">
+                </div>
+                <div class="control-group">
+                    <label for="custom-approach">趋近点:</label>
+                    <input type="number" id="custom-approach" value="0" step="0.1">
+                </div>
+                <div class="control-group">
+                    <label for="custom-epsilon">ε:</label>
+                    <input type="number" id="custom-epsilon" value="0.5" step="0.1" min="0.1">
+                </div>
+                <button onclick="plotCustomFunction()" style="align-self: flex-end;">绘制函数</button>
+            </div>
+            <div class="chart-container">
+                <canvas id="customChart"></canvas>
+            </div>
+            <div id="customLimitInfo" class="limit-info"></div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化图表
+        let finiteChart, leftChart, rightChart, infiniteChart, customChart;
+        let currentExample = 1;
+        let currentTab = 1;
+        
+        // 示例函数定义
+        const exampleFunctions = {
+            // 有限极限示例
+            1: [
+                x => (x**2-1)/(x-1),  // 示例1: (x²-1)/(x-1)
+                x => Math.sin(x)/x,    // 示例2: sin(x)/x
+                x => x < 1 ? x**2 : 2*x - 1  // 示例3: 分段函数
+            ],
+            // 左右极限示例
+            2: [
+                x => Math.abs(x)/x,    // 示例1: 绝对值函数
+                x => x < 0 ? -1 : 1,   // 示例2: 分段函数
+                x => 1/x               // 示例3: 1/x
+            ],
+            // 无穷极限示例
+            3: [
+                x => 1/x,              // 示例1: 1/x
+                x => 1/(x**2),         // 示例2: 1/x²
+                x => Math.tan(x)       // 示例3: tan(x)
+            ]
+        };
+        
+        // 初始化所有图表
+        function initCharts() {
+            // 有限极限图表
+            const finiteCtx = document.getElementById('finiteChart').getContext('2d');
+            finiteChart = new Chart(finiteCtx, {
+                type: 'scatter',
+                data: { datasets: [] },
+                options: getChartOptions('有限极限示例')
+            });
+            
+            // 左极限图表
+            const leftCtx = document.getElementById('leftChart').getContext('2d');
+            leftChart = new Chart(leftCtx, {
+                type: 'scatter',
+                data: { datasets: [] },
+                options: getChartOptions('左极限示例')
+            });
+            
+            // 右极限图表
+            const rightCtx = document.getElementById('rightChart').getContext('2d');
+            rightChart = new Chart(rightCtx, {
+                type: 'scatter',
+                data: { datasets: [] },
+                options: getChartOptions('右极限示例')
+            });
+            
+            // 无穷极限图表
+            const infiniteCtx = document.getElementById('infiniteChart').getContext('2d');
+            infiniteChart = new Chart(infiniteCtx, {
+                type: 'scatter',
+                data: { datasets: [] },
+                options: getChartOptions('无穷极限示例')
+            });
+            
+            // 自定义函数图表
+            const customCtx = document.getElementById('customChart').getContext('2d');
+            customChart = new Chart(customCtx, {
+                type: 'scatter',
+                data: { datasets: [] },
+                options: getChartOptions('自定义函数极限')
+            });
+        }
+        
+        // 获取图表配置选项
+        function getChartOptions(title) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: title,
+                        font: { size: 16 }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `(${context.parsed.x.toFixed(2)}, ${context.parsed.y.toFixed(2)})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'x' },
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    y: {
+                        title: { display: true, text: 'f(x)' },
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    }
+                },
+                elements: {
+                    point: { radius: 3 }
+                }
+            };
+        }
+        
+        // 设置示例
+        function setExample(exampleNum, tabNum) {
+            currentExample = exampleNum;
+            currentTab = tabNum;
+            
+            // 更新活动按钮样式
+            const buttons = document.querySelectorAll(`#${getTabId(tabNum)} .example-btn`);
+            buttons.forEach((btn, index) => {
+                if (index === exampleNum - 1) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // 根据当前标签页更新图表
+            switch(tabNum) {
+                case 1: updateFiniteChart(); break;
+                case 2: updateLeftRightCharts(); break;
+                case 3: updateInfiniteChart(); break;
+            }
+        }
+        
+        // 获取标签页ID
+        function getTabId(tabNum) {
+            switch(tabNum) {
+                case 1: return 'finite';
+                case 2: return 'left-right';
+                case 3: return 'infinite';
+                case 4: return 'custom';
+                default: return 'finite';
+            }
+        }
+        
+        
+// 更新有限极限图表
+function updateFiniteChart() {
+    const epsilon = parseFloat(document.getElementById('finite-epsilon').value);
+    const delta = parseFloat(document.getElementById('finite-delta').value);
+    document.getElementById('finite-epsilon-value').textContent = epsilon;
+    document.getElementById('finite-delta-value').textContent = delta;
+    
+    const func = exampleFunctions[1][currentExample - 1];
+    const approachPoint = 1;
+    let limitValue;
+    
+    // 计算极限值
+    switch(currentExample) {
+        case 1: limitValue = 2; break;  // (x²-1)/(x-1)在x→1时为2
+        case 2: limitValue = 1; break;  // sin(x)/x在x→0时为1
+        case 3: limitValue = 1; break;  // 分段函数在x→1时为1
+    }
+    
+    // 生成数据点
+    const points = [];
+    const epsilonBand = [];
+    const deltaBand = [];
+    
+    for (let x = approachPoint - 2; x <= approachPoint + 2; x += 0.05) {
+        if (Math.abs(x - approachPoint) < 0.01 && currentExample === 1) continue; // 跳过x=1的点
+        
+        try {
+            const y = func(x);
+            if (isFinite(y)) {
+                points.push({x, y});
+                
+                // 添加ε带和δ带数据
+                if (Math.abs(x - approachPoint) < delta) {
+                    epsilonBand.push({x, y});
+                }
+            }
+        } catch (e) {}
+    }
+    
+    // 添加δ带边界线
+    deltaBand.push(
+        {x: approachPoint - delta, y: limitValue - epsilon - 1},
+        {x: approachPoint - delta, y: limitValue + epsilon + 1},
+        {x: approachPoint + delta, y: limitValue - epsilon - 1},
+        {x: approachPoint + delta, y: limitValue + epsilon + 1}
+    );
+    
+    // 更新图表数据
+    finiteChart.data.datasets = [
+        {
+            label: '函数曲线',
+            data: points,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderWidth: 2,
+            showLine: true,
+            pointRadius: 0
+        },
+        {
+            label: '极限点',
+            data: [{x: approachPoint, y: limitValue}],
+            backgroundColor: 'rgba(255, 99, 132, 1)',
+            radius: 5
+        },
+        {
+            label: 'ε带',
+            data: [
+                {x: approachPoint - 2, y: limitValue + epsilon},
+                {x: approachPoint + 2, y: limitValue + epsilon},
+                {x: approachPoint + 2, y: limitValue - epsilon},
+                {x: approachPoint - 2, y: limitValue - epsilon}
+            ],
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            borderColor: 'rgba(52, 152, 219, 0.5)',
+            borderWidth: 1,
+            fill: true,
+            pointRadius: 0,
+            showLine: true
+        },
+        {
+            label: 'δ邻域',
+            data: deltaBand,
+            borderColor: 'rgba(46, 204, 113, 0.5)',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            showLine: true
+        }
+    ];
+    
+    finiteChart.update();
+    
+    // 更新极限信息
+    showFiniteLimitInfo(func, approachPoint, limitValue, epsilon, delta);
+}
+
+// 更新左右极限图表
+function updateLeftRightCharts() {
+    const leftEpsilon = parseFloat(document.getElementById('left-epsilon').value);
+    const rightEpsilon = parseFloat(document.getElementById('right-epsilon').value);
+    document.getElementById('left-epsilon-value').textContent = leftEpsilon;
+    document.getElementById('right-epsilon-value').textContent = rightEpsilon;
+    
+    const func = exampleFunctions[2][currentExample - 1];
+    const approachPoint = 0;
+    let leftLimit, rightLimit;
+    
+    // 计算左右极限
+    switch(currentExample) {
+        case 1: 
+            leftLimit = -1; 
+            rightLimit = 1; 
+            break;
+        case 2: 
+            leftLimit = -1; 
+            rightLimit = 1; 
+            break;
+        case 3: 
+            leftLimit = -Infinity; 
+            rightLimit = Infinity; 
+            break;
+    }
+    
+    // 生成左右图表数据
+    const leftPoints = [];
+    const rightPoints = [];
+    const leftEpsilonBand = [];
+    const rightEpsilonBand = [];
+    
+    for (let x = approachPoint - 2; x <= approachPoint + 2; x += 0.05) {
+        if (x === approachPoint) continue;
+        
+        try {
+            const y = func(x);
+            if (isFinite(y)) {
+                if (x < approachPoint) {
+                    leftPoints.push({x, y});
+                    if (Math.abs(x - approachPoint) < 0.5) {
+                        leftEpsilonBand.push({x, y});
+                    }
+                } else {
+                    rightPoints.push({x, y});
+                    if (Math.abs(x - approachPoint) < 0.5) {
+                        rightEpsilonBand.push({x, y});
+                    }
+                }
+            }
+        } catch (e) {}
+    }
+    
+    // 更新左极限图表
+    leftChart.data.datasets = [
+        {
+            label: '左极限曲线',
+            data: leftPoints,
+            borderColor: 'rgba(231, 76, 60, 1)',
+            backgroundColor: 'rgba(231, 76, 60, 0.2)',
+            borderWidth: 2,
+            showLine: true,
+            pointRadius: 0
+        },
+        {
+            label: '左极限点',
+            data: [{x: approachPoint, y: leftLimit}],
+            backgroundColor: 'rgba(142, 68, 173, 1)',
+            radius: 5
+        }
+    ];
+    
+    // 更新右极限图表
+    rightChart.data.datasets = [
+        {
+            label: '右极限曲线',
+            data: rightPoints,
+            borderColor: 'rgba(41, 128, 185, 1)',
+            backgroundColor: 'rgba(41, 128, 185, 0.2)',
+            borderWidth: 2,
+            showLine: true,
+            pointRadius: 0
+        },
+        {
+            label: '右极限点',
+            data: [{x: approachPoint, y: rightLimit}],
+            backgroundColor: 'rgba(142, 68, 173, 1)',
+            radius: 5
+        }
+    ];
+    
+    // 如果极限存在，添加ε带
+    if (isFinite(leftLimit)) {
+        leftChart.data.datasets.push({
+            label: '左ε带',
+            data: [
+                {x: approachPoint - 2, y: leftLimit + leftEpsilon},
+                {x: approachPoint, y: leftLimit + leftEpsilon},
+                {x: approachPoint, y: leftLimit - leftEpsilon},
+                {x: approachPoint - 2, y: leftLimit - leftEpsilon}
+            ],
+            backgroundColor: 'rgba(231, 76, 60, 0.2)',
+            borderColor: 'rgba(231, 76, 60, 0.5)',
+            borderWidth: 1,
+            fill: true,
+            pointRadius: 0,
+            showLine: true
+        });
+    }
+    
+    if (isFinite(rightLimit)) {
+        rightChart.data.datasets.push({
+            label: '右ε带',
+            data: [
+                {x: approachPoint, y: rightLimit + rightEpsilon},
+                {x: approachPoint + 2, y: rightLimit + rightEpsilon},
+                {x: approachPoint + 2, y: rightLimit - rightEpsilon},
+                {x: approachPoint, y: rightLimit - rightEpsilon}
+            ],
+            backgroundColor: 'rgba(41, 128, 185, 0.2)',
+            borderColor: 'rgba(41, 128, 185, 0.5)',
+            borderWidth: 1,
+            fill: true,
+            pointRadius: 0,
+            showLine: true
+        });
+    }
+    
+    leftChart.update();
+    rightChart.update();
+    
+    // 更新极限信息
+    showLeftRightLimitInfo(func, approachPoint, leftLimit, rightLimit, leftEpsilon, rightEpsilon);
+}
+
+// 更新无穷极限图表
+function updateInfiniteChart() {
+    const approachPoint = parseFloat(document.getElementById('infinite-approach').value);
+    const range = parseFloat(document.getElementById('infinite-range').value);
+    
+    const func = exampleFunctions[3][currentExample - 1];
+    let limitValue;
+    
+    // 生成数据点
+    const points = [];
+    const verticalAsymptote = [];
+    
+    for (let x = approachPoint - range; x <= approachPoint + range; x += 0.05) {
+        if (Math.abs(x - approachPoint) < 0.01) continue;
+        
+        try {
+            const y = func(x);
+            if (Math.abs(y) < 100) { // 限制y值范围
+                points.push({x, y});
+            }
+        } catch (e) {}
+    }
+    
+    // 添加垂直渐近线
+    if (currentExample === 3) { // tan(x)有多个渐近线
+        for (let x = approachPoint - range; x <= approachPoint + range; x += Math.PI/2) {
+            if (x !== approachPoint) {
+                verticalAsymptote.push(
+                    {x, y: -100},
+                    {x, y: 100},
+                    {x: NaN, y: NaN}
+                );
+            }
+        }
+    } else if (currentExample === 1 || currentExample === 2) { // 1/x和1/x²在x=0有渐近线
+        verticalAsymptote.push(
+            {x: approachPoint, y: -100},
+            {x: approachPoint, y: 100},
+            {x: NaN, y: NaN}
+        );
+    }
+    
+    // 更新图表数据
+    infiniteChart.data.datasets = [
+        {
+            label: '函数曲线',
+            data: points,
+            borderColor: 'rgba(155, 89, 182, 1)',
+            backgroundColor: 'rgba(155, 89, 182, 0.2)',
+            borderWidth: 2,
+            showLine: true,
+            pointRadius: 0
+        },
+        {
+            label: '垂直渐近线',
+            data: verticalAsymptote,
+            borderColor: 'rgba(231, 76, 60, 1)',
+            borderWidth: 1,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            showLine: true
+        }
+    ];
+    
+    infiniteChart.options.scales.y.min = -range;
+    infiniteChart.options.scales.y.max = range;
+    infiniteChart.update();
+    
+    // 更新极限信息
+    showInfiniteLimitInfo(func, approachPoint);
+}
+
+// 绘制自定义函数
+function plotCustomFunction() {
+    const funcStr = document.getElementById('custom-function').value;
+    const approachPoint = parseFloat(document.getElementById('custom-approach').value);
+    const epsilon = parseFloat(document.getElementById('custom-epsilon').value);
+    
+    let func;
+    try {
+        func = eval(`(${funcStr})`);
+    } catch (e) {
+        alert('函数表达式错误: ' + e.message);
+        return;
+    }
+    
+    // 尝试计算极限值
+    let limitValue = null;
+    try {
+        // 简单估算极限值
+        const values = [];
+        for (let i = 1; i <= 10; i++) {
+            const x = approachPoint + (1/Math.pow(10, i));
+            values.push(func(x));
+        }
+        
+        // 检查是否收敛
+        const diff = Math.abs(values[values.length-1] - values[values.length-2]);
+        if (diff < 0.001) {
+            limitValue = values[values.length-1];
+        }
+    } catch (e) {}
+    
+    // 生成数据点
+    const points = [];
+    const epsilonBand = [];
+    
+    for (let x = approachPoint - 2; x <= approachPoint + 2; x += 0.05) {
+        try {
+            const y = func(x);
+            if (isFinite(y)) {
+                points.push({x, y});
+                
+                if (limitValue !== null && Math.abs(x - approachPoint) < 0.5) {
+                    epsilonBand.push({x, y});
+                }
+            }
+        } catch (e) {}
+    }
+    
+    // 更新图表数据
+    customChart.data.datasets = [
+        {
+            label: '函数曲线',
+            data: points,
+            borderColor: 'rgba(52, 152, 219, 1)',
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            borderWidth: 2,
+            showLine: true,
+            pointRadius: 0
+        }
+    ];
+    
+    // 如果极限存在，添加极限点和ε带
+    if (limitValue !== null) {
+        customChart.data.datasets.push(
+            {
+                label: '极限点',
+                data: [{x: approachPoint, y: limitValue}],
+                backgroundColor: 'rgba(231, 76, 60, 1)',
+                radius: 5
+            },
+            {
+                label: 'ε带',
+                data: [
+                    {x: approachPoint - 2, y: limitValue + epsilon},
+                    {x: approachPoint + 2, y: limitValue + epsilon},
+                    {x: approachPoint + 2, y: limitValue - epsilon},
+                    {x: approachPoint - 2, y: limitValue - epsilon}
+                ],
+                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                borderColor: 'rgba(52, 152, 219, 0.5)',
+                borderWidth: 1,
+                fill: true,
+                pointRadius: 0,
+                showLine: true
+            }
+        );
+    }
+    
+    customChart.update();
+    
+    // 更新极限信息
+    showCustomLimitInfo(func, approachPoint, limitValue, epsilon);
+}
+
+// 显示有限极限信息
+function showFiniteLimitInfo(func, approachPoint, limitValue, epsilon, delta) {
+    const infoDiv = document.getElementById('finiteLimitInfo');
+    const funcStr = func.toString().replace('x => ', '').replace('**', '^').replace('Math.', '');
+    
+    infoDiv.innerHTML = `
+        <h3>极限分析</h3>
+        <p><strong>函数表达式：</strong> f(x) = ${funcStr}</p>
+        <p><strong>极限表达式：</strong> lim<sub>x→${approachPoint}</sub> f(x) = ${limitValue}</p>
+        <p><strong>ε-δ定义验证：</strong></p>
+        <p>对于任意 ε > 0，存在 δ = ${delta}，使得当 0 < |x - ${approachPoint}| < δ 时，有 |f(x) - ${limitValue}| < ε = ${epsilon}</p>
+        <p>在 x ∈ (${(approachPoint-delta).toFixed(2)}, ${approachPoint}) ∪ (${approachPoint}, ${(approachPoint+delta).toFixed(2)}) 区间内：</p>
+        <p>所有函数值 f(x) ∈ (${(limitValue-epsilon).toFixed(2)}, ${(limitValue+epsilon).toFixed(2)})</p>
+    `;
+}
+
+// 显示左右极限信息
+function showLeftRightLimitInfo(func, approachPoint, leftLimit, rightLimit, leftEpsilon, rightEpsilon) {
+    const infoDiv = document.getElementById('leftRightLimitInfo');
+    const funcStr = func.toString().replace('x => ', '').replace('**', '^').replace('Math.', '');
+    
+    let limitExists = (leftLimit === rightLimit) && isFinite(leftLimit);
+    let conclusion = limitExists 
+        ? `左右极限相等，因此 lim<sub>x→${approachPoint}</sub> f(x) = ${leftLimit}`
+        : `左右极限不相等，因此 lim<sub>x→${approachPoint}</sub> f(x) 不存在`;
+    
+    infoDiv.innerHTML = `
+        <h3>左右极限分析</h3>
+        <p><strong>函数表达式：</strong> f(x) = ${funcStr}</p>
+        <p><strong>左极限：</strong> lim<sub>x→${approachPoint}<sup>-</sup></sub> f(x) = ${isFinite(leftLimit) ? leftLimit : "∞"}</p>
+        <p><strong>右极限：</strong> lim<sub>x→${approachPoint}<sup>+</sup></sub> f(x) = ${isFinite(rightLimit) ? rightLimit : "∞"}</p>
+        <p><strong>结论：</strong> ${conclusion}</p>
+    `;
+}
+
+
+// 显示无穷极限信息
+function showInfiniteLimitInfo(func, approachPoint) {
+    const infoDiv = document.getElementById('infiniteLimitInfo');
+    const funcStr = func.toString().replace('x => ', '').replace('**', '^').replace('Math.', '');
+    
+    let description = "";
+    switch(currentExample) {
+        case 1:
+            description = `当 x→${approachPoint} 时，f(x)→${approachPoint < 0 ? "-∞" : "+∞"}，函数在 x=${approachPoint} 处有垂直渐近线`;
+            break;
+        case 2:
+            description = `当 x→${approachPoint} 时，f(x)→+∞，无论x从哪侧趋近，函数在 x=${approachPoint} 处有垂直渐近线`;
+            break;
+        case 3:
+            description = `当 x→kπ/2 (k为奇数) 时，f(x)→±∞，函数在这些点有无限多个垂直渐近线`;
+            break;
+    }
+    
+    infoDiv.innerHTML = `
+        <h3>无穷极限分析</h3>
+        <p><strong>函数表达式：</strong> f(x) = ${funcStr}</p>
+        <p><strong>极限行为：</strong> ${description}</p>
+        <p><strong>结论：</strong> 函数在 x→${approachPoint} 时极限不存在（趋向于无穷大）</p>
+    `;
+}
+
+// 显示自定义函数极限信息
+function showCustomLimitInfo(func, approachPoint, limitValue, epsilon) {
+    const infoDiv = document.getElementById('customLimitInfo');
+    const funcStr = func.toString().replace('x => ', '').replace('**', '^').replace('Math.', '');
+    
+    let conclusion = limitValue !== null 
+        ? `lim<sub>x→${approachPoint}</sub> f(x) = ${limitValue.toFixed(4)}`
+        : `lim<sub>x→${approachPoint}</sub> f(x) 不存在`;
+    
+    infoDiv.innerHTML = `
+        <h3>自定义函数分析</h3>
+        <p><strong>函数表达式：</strong> f(x) = ${funcStr}</p>
+        <p><strong>极限表达式：</strong> ${conclusion}</p>
+        ${limitValue !== null ? `
+        <p><strong>ε-δ验证：</strong> 对于 ε = ${epsilon}，存在 δ > 0 使得当 0 < |x - ${approachPoint}| < δ 时，有 |f(x) - ${limitValue.toFixed(4)}| < ε</p>
+        ` : `
+        <p><strong>原因：</strong> 函数在 x→${approachPoint} 时可能发散或振荡</p>
+        `}
+    `;
+}
+
+// 切换标签页
+function openTab(evt, tabName) {
+    const tabContents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < tabContents.length; i++) {
+        tabContents[i].style.display = "none";
+    }
+    
+    const tabs = document.getElementsByClassName("tab");
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].className = tabs[i].className.replace(" active", "");
+    }
+    
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+    
+    // 根据标签页更新图表
+    switch(tabName) {
+        case 'finite': 
+            currentTab = 1;
+            updateFiniteChart(); 
+            break;
+        case 'left-right': 
+            currentTab = 2;
+            updateLeftRightCharts(); 
+            break;
+        case 'infinite': 
+            currentTab = 3;
+            updateInfiniteChart(); 
+            break;
+        case 'custom': 
+            currentTab = 4;
+            plotCustomFunction(); 
+            break;
+    }
+}
+
+// 页面加载完成后初始化
+window.onload = function() {
+    initCharts();
+    setExample(1, 1);
+    
+    // 初始化MathJax
+    if (typeof MathJax !== 'undefined') {
+        MathJax.Hub.Config({
+            tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] }
+        });
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+};
+
+    </script>
+</body>
+</html>

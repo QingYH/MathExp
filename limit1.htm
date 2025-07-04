@@ -1,0 +1,427 @@
+﻿
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数列极限可视化教学</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(to right, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .theory-section {
+            background-color: #f8f9fa;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 0 10px 10px 0;
+        }
+        .math-def {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 8px;
+        }
+        .visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input[type="range"], select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .epsilon-band {
+            fill: rgba(52, 152, 219, 0.2);
+            stroke: #3498db;
+            stroke-width: 1;
+        }
+        .limit-line {
+            stroke: #e74c3c;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+        }
+        .example-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .example-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .example-btn:hover {
+            background-color: #bdc3c7;
+        }
+        .example-btn.active {
+            background-color: #3498db;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>数列极限可视化教学</h1>
+        
+        <div class="theory-section">
+            <h2>数列极限的ε-N定义</h2>
+            <div class="math-def">
+                \[ \lim_{n \to \infty} a_n = A \iff \forall \varepsilon > 0, \exists N \in \mathbb{N}, \text{当} n > N \text{时}, |a_n - A| < \varepsilon \]
+            </div>
+            <p>数列极限的ε-N定义是高等数学中最重要的基础概念之一，它精确地描述了数列收敛的数学含义：</p>
+            <ul>
+                <li>对于任意给定的正数ε（无论多小）</li>
+                <li>总能找到一个正整数N</li>
+                <li>使得当数列的项数n大于N时</li>
+                <li>数列的值aₙ与极限值A的距离都小于ε</li>
+            </ul>
+            <p>这个定义体现了数学分析中的"无限接近"思想，是后续学习函数极限、连续性、导数等概念的基础。</p>
+        </div>
+
+        <div class="visualization">
+            <div class="chart-container">
+                <canvas id="sequenceChart"></canvas>
+            </div>
+            <div class="controls">
+                <div class="example-selector">
+                    <button class="example-btn active" onclick="setExample(1)">1/n</button>
+                    <button class="example-btn" onclick="setExample(2)">(n+1)/n</button>
+                    <button class="example-btn" onclick="setExample(3)">(-1)^n/n</button>
+                    <button class="example-btn" onclick="setExample(4)">sin(n)/n</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="epsilon">ε (精度控制): <span id="epsilonValue">0.5</span></label>
+                    <input type="range" id="epsilon" min="0.05" max="1" step="0.05" value="0.5" oninput="updateEpsilon()">
+                </div>
+                
+                <div class="form-group">
+                    <label for="nRange">显示项数: <span id="nRangeValue">20</span></label>
+                    <input type="range" id="nRange" min="10" max="100" step="5" value="20" oninput="updateNRange()">
+                </div>
+                
+                <button onclick="showNValue()">显示N值</button>
+                <div id="nValueDisplay" style="margin-top: 15px; font-weight: bold;"></div>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="customFunction">自定义数列 (使用n作为变量):</label>
+                    <input type="text" id="customFunction" placeholder="例如: (n^2)/(n^2+1)" style="width: 100%;">
+                    <button onclick="setCustomFunction()" style="margin-top: 10px;">应用自定义函数</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart;
+        let currentExample = 1;
+        let epsilon = 0.5;
+        let nRange = 20;
+        let limitValue = 0;
+        let sequenceFunction = n => 1/n;
+        
+        function initChart() {
+            const ctx = document.getElementById('sequenceChart').getContext('2d');
+            
+            chart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: '数列点',
+                        data: [],
+                        backgroundColor: '#3498db',
+                        borderColor: '#2980b9',
+                        borderWidth: 1,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }, {
+                        label: '极限值',
+                        data: [],
+                        type: 'line',
+                        borderColor: '#e74c3c',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
+                    }, {
+                        label: 'ε带(上)',
+                        data: [],
+                        type: 'line',
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: '#3498db',
+                        borderWidth: 1,
+                        fill: '1',
+                        pointRadius: 0
+                    }, {
+                        label: 'ε带(下)',
+                        data: [],
+                        type: 'line',
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: '#3498db',
+                        borderWidth: 1,
+                        fill: '-1',
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '项数 n',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            },
+                            min: 1,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '数列值 aₙ',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `a_${context.parsed.x} = ${context.parsed.y.toFixed(4)}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 1000
+                    }
+                }
+            });
+            
+            updateChart();
+        }
+        
+        function updateChart() {
+            const sequenceData = [];
+            const limitData = [];
+            const epsilonUpperData = [];
+            const epsilonLowerData = [];
+            
+            for (let n = 1; n <= nRange; n++) {
+                const value = sequenceFunction(n);
+                sequenceData.push({x: n, y: value});
+                limitData.push({x: n, y: limitValue});
+                epsilonUpperData.push({x: n, y: limitValue + epsilon});
+                epsilonLowerData.push({x: n, y: limitValue - epsilon});
+            }
+            
+            chart.data.datasets[0].data = sequenceData;
+            chart.data.datasets[1].data = limitData;
+            chart.data.datasets[2].data = epsilonUpperData;
+            chart.data.datasets[3].data = epsilonLowerData;
+            
+            chart.update();
+        }
+        
+        function setExample(exampleNum) {
+            currentExample = exampleNum;
+            document.querySelectorAll('.example-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            switch(exampleNum) {
+                case 1:
+                    sequenceFunction = n => 1/n;
+                    limitValue = 0;
+                    break;
+                case 2:
+                    sequenceFunction = n => (n+1)/n;
+                    limitValue = 1;
+                    break;
+                case 3:
+                    sequenceFunction = n => Math.pow(-1, n)/n;
+                    limitValue = 0;
+                    break;
+                case 4:
+                    sequenceFunction = n => Math.sin(n)/n;
+                    limitValue = 0;
+                    break;
+            }
+            
+            updateChart();
+        }
+        
+        function updateEpsilon() {
+            epsilon = parseFloat(document.getElementById('epsilon').value);
+            document.getElementById('epsilonValue').textContent = epsilon.toFixed(2);
+            updateChart();
+        }
+        
+        function updateNRange() {
+            nRange = parseInt(document.getElementById('nRange').value);
+            document.getElementById('nRangeValue').textContent = nRange;
+            updateChart();
+        }
+        
+        function showNValue() {
+            let N = 0;
+            for (let n = 1; n <= 1000; n++) {
+                if (Math.abs(sequenceFunction(n) - limitValue) >= epsilon) {
+                    N = n;
+                } else {
+                    break;
+                }
+            }
+            
+            const display = document.getElementById('nValueDisplay');
+            if (N >= nRange) {
+                display.innerHTML = `对于ε=${epsilon}，在显示范围内(n≤${nRange})未找到合适的N值`;
+            } else {
+                display.innerHTML = `对于ε=${epsilon}，当n > ${N}时，|aₙ - ${limitValue}| < ${epsilon}`;
+            }
+        }
+        
+        function setCustomFunction() {
+        const funcStr = document.getElementById('customFunction').value;
+        if (!funcStr) return;
+        
+        try {
+            sequenceFunction = new Function('n', `return ${funcStr.replace(/[^0-9n+\-*/.()^% ]/g, '')}`);
+            
+            // 测试函数是否有效
+            const testValue = sequenceFunction(1);
+            if (isNaN(testValue)) throw new Error('无效函数');
+            
+            // 改进的极限判定逻辑
+            const values = [
+                sequenceFunction(1000),
+                sequenceFunction(10000),
+                sequenceFunction(100000)
+            ];
+            
+            // 检查数列是否收敛
+            const diff1 = Math.abs(values[0] - values[1]);
+            const diff2 = Math.abs(values[1] - values[2]);
+            
+            if (diff1 < 0.001 && diff2 < 0.001) {
+                limitValue = (values[0] + values[1] + values[2]) / 3;
+                // 显示极限线和ε带
+                chart.data.datasets[1].hidden = false;
+                chart.data.datasets[2].hidden = false;
+                chart.data.datasets[3].hidden = false;
+            } else {
+                limitValue = null;
+                // 隐藏极限线和ε带
+                chart.data.datasets[1].hidden = true;
+                chart.data.datasets[2].hidden = true;
+                chart.data.datasets[3].hidden = true;
+                alert("系统无法确定该数列的极限值，请自行观察数列行为");
+            }
+            
+            updateChart();
+        } catch (e) {
+            alert("请输入有效的数学表达式，使用n作为变量，例如：(n^2)/(n^2+1)");
+            console.error(e);
+        }
+    }
+        
+        window.onload = function() {
+            initChart();
+            MathJax.typeset();
+        };
+    </script>
+</body>
+</html>
