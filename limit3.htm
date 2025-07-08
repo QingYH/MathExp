@@ -1,12 +1,13 @@
-﻿
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一元函数极限可视化教学</title>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <title>一元函数极限可视化</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.6.0/lib/browser/math.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         body {
             font-family: 'Microsoft YaHei', sans-serif;
@@ -41,6 +42,10 @@
             line-height: 1.8;
             font-size: 16px;
         }
+        .theory h2 {
+            color: #3498db;
+            margin-top: 0;
+        }
         .input-group {
             display: flex;
             flex-wrap: wrap;
@@ -48,9 +53,9 @@
             margin-bottom: 20px;
             align-items: center;
         }
-        .input-item {
+        .input-field {
             flex: 1;
-            min-width: 200px;
+            min-width: 100px;
         }
         label {
             display: block;
@@ -59,11 +64,16 @@
             color: #2c3e50;
         }
         input, select {
-            width: 100%;
+            width: 50%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 2px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
         }
         button {
             background-color: #3498db;
@@ -74,486 +84,508 @@
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #2980b9;
         }
         #graph {
+            width: 100%;
             height: 500px;
             margin-top: 20px;
         }
-        .slider-container {
-            margin-top: 15px;
-        }
-        .slider-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-        .limit-type {
+        .result {
             margin-top: 20px;
             padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-        .formula {
-            background-color: #f1f8ff;
-            padding: 10px;
+            background-color: #e8f4fc;
             border-radius: 5px;
-            margin: 10px 0;
-            overflow-x: auto;
+            border-left: 4px solid #3498db;
+        }
+        .epsilon-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .epsilon-control input[type="range"] {
+            flex: 1;
+        }
+        .epsilon-value {
+            min-width: 60px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
         .example-btn {
-            background-color: #2ecc71;
+            background-color: #27ae60;
             margin-left: 10px;
         }
         .example-btn:hover {
-            background-color: #27ae60;
-        }
-        .error {
-            color: #e74c3c;
-            margin-top: 5px;
+            background-color: #219653;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>一元函数极限可视化教学</h1>
-        
-        <div class="section theory">
-            <h2>极限定义理论</h2>
-            <p>在高等数学中，函数极限是研究函数在某一点附近行为的重要概念。以下是几种常见的极限定义：</p>
-            
-            <div class="limit-type">
-                <h3>1. 函数在某点的极限</h3>
-                <p>设函数 \( f(x) \) 在点 \( x_0 \) 的某个去心邻域内有定义，如果存在常数 \( A \)，对于任意给定的 \( \varepsilon > 0 \)，总存在 \( \delta > 0 \)，使得当 \( 0 < |x - x_0| < \delta \) 时，有 \( |f(x) - A| < \varepsilon \)，则称 \( A \) 为函数 \( f(x) \) 当 \( x \) 趋近于 \( x_0 \) 时的极限，记作：</p>
-                <div class="formula">
-                    $$ \lim_{x \to x_0} f(x) = A $$
-                </div>
-            </div>
-            
-            <div class="limit-type">
-                <h3>2. 左极限与右极限</h3>
-                <p>左极限：当 \( x \) 从左侧趋近于 \( x_0 \) 时函数的极限，记作 \( \lim_{x \to x_0^-} f(x) \)</p>
-                <p>右极限：当 \( x \) 从右侧趋近于 \( x_0 \) 时函数的极限，记作 \( \lim_{x \to x_0^+} f(x) \)</p>
-                <p>函数在某点极限存在的充要条件是左右极限存在且相等。</p>
-            </div>
-            
-            <div class="limit-type">
-                <h3>3. 无穷远处的极限</h3>
-                <p>当 \( x \) 趋近于无穷大时函数的极限：</p>
-                <div class="formula">
-                    $$ \lim_{x \to +\infty} f(x) = A \quad \text{或} \quad \lim_{x \to -\infty} f(x) = A $$
-                </div>
-                <p>定义类似：对于任意 \( \varepsilon > 0 \)，存在 \( M > 0 \)，使得当 \( x > M \) (或 \( x < -M \)) 时，有 \( |f(x) - A| < \varepsilon \)。</p>
-            </div>
-        </div>
+        <h1>一元函数极限可视化</h1>
         
         <div class="section">
-            <h2>极限可视化工具</h2>
+            <div class="tab-container">
+                <div class="tab active" onclick="switchTab('theory')">理论介绍</div>
+                <div class="tab" onclick="switchTab('visualization')">可视化演示</div>
+            </div>
             
-            <div class="input-group">
-                <div class="input-item">
-                    <label for="function">函数表达式 (使用JavaScript语法，如 Math.sin(x)):</label>
-                    <input type="text" id="function" value="Math.sin(x)/x">
-                    <button class="example-btn" onclick="setExample('Math.sin(x)/x')">示例1</button>
-                    <button class="example-btn" onclick="setExample('(x*x-1)/(x-1)')">示例2</button>
-                    <button class="example-btn" onclick="setExample('1/x')">示例3</button>
-                </div>
-                
-                <div class="input-item">
-                    <label for="limitPoint">极限点 \( x_0 \) (输入'inf'表示无穷大):</label>
-                    <input type="text" id="limitPoint" value="0">
+            <div id="theory" class="tab-content active">
+                <div class="theory">
+                    <h2>一元函数极限的定义</h2>
+                    <p>设函数 \( f(x) \) 在点 \( x_0 \) 的某个去心邻域内有定义，如果存在常数 \( A \)，对于任意给定的正数 \( \varepsilon \)（无论它多么小），总存在正数 \( \delta \)，使得当 \( 0 < |x - x_0| < \delta \) 时，对应的函数值 \( f(x) \) 都满足不等式 \( |f(x) - A| < \varepsilon \)，那么常数 \( A \) 就叫做函数 \( f(x) \) 当 \( x \to x_0 \) 时的极限，记作：</p>
+                    <p style="text-align: center;">\[ \lim_{x \to x_0} f(x) = A \]</p>
+                    
+                    <h2>极限的类型</h2>
+                    <h3>1. 有限点处的极限</h3>
+                    <p>即上述定义中 \( x \) 趋近于某个有限值 \( x_0 \) 时的极限。</p>
+                    
+                    <h3>2. 无穷远处的极限</h3>
+                    <p>当 \( x \) 趋近于无穷大时，如果存在常数 \( A \)，对于任意 \( \varepsilon > 0 \)，存在 \( M > 0 \)，使得当 \( |x| > M \) 时，有 \( |f(x) - A| < \varepsilon \)，则称 \( A \) 为 \( f(x) \) 当 \( x \to \infty \) 时的极限，记作：</p>
+                    <p style="text-align: center;">\[ \lim_{x \to \infty} f(x) = A \]</p>
+                    
+                    <h3>3. 单侧极限</h3>
+                    <p>左极限：\( \lim_{x \to x_0^-} f(x) = A \) 表示 \( x \) 从左侧趋近于 \( x_0 \) 时的极限。</p>
+                    <p>右极限：\( \lim_{x \to x_0^+} f(x) = A \) 表示 \( x \) 从右侧趋近于 \( x_0 \) 时的极限。</p>
+                    <p>函数在某点极限存在的充要条件是左右极限存在且相等。</p>
+                    
+                    <h2>极限不存在的几种情况</h2>
+                    <ul>
+                        <li>左右极限不相等</li>
+                        <li>函数值振荡无界</li>
+                        <li>函数值趋向于无穷大</li>
+                    </ul>
                 </div>
             </div>
             
-            <div class="input-group">
-                <div class="input-item">
-                    <label for="xMin">x轴最小值:</label>
-                    <input type="number" id="xMin" value="-5" step="0.1">
+            <div id="visualization" class="tab-content">
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="function">函数表达式 (使用x作为变量):</label>
+                        <input type="text" id="function" value="sin(x)/x" placeholder="例如: (x^2-1)/(x-1)">
+                    </div>
+                    <div class="input-field">
+                        <label for="limit-point">趋近点 (x→):</label>
+                        <input type="text" id="limit-point" value="0" placeholder="可以是数字或inf(无穷)">
+                    </div>
+                    <button onclick="calculateLimit()">计算极限</button>
+                    <button class="example-btn" onclick="loadExample(1)">示例1</button>
+                    <button class="example-btn" onclick="loadExample(2)">示例2</button>
+                    <button class="example-btn" onclick="loadExample(3)">示例3</button>
                 </div>
                 
-                <div class="input-item">
-                    <label for="xMax">x轴最大值:</label>
-                    <input type="number" id="xMax" value="5" step="0.1">
+                <div id="result" class="result" style="display: none;">
+                    <p>极限值: <span id="limit-value"></span></p>
+                    <p id="limit-exists-message"></p>
                 </div>
                 
-                <div class="input-item">
-                    <label for="yMin">y轴最小值:</label>
-                    <input type="number" id="yMin" value="-2" step="0.1">
+                <div class="epsilon-control" id="epsilon-control" style="display: none;">
+                    <label for="epsilon-slider">ε (精度):</label>
+                    <input type="range" id="epsilon-slider" min="0.01" max="1" step="0.01" value="0.1">
+                    <span class="epsilon-value" id="epsilon-value">0.1</span>
+                    <label for="delta-value">计算得到的 δ:</label>
+                    <span class="epsilon-value" id="delta-value">-</span>
                 </div>
                 
-                <div class="input-item">
-                    <label for="yMax">y轴最大值:</label>
-                    <input type="number" id="yMax" value="2" step="0.1">
-                </div>
+                <div id="graph"></div>
             </div>
-            
-            <div class="slider-container">
-                <div class="slider-label">
-                    <label for="epsilon">ε (精度控制):</label>
-                    <span id="epsilonValue">0.5</span>
-                </div>
-                <input type="range" id="epsilon" min="0.01" max="1" step="0.01" value="0.5">
-            </div>
-            
-            <button onclick="plotFunction()">绘制函数与极限</button>
-            <div id="error" class="error"></div>
-            
-            <div id="graph"></div>
         </div>
     </div>
 
     <script>
-        let plot = null;
-        const epsilonSlider = document.getElementById('epsilon');
-        const epsilonValue = document.getElementById('epsilonValue');
+        let currentLimit = null;
+        let currentFunction = null;
+        let currentLimitPoint = null;
+        let currentEpsilon = 0.1;
+        let currentDelta = null;
         
-        epsilonSlider.addEventListener('input', function() {
-            epsilonValue.textContent = this.value;
-            if (plot) {
-                plotFunction();
-            }
-        });
-        
-        function setExample(func) {
-            document.getElementById('function').value = func;
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
         }
         
-        function plotFunction() {
+        function loadExample(num) {
+            const examples = [
+                { func: "sin(x)/x", point: "0" },
+                { func: "(x^2-1)/(x-1)", point: "1" },
+                { func: "1/x", point: "0" }
+            ];
+            
+            document.getElementById('function').value = examples[num-1].func;
+            document.getElementById('limit-point').value = examples[num-1].point;
+            calculateLimit();
+        }
+        
+        function calculateLimit() {
             const funcStr = document.getElementById('function').value;
-            const limitPointStr = document.getElementById('limitPoint').value;
-            const xMin = parseFloat(document.getElementById('xMin').value);
-            const xMax = parseFloat(document.getElementById('xMax').value);
-            const yMin = parseFloat(document.getElementById('yMin').value);
-            const yMax = parseFloat(document.getElementById('yMax').value);
-            const epsilon = parseFloat(epsilonSlider.value);
+            const limitPointStr = document.getElementById('limit-point').value;
             
-            // 验证输入
-            if (isNaN(xMin) || isNaN(xMax) || xMin >= xMax) {
-                showError("x轴范围无效");
-                return;
+            try {
+                // 创建函数
+                currentFunction = math.compile(funcStr);
+                
+                // 解析趋近点
+                currentLimitPoint = limitPointStr === 'inf' ? Infinity : parseFloat(limitPointStr);
+                
+                // 计算极限
+                currentLimit = computeLimit(funcStr, limitPointStr);
+                
+                // 显示结果
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('limit-value').textContent = 
+                    currentLimit !== null && isFinite(currentLimit) ? currentLimit : 
+                    currentLimit === Infinity ? '∞' : 
+                    currentLimit === -Infinity ? '-∞' : '不存在';
+                
+                if (currentLimit !== null && isFinite(currentLimit)) {
+                    document.getElementById('limit-exists-message').textContent = '极限存在';
+                    document.getElementById('epsilon-control').style.display = 'flex';
+                    updateEpsilon(currentEpsilon);
+                } else {
+                    document.getElementById('limit-exists-message').textContent = '极限不存在';
+                    document.getElementById('epsilon-control').style.display = 'none';
+                    plotGraph();
+                }
+            } catch (error) {
+                alert('函数表达式错误: ' + error.message);
+                console.error(error);
+            }
+        }
+        
+        function computeLimit(funcStr, pointStr) {
+            try {
+                const x = pointStr === 'inf' ? Infinity : parseFloat(pointStr);
+                const expr = math.parse(funcStr);
+                
+                // 尝试直接代入
+                try {
+                    const direct = expr.evaluate({x: x});
+                    if (!isNaN(direct) && direct !== null) {
+                        return direct;
+                    }
+                } catch (e) {}
+                
+                // 尝试计算极限
+                if (pointStr === 'inf') {
+                    // 无穷远处的极限
+                    const plusInf = expr.evaluate({x: 1e10});
+                    const minusInf = expr.evaluate({x: -1e10});
+                    
+                    if (Math.abs(plusInf - minusInf) < 1e-6) {
+                        return plusInf;
+                    } else if (plusInf > 1e8 && minusInf > 1e8) {
+                        return Infinity;
+                    } else if (plusInf < -1e8 && minusInf < -1e8) {
+                        return -Infinity;
+                    } else {
+                        return null; // 不存在
+                    }
+                } else {
+                    // 有限点处的极限
+                    const left = expr.evaluate({x: x - 1e-5});
+                    const right = expr.evaluate({x: x + 1e-5});
+                    
+                    if (Math.abs(left - right) < 1e-4) {
+                          num0=(left + right) / 2;
+                        return Number(num0.toFixed(2));
+                    } else if (left > 1e8 && right > 1e8) {
+                        return Infinity;
+                    } else if (left < -1e8 && right < -1e8) {
+                        return -Infinity;
+                    } else {
+                        return null; // 不存在
+                    }
+                }
+            } catch (error) {
+                console.error('计算极限时出错:', error);
+                return null;
+            }
+        }
+        
+        function updateEpsilon(epsilon) {
+            currentEpsilon = parseFloat(epsilon);
+            document.getElementById('epsilon-value').textContent = currentEpsilon.toFixed(2);
+            
+            if (currentLimit !== null && isFinite(currentLimit)) {
+                // 计算delta
+                currentDelta = findDelta(currentEpsilon);
+                document.getElementById('delta-value').textContent = 
+                    currentDelta !== null ? currentDelta.toFixed(3) : '无法确定';
+                
+                plotGraph();
+            }
+        }
+        
+        function findDelta(epsilon) {
+            if (currentLimitPoint === Infinity || currentLimitPoint === -Infinity) {
+                return findMForInfinityLimit(epsilon);
             }
             
-            if (isNaN(yMin) || isNaN(yMax) || yMin >= yMax) {
-                showError("y轴范围无效");
-                return;
+            // 对于有限点处的极限，寻找delta
+            const step = 0.01;
+            let delta = step;
+            let found = false;
+            let maxIterations = 0;
+            
+            while (delta < 10 && maxIterations<1000) {
+                let allValid = true;
+                
+                // 检查x0 ± delta区间内的点
+                for (let x = currentLimitPoint - delta; x <= currentLimitPoint + delta; x += step/2) {
+                    if (x === currentLimitPoint) continue;
+                    
+                    try {
+                        const y = currentFunction.evaluate({x: x});
+                        if (Math.abs(y - currentLimit) >= epsilon) {
+                            allValid = false;
+                            break;
+                        }
+                    } catch (e) {
+                        allValid = false;
+                        break;
+                    }
+                }
+                
+                if (allValid) {
+                    found = true;
+                   }else {
+                    delta *= 0.9; // 减小delta
+                }
+                
+                delta += step;
+                maxIterations +=1;
             }
             
-            if (isNaN(epsilon) || epsilon <= 0) {
-                showError("ε必须为正数");
-                return;
-            }
+            return found ? delta : null;
+        }
+        
+        function findMForInfinityLimit(epsilon) {
+            let M = 1;
+            let found = false;
+            let maxIterations = 1000;
             
-            // 计算函数值
-            const step = (xMax - xMin) / 500;
-            const xValues = [];
-            const yValues = [];
-            
-            for (let x = xMin; x <= xMax; x += step) {
-                // 跳过可能导致函数未定义的点
-                if (Math.abs(x) < 1e-10) x = 0;
+            while (M < 1e6 && maxIterations-- > 0) {
+                const x1 = M;
+                const x2 = -M;
                 
                 try {
-                    const y = evaluateFunction(funcStr, x);
+                    const y1 = currentFunction.evaluate({x: x1});
+                    const y2 = currentFunction.evaluate({x: x2});
+                    
+                    if (Math.abs(y1 - currentLimit) < epsilon && Math.abs(y2 - currentLimit) < epsilon) {
+                        found = true;
+                        break;
+                    }
+                } catch (e) {
+                    // 忽略错误
+                }
+                
+                M *= 1.1;
+            }
+            
+            return found ? M : null;
+        }
+        
+        function plotGraph() {
+            if (!currentFunction) return;
+            
+            const xValues = [];
+            const yValues = [];
+            const xRange = 5;
+            let xStart, xEnd;
+            
+            if (currentLimitPoint === Infinity || currentLimitPoint === -Infinity) {
+                xStart = -10;
+                xEnd = 10;
+            } else {
+                xStart = currentLimitPoint - xRange;
+                xEnd = currentLimitPoint + xRange;
+            }
+            
+            const step = (xEnd - xStart) / 200;
+            
+            for (let x = xStart; x <= xEnd; x += step) {
+                try {
+                    const y = currentFunction.evaluate({x: x});
                     if (isFinite(y)) {
                         xValues.push(x);
                         yValues.push(y);
                     }
                 } catch (e) {
-                    // 忽略无法计算的点
+                    // 跳过不定义的点
                 }
             }
             
-            // 准备绘图数据
-            const data = [{
+            const traces = [{
                 x: xValues,
                 y: yValues,
                 mode: 'lines',
-                line: {color: '#3498db', width: 3},
-                name: 'f(x) = ' + funcStr
+                name: '函数曲线',
+                line: {color: '#3498db', width: 3}
             }];
             
-            // 计算极限
-            let limitValue = null;
-            let limitExists = false;
-            const limitPoint = limitPointStr === 'inf' ? Infinity : 
-                             limitPointStr === '-inf' ? -Infinity : parseFloat(limitPointStr);
-            
-            if (!isNaN(limitPoint)) {
-                try {
-                    if (isFinite(limitPoint)) {
-                        // 有限点极限
-                        limitValue = calculateLimit(funcStr, limitPoint);
-                        if (limitValue !== null) {
-                            limitExists = true;
-                            
-                            // 添加极限带
-                            data.push({
-                                x: [xMin, xMax],
-                                y: [limitValue + epsilon, limitValue + epsilon],
-                                mode: 'lines',
-                                line: {color: '#e74c3c', width: 1, dash: 'dash'},
-                                name: `A+ε (ε=${epsilon})`
-                            });
-                            
-                            data.push({
-                                x: [xMin, xMax],
-                                y: [limitValue - epsilon, limitValue - epsilon],
-                                mode: 'lines',
-                                line: {color: '#e74c3c', width: 1, dash: 'dash'},
-                                name: `A-ε (ε=${epsilon})`
-                            });
-                            
-                            // 添加极限带填充区域
-                            data.push({
-                                x: [xMin, xMax, xMax, xMin],
-                                y: [limitValue + epsilon, limitValue + epsilon, 
-                                    limitValue - epsilon, limitValue - epsilon],
-                                fill: 'toself',
-                                fillcolor: 'rgba(231, 76, 60, 0.2)',
-                                mode: 'lines',
-                                line: {width: 0},
-                                name: 'ε-带',
-                                hoverinfo: 'none'
-                            });
-                            
-                            // 尝试计算δ区域
-                            const delta = estimateDelta(funcStr, limitPoint, limitValue, epsilon, xMin, xMax);
-                            if (delta > 0) {
-                                data.push({
-                                    x: [limitPoint - delta, limitPoint - delta],
-                                    y: [yMin, yMax],
-                                    mode: 'lines',
-                                    line: {color: '#2ecc71', width: 1, dash: 'dot'},
-                                    name: `x₀-δ (δ≈${delta.toFixed(3)})`
-                                });
-                                
-                                data.push({
-                                    x: [limitPoint + delta, limitPoint + delta],
-                                    y: [yMin, yMax],
-                                    mode: 'lines',
-                                    line: {color: '#2ecc71', width: 1, dash: 'dot'},
-                                    name: `x₀+δ (δ≈${delta.toFixed(3)})`
-                                });
-                                
-                                data.push({
-                                    x: [limitPoint - delta, limitPoint - delta, limitPoint + delta, limitPoint + delta],
-                                    y: [yMin, yMax, yMax, yMin],
-                                    fill: 'toself',
-                                    fillcolor: 'rgba(46, 204, 113, 0.1)',
-                                    mode: 'lines',
-                                    line: {width: 0},
-                                    name: 'δ-邻域',
-                                    hoverinfo: 'none'
-                                });
-                            }
-                        }
-                    } else {
-                        // 无穷远处极限
-                        limitValue = calculateLimitAtInfinity(funcStr, limitPoint);
-                        if (limitValue !== null) {
-                            limitExists = true;
-                            
-                            // 添加极限带
-                            data.push({
-                                x: [xMin, xMax],
-                                y: [limitValue + epsilon, limitValue + epsilon],
-                                mode: 'lines',
-                                line: {color: '#e74c3c', width: 1, dash: 'dash'},
-                                name: `A+ε (ε=${epsilon})`
-                            });
-                            
-                            data.push({
-                                x: [xMin, xMax],
-                                y: [limitValue - epsilon, limitValue - epsilon],
-                                mode: 'lines',
-                                line: {color: '#e74c3c', width: 1, dash: 'dash'},
-                                name: `A-ε (ε=${epsilon})`
-                            });
-                            
-                            // 添加极限带填充区域
-                            data.push({
-                                x: [xMin, xMax, xMax, xMin],
-                                y: [limitValue + epsilon, limitValue + epsilon, 
-                                    limitValue - epsilon, limitValue - epsilon],
-                                fill: 'toself',
-                                fillcolor: 'rgba(231, 76, 60, 0.2)',
-                                mode: 'lines',
-                                line: {width: 0},
-                                name: 'ε-带',
-                                hoverinfo: 'none'
-                            });
-                        }
-                    }
-                } catch (e) {
-                    console.error("计算极限时出错:", e);
-                }
-            }
-            
-            // 添加极限点标记
-            if (isFinite(limitPoint) && limitExists) {
-                data.push({
-                    x: [limitPoint],
-                    y: [limitValue],
+            // 添加极限点和极限带
+            if (currentLimit !== null && isFinite(currentLimit) && isFinite(currentLimitPoint)) {
+                // 极限点
+                traces.push({
+                    x: [currentLimitPoint],
+                    y: [currentLimit],
                     mode: 'markers',
-                    marker: {color: '#9b59b6', size: 10},
-                    name: `极限点 (${limitPoint}, ${limitValue.toFixed(3)})`
+                    name: '极限点',
+                    marker: {color: '#e74c3c', size: 10}
+                });
+                
+                
+                // 添加极限带 (ε带)
+                if (currentEpsilon) {
+                    const epsilonBandX = [xStart, xEnd];
+                    traces.push({
+                        x: epsilonBandX,
+                        y: Array(2).fill(currentLimit + currentEpsilon),
+                        mode: 'lines',
+                        name: 'ε上限',
+                        line: {color: 'rgba(231, 76, 60, 0.5)', width: 1, dash: 'dot'}
+                    });
+                    traces.push({
+                        x: epsilonBandX,
+                        y: Array(2).fill(currentLimit - currentEpsilon),
+                        mode: 'lines',
+                        name: 'ε下限',
+                        line: {color: 'rgba(231, 76, 60, 0.5)', width: 1, dash: 'dot'}
+                    });
+                    traces.push({
+                        x: epsilonBandX,
+                        y: Array(2).fill(currentLimit),
+                        mode: 'lines',
+                        name: '极限值',
+                        line: {color: '#e74c3c', width: 2}
+                    });
+
+                    // 填充ε带区域
+                    traces.push({
+                        x: [...epsilonBandX, ...epsilonBandX.slice().reverse()],
+                        y: [...Array(2).fill(currentLimit + currentEpsilon), 
+                            ...Array(2).fill(currentLimit - currentEpsilon).reverse()],
+                        fill: 'toself',
+                        fillcolor: 'rgba(231, 76, 60, 0.2)',
+                        mode: 'none',
+                        name: 'ε带区域',
+                        hoverinfo: 'none'
+                    });
+
+                    // 如果delta存在，添加delta区间
+                    if (currentDelta !== null && isFinite(currentLimitPoint)) {
+                        traces.push({
+                            x: [currentLimitPoint - currentDelta, currentLimitPoint - currentDelta],
+                            y: [Math.min(...yValues) - 1, Math.max(...yValues) + 1],
+                            mode: 'lines',
+                            name: 'δ区间左',
+                            line: {color: '#27ae60', width: 2, dash: 'dash'}
+                        });
+                        traces.push({
+                            x: [currentLimitPoint + currentDelta, currentLimitPoint + currentDelta],
+                            y: [Math.min(...yValues) - 1, Math.max(...yValues) + 1],
+                            mode: 'lines',
+                            name: 'δ区间右',
+                            line: {color: '#27ae60', width: 2, dash: 'dash'}
+                        });
+                        traces.push({
+                            x: [currentLimitPoint - currentDelta, currentLimitPoint + currentDelta],
+                            y: [Math.min(...yValues) - 1, Math.min(...yValues) - 1],
+                            mode: 'lines',
+                            name: '上边',
+                            line: {color: '#27ae60', width: 2}
+                        });
+                        traces.push({
+                            x: [currentLimitPoint - currentDelta, currentLimitPoint + currentDelta],
+                            y: [Math.max(...yValues) + 1, Math.max(...yValues) + 1],
+                            mode: 'lines',
+                            name: '下边',
+                            line: {color: '#27ae60', width: 2}
+                        });
+                    }
+                }
+            } else if (currentLimit === Infinity || currentLimit === -Infinity) {
+                // 无穷极限的情况
+                traces.push({
+                    x: [xStart, xEnd],
+                    y: Array(2).fill(0),
+                    mode: 'lines',
+                    name: 'x轴',
+                    line: {color: '#7f8c8d', width: 1}
                 });
             }
-            
-            // 绘图布局
+
             const layout = {
-                title: `函数极限可视化: f(x) = ${funcStr}`,
-                xaxis: {title: 'x', range: [xMin, xMax]},
-                yaxis: {title: 'f(x)', range: [yMin, yMax]},
+                title: '',
+                xaxis: {
+                    title: 'x',
+                    range: [xStart, xEnd]
+                },
+                yaxis: {
+                    title: 'f(x)',
+                    range: [Math.min(...yValues) - 1, Math.max(...yValues) + 1]
+                },
                 hovermode: 'closest',
-                margin: {l: 60, r: 60, t: 80, b: 60},
                 showlegend: true,
-                legend: {orientation: 'h', y: -0.2}
+                legend: {
+                    orientation: 'h',
+                    y: 1.1
+                },
+                margin: {l: 50, r: 50, b: 50, t: 50, pad: 4},
+                plot_bgcolor: 'rgba(255,255,255,0.9)',
+                paper_bgcolor: 'rgba(255,255,255,0)'
             };
-            
-            // 绘制图形
-            const graphDiv = document.getElementById('graph');
-            Plotly.newPlot(graphDiv, data, layout).then(gd => {
-                plot = gd;
-            });
-            
-            // 显示极限信息
-            if (limitExists) {
-                showError(`极限存在: lim(x→${limitPoint}) f(x) = ${limitValue !== null ? limitValue.toFixed(4) : '不存在'}`);
-            } else {
-                showError(`极限不存在或无法计算`);
-            }
+
+            Plotly.newPlot('graph', traces, layout);
         }
-        
-        function evaluateFunction(funcStr, x) {
-            try {
-                // 替换数学函数和常量
-                funcStr = funcStr.replace(/sin/g, 'Math.sin')
-                                 .replace(/cos/g, 'Math.cos')
-                                 .replace(/tan/g, 'Math.tan')
-                                 .replace(/exp/g, 'Math.exp')
-                                 .replace(/log/g, 'Math.log')
-                                 .replace(/sqrt/g, 'Math.sqrt')
-                                 .replace(/abs/g, 'Math.abs')
-                                 .replace(/PI/g, 'Math.PI')
-                                 .replace(/E/g, 'Math.E');
-                
-                // 使用Function构造函数避免eval的安全问题
-                return new Function('x', `return ${funcStr}`)(x);
-            } catch (e) {
-                console.error("计算函数值时出错:", e);
-                return NaN;
-            }
-        }
-        
-        
-        function calculateLimit(funcStr, x0) {
-            // 计算左右极限
-            const leftLimit = calculateSideLimit(funcStr, x0, -1);
-            const rightLimit = calculateSideLimit(funcStr, x0, 1);
-            
-            // 如果左右极限存在且相等，则极限存在
-            if (leftLimit !== null && rightLimit !== null && 
-                Math.abs(leftLimit - rightLimit) < 1e-6) {
-                return (leftLimit + rightLimit) / 2;
-            }
-            return null;
-        }
-        
-        function calculateSideLimit(funcStr, x0, direction) {
-            const hValues = [0.1, 0.01, 0.001, 0.0001, 0.00001];
-            let lastValue = null;
-            let convergenceCount = 0;
-            
-            for (const h of hValues) {
-                const x = x0 + direction * h;
-                try {
-                    const y = evaluateFunction(funcStr, x);
-                    if (!isFinite(y)) continue;
-                    
-                    if (lastValue !== null && Math.abs(y - lastValue) < 1e-6) {
-                        convergenceCount++;
-                        if (convergenceCount >= 2) {
-                            return y;
-                        }
-                    }
-                    lastValue = y;
-                } catch (e) {
-                    continue;
-                }
-            }
-            return lastValue;
-        }
-        
-        function calculateLimitAtInfinity(funcStr, infinityDirection) {
-            const largeValues = [10, 100, 1000, 10000, 100000];
-            let lastValue = null;
-            let convergenceCount = 0;
-            
-            for (const x of largeValues) {
-                const input = infinityDirection > 0 ? x : -x;
-                try {
-                    const y = evaluateFunction(funcStr, input);
-                    if (!isFinite(y)) continue;
-                    
-                    if (lastValue !== null && Math.abs(y - lastValue) < 1e-6) {
-                        convergenceCount++;
-                        if (convergenceCount >= 2) {
-                            return y;
-                        }
-                    }
-                    lastValue = y;
-                } catch (e) {
-                    continue;
-                }
-            }
-            return lastValue;
-        }
-        
-        function estimateDelta(funcStr, x0, limitValue, epsilon, xMin, xMax) {
-            // 简单的δ估计方法，实际应用中可能需要更复杂的算法
-            const testPoints = 100;
-            let maxDelta = Math.min(x0 - xMin, xMax - x0);
-            let bestDelta = 0;
-            
-            for (let i = 1; i <= testPoints; i++) {
-                const delta = maxDelta * i / testPoints;
-                let valid = true;
-                
-                // 测试delta邻域内的点
-                for (let x = x0 - delta; x <= x0 + delta; x += delta / 10) {
-                    if (x === x0) continue;
-                    try {
-                        const y = evaluateFunction(funcStr, x);
-                        if (!isFinite(y) || Math.abs(y - limitValue) > epsilon) {
-                            valid = false;
-                            break;
-                        }
-                    } catch (e) {
-                        valid = false;
-                        break;
-                    }
-                }
-                
-                if (valid) {
-                    bestDelta = delta;
-                } else {
-                    break;
-                }
-            }
-            
-            return bestDelta;
-        }
-        
-        function showError(message) {
-            document.getElementById('error').textContent = message;
-        }
-        
-        // 页面加载时自动绘制
+
+        // 初始化事件监听
+        document.getElementById('epsilon-slider').addEventListener('input', function() {
+            const epsilon = parseFloat(this.value);
+            document.getElementById('epsilon-value').textContent = epsilon.toFixed(2);
+            updateEpsilon(epsilon);
+        });
+
+        // 页面加载时计算默认示例
         window.onload = function() {
-            plotFunction();
+            calculateLimit();
         };
     </script>
 </body>
