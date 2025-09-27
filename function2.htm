@@ -1,0 +1,917 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学反函数与复合函数可视化教程</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent1: #f72585;
+            --accent2: #4cc9f0;
+            --accent3: #2a9d8f;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            font-size: 18px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            color: var(--secondary);
+            margin: 25px 0 15px;
+            border-bottom: 3px solid var(--accent1);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 20px 0 10px;
+        }
+        
+        .intro {
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--dark);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            flex: 1 1 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 5px solid var(--accent1);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card h3 {
+            color: var(--accent1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .definition {
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 20px;
+            border-left: 5px solid var(--primary);
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-size: 1.3rem;
+        }
+        
+        .example {
+            background-color: rgba(76, 201, 240, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--accent2);
+        }
+        
+        .visualization {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .chart-container {
+            height: 400px;
+            margin: 20px auto;
+            position: relative;
+        }
+        
+        .interactive {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            color: white;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .math-example {
+            background-color: rgba(247, 37, 133, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-left: 5px solid var(--accent1);
+        }
+        
+        .math-expression {
+            font-family: 'Cambria Math', serif;
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            background-color: var(--dark);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .highlight {
+            background-color: yellow;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .function-input {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .function-input input, .function-input select {
+            padding: 10px;
+            border: 2px solid var(--primary);
+            border-radius: 5px;
+            font-size: 1.2rem;
+            width: 200px;
+        }
+        
+        .comparison {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .comparison-item {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        @media (max-width: 768px) {
+            .card-container, .comparison {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        .tab-container {
+            margin: 30px 0;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            background: rgba(67, 97, 238, 0.1);
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .step-by-step {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 5px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--accent1);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+        }
+        
+        .function-option {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .function-option input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 高等数学反函数与复合函数可视化教程</h1>
+            <p>通过直观有趣的方式理解反函数与复合函数的概念和图像特征</p>
+        </header>
+        
+        <section class="intro">
+            <p>反函数和复合函数是高等数学中的重要概念，它们描述了函数之间的特殊关系。本教程将通过可视化、互动和有趣的例子帮助你深入理解这些概念。</p>
+        </section>
+        
+        <section>
+            <h2>📚 反函数的定义</h2>
+            <div class="definition">
+                <p>如果函数 \( f: A \to B \) 是双射（一一对应），那么它的<span class="highlight">反函数</span> \( f^{-1}: B \to A \) 定义为：</p>
+                <p class="math-expression">\( f^{-1}(y) = x \quad \text{当且仅当} \quad f(x) = y \)</p>
+                <p>其中，原函数 \( f \) 的定义域成为反函数 \( f^{-1} \) 的值域，原函数的值域成为反函数的定义域。</p>
+            </div>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3>🔑 反函数的存在条件</h3>
+                    <ul>
+                        <li>原函数必须是双射（一一对应）</li>
+                        <li>定义域和值域互换</li>
+                        <li>图像关于直线 \( y = x \) 对称</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>📊 反函数的性质</h3>
+                    <ul>
+                        <li>\( f(f^{-1}(x)) = x \)</li>
+                        <li>\( f^{-1}(f(x)) = x \)</li>
+                        <li>反函数的反函数是原函数</li>
+                        <li>图像关于 \( y = x \) 对称</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="visualization">
+                <h3>反函数图像特征</h3>
+                <p>原函数与反函数的图像关于直线 \( y = x \) 对称：</p>
+                <div class="chart-container">
+                    <canvas id="inverseChart"></canvas>
+                </div>
+                <div class="function-input">
+                    <label for="inverseFunctionSelect">选择函数:</label>
+                    <select id="inverseFunctionSelect" onchange="updateInverseFunction()">
+                        <option value="2*x+1">f(x) = 2x + 1</option>
+                        <option value="x^2" selected>f(x) = x² (x≥0)</option>
+                        <option value="Math.exp(x)">f(x) = e^x</option>
+                        <option value="Math.log(x)">f(x) = ln(x)</option>
+                        <option value="Math.sin(x)">f(x) = sin(x) (-π/2≤x≤π/2)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="math-example">
+                <h3>🍎 有趣的反函数例子</h3>
+                <p>温度转换：摄氏度与华氏度的相互转换</p>
+                <p>原函数：\( F(C) = \frac{9}{5}C + 32 \) （摄氏度转华氏度）</p>
+                <p>反函数：\( C(F) = \frac{5}{9}(F - 32) \) （华氏度转摄氏度）</p>
+                <p>这两个函数互为反函数，验证：\( F(C(F)) = F \) 且 \( C(F(C)) = C \)</p>
+            </div>
+        </section>
+        
+        <section>
+            <h2>📈 复合函数的定义</h2>
+            <div class="definition">
+                <p>设有两个函数 \( f: A \to B \) 和 \( g: B \to C \)，则它们的<span class="highlight">复合函数</span> \( g \circ f: A \to C \) 定义为：</p>
+                <p class="math-expression">\( (g \circ f)(x) = g(f(x)) \)</p>
+                <p>即先应用函数 \( f \)，再将结果代入函数 \( g \)。</p>
+            </div>
+            
+            <div class="card-container">
+                <div class="card">
+                    <h3>🎯 复合函数的条件</h3>
+                    <ul>
+                        <li>函数 \( f \) 的值域必须是函数 \( g \) 的定义域的子集</li>
+                        <li>复合顺序很重要：\( g \circ f \) 与 \( f \circ g \) 通常不同</li>
+                        <li>复合函数可以连续应用多个函数</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>📐 复合函数的性质</h3>
+                    <ul>
+                        <li>结合律：\( (h \circ g) \circ f = h \circ (g \circ f) \)</li>
+                        <li>不满足交换律：\( g \circ f \neq f \circ g \)</li>
+                        <li>恒等函数：\( f \circ f^{-1} = f^{-1} \circ f = I \)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="interactive">
+                <h3>🔧 复合函数探索</h3>
+                <p>选择函数 f(x) 和 g(x)，观察复合函数 \( g(f(x)) \) 的图像：</p>
+                
+                <div class="function-input">
+                    <label for="fFunctionSelect">f(x):</label>
+                    <select id="fFunctionSelect" onchange="updateCompositeFunction()">
+                        <option value="x">f(x) = x</option>
+                        <option value="x^2" selected>f(x) = x²</option>
+                        <option value="2*x+1">f(x) = 2x + 1</option>
+                        <option value="Math.sin(x)">f(x) = sin(x)</option>
+                        <option value="Math.exp(x)">f(x) = e^x</option>
+                    </select>
+                    
+                    <label for="gFunctionSelect">g(x):</label>
+                    <select id="gFunctionSelect" onchange="updateCompositeFunction()">
+                        <option value="x">g(x) = x</option>
+                        <option value="Math.sin(x)" selected>g(x) = sin(x)</option>
+                        <option value="x^2">g(x) = x²</option>
+                        <option value="Math.log(x)">g(x) = ln(x)</option>
+                        <option value="2*x+3">g(x) = 2x + 3</option>
+                    </select>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="compositeChart"></canvas>
+                </div>
+                <p id="compositeDescription">复合函数 \( g(f(x)) = \sin(x^2) \)</p>
+            </div>
+            
+            <div class="math-example">
+                <h3>🚀 有趣的复合函数例题</h3>
+                <p>例题：细菌增长模型</p>
+                <p>假设细菌数量随时间变化为 \( N(t) = 100 \cdot 2^{t} \)（t 以小时计）</p>
+                <p>同时，容器温度随时间变化为 \( T(t) = 20 + 5\sin(\frac{\pi t}{12}) \)</p>
+                <p>问题：求细菌数量关于温度的函数关系</p>
+                <button onclick="showCompositeSolution()">显示解答</button>
+                <div id="compositeSolution" style="display: none; margin-top: 15px;">
+                    <p>解答：我们需要找到 \( N(T) \)，即 \( N(t(T)) \)</p>
+                    <p>首先从 \( T(t) \) 解出 \( t \)：\( t = \frac{12}{\pi} \arcsin\left(\frac{T-20}{5}\right) \)</p>
+                    <p>然后代入 \( N(t) \)：\( N(T) = 100 \cdot 2^{\frac{12}{\pi} \arcsin\left(\frac{T-20}{5}\right)} \)</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>🔄 反函数与复合函数的关系</h2>
+            <div class="definition">
+                <p>反函数和复合函数有密切关系：一个函数与其反函数的复合等于恒等函数。</p>
+                <p class="math-expression">\( f(f^{-1}(x)) = x \) 且 \( f^{-1}(f(x)) = x \)</p>
+            </div>
+            
+            <div class="comparison">
+                <div class="comparison-item">
+                    <h3>反函数</h3>
+                    <ul>
+                        <li>需要原函数是双射</li>
+                        <li>定义域和值域互换</li>
+                        <li>图像关于 y=x 对称</li>
+                        <li>\( f(f^{-1}(x)) = x \)</li>
+                    </ul>
+                </div>
+                
+                <div class="comparison-item">
+                    <h3>复合函数</h3>
+                    <ul>
+                        <li>可以组合任意两个兼容函数</li>
+                        <li>顺序很重要</li>
+                        <li>可以连续应用多个函数</li>
+                        <li>满足结合律但不满足交换律</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="openTab(event, 'step1')">求反函数步骤</button>
+                    <button class="tab" onclick="openTab(event, 'step2')">求复合函数步骤</button>
+                    <button class="tab" onclick="openTab(event, 'step3')">关系验证</button>
+                </div>
+                
+                <div id="step1" class="tab-content active">
+                    <h3>求反函数的步骤</h3>
+                    <div class="step-by-step">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            确认原函数是双射（一一对应）
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            将 \( y = f(x) \) 中的 x 和 y 互换
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            解出 y 关于 x 的表达式
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            将解出的 y 表示为 \( f^{-1}(x) \)
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="step2" class="tab-content">
+                    <h3>求复合函数的步骤</h3>
+                    <div class="step-by-step">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            确认内层函数的值域在外层函数的定义域内
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            将内层函数代入外层函数
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            简化表达式（如果可能）
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            确定复合函数的定义域
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="step3" class="tab-content">
+                    <h3>验证反函数与复合函数的关系</h3>
+                    <div class="step-by-step">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            计算 \( f(f^{-1}(x)) \)，结果应为 x
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            计算 \( f^{-1}(f(x)) \)，结果也应为 x
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            检查两个函数的图像是否关于 y=x 对称
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>🎓 高等数学反函数与复合函数可视化教程 | 通过有趣的方式学习数学概念</p>
+            <p>© 2023 数学可视化项目</p>
+        </footer>
+    </div>
+
+    <script>
+        // 反函数图像
+        const inverseCtx = document.getElementById('inverseChart').getContext('2d');
+        let inverseChart = new Chart(inverseCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: '原函数 f(x)',
+                        data: [],
+                        borderColor: 'rgba(247, 37, 133, 0.8)',
+                        backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                        showLine: true,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0
+                    },
+                    {
+                        label: '反函数 f⁻¹(x)',
+                        data: [],
+                        borderColor: 'rgba(67, 97, 238, 0.8)',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        showLine: true,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'y = x',
+                        data: [{x: -5, y: -5}, {x: 5, y: 5}],
+                        borderColor: 'rgba(76, 201, 240, 0.5)',
+                        borderDash: [5, 5],
+                        showLine: true,
+                        fill: false,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'x',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        min: -5,
+                        max: 5
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'y',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        min: -5,
+                        max: 5
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 更新反函数图像
+        function updateInverseFunction() {
+            const funcStr = document.getElementById('inverseFunctionSelect').value;
+            let f, startX, endX, step;
+            
+            // 根据选择的函数设置参数
+            switch(funcStr) {
+                case '2*x+1':
+                    f = x => 2*x + 1;
+                    startX = -3; endX = 3; step = 0.1;
+                    break;
+                case 'x^2':
+                    f = x => x >= 0 ? x*x : null; // 只取x≥0的部分
+                    startX = 0; endX = 3; step = 0.1;
+                    break;
+                case 'Math.exp(x)':
+                    f = x => Math.exp(x);
+                    startX = -2; endX = 2; step = 0.1;
+                    break;
+                case 'Math.log(x)':
+                    f = x => x > 0 ? Math.log(x) : null;
+                    startX = 0.1; endX = 5; step = 0.1;
+                    break;
+                case 'Math.sin(x)':
+                    f = x => Math.sin(x);
+                    startX = -Math.PI/2; endX = Math.PI/2; step = 0.1;
+                    break;
+                default:
+                    f = x => 2*x + 1;
+                    startX = -3; endX = 3; step = 0.1;
+            }
+            
+            // 生成原函数数据点
+            const originalData = [];
+            for (let x = startX; x <= endX; x += step) {
+                try {
+                    const y = f(x);
+                    if (y !== null && isFinite(y)) {
+                        originalData.push({x: x, y: y});
+                    }
+                } catch(e) {
+                    // 忽略无法计算的点
+                }
+            }
+            
+            // 生成反函数数据点（交换x和y）
+            const inverseData = [];
+            for (let i = 0; i < originalData.length; i++) {
+                inverseData.push({
+                    x: originalData[i].y,
+                    y: originalData[i].x
+                });
+            }
+            
+            // 更新图表
+            inverseChart.data.datasets[0].data = originalData;
+            inverseChart.data.datasets[1].data = inverseData;
+            inverseChart.update();
+        }
+
+        // 复合函数图像
+        const compositeCtx = document.getElementById('compositeChart').getContext('2d');
+        let compositeChart = new Chart(compositeCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'f(x)',
+                        data: [],
+                        borderColor: 'rgba(247, 37, 133, 0.8)',
+                        backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                        showLine: true,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'g(x)',
+                        data: [],
+                        borderColor: 'rgba(67, 97, 238, 0.8)',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        showLine: true,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'g(f(x))',
+                        data: [],
+                        borderColor: 'rgba(42, 157, 143, 0.8)',
+                        backgroundColor: 'rgba(42, 157, 143, 0.1)',
+                        showLine: true,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'x',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        min: -5,
+                        max: 5
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'y',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        min: -3,
+                        max: 3
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 更新复合函数图像
+        function updateCompositeFunction() {
+            const fStr = document.getElementById('fFunctionSelect').value;
+            const gStr = document.getElementById('gFunctionSelect').value;
+            
+            let f, g;
+            
+            // 定义f(x)
+            switch(fStr) {
+                case 'x':
+                    f = x => x;
+                    break;
+                case 'x^2':
+                    f = x => x*x;
+                    break;
+                case '2*x+1':
+                    f = x => 2*x + 1;
+                    break;
+                case 'Math.sin(x)':
+                    f = x => Math.sin(x);
+                    break;
+                case 'Math.exp(x)':
+                    f = x => Math.exp(x);
+                    break;
+                default:
+                    f = x => x*x;
+            }
+            
+            // 定义g(x)
+            switch(gStr) {
+                case 'x':
+                    g = x => x;
+                    break;
+                case 'Math.sin(x)':
+                    g = x => Math.sin(x);
+                    break;
+                case 'x^2':
+                    g = x => x*x;
+                    break;
+                case 'Math.log(x)':
+                    g = x => x > 0 ? Math.log(x) : null;
+                    break;
+                case '2*x+3':
+                    g = x => 2*x + 3;
+                    break;
+                default:
+                    g = x => Math.sin(x);
+            }
+            
+            // 生成函数数据点
+            const fData = [];
+            const gData = [];
+            const compositeData = [];
+            
+            for (let x = -5; x <= 5; x += 0.1) {
+                try {
+                    const fx = f(x);
+                    const gx = g(x);
+                    
+                    if (fx !== null && isFinite(fx)) {
+                        fData.push({x: x, y: fx});
+                        
+                        // 计算复合函数 g(f(x))
+                        const gfx = g(fx);
+                        if (gfx !== null && isFinite(gfx)) {
+                            compositeData.push({x: x, y: gfx});
+                        }
+                    }
+                    
+                    if (gx !== null && isFinite(gx)) {
+                        gData.push({x: x, y: gx});
+                    }
+                } catch(e) {
+                    // 忽略无法计算的点
+                }
+            }
+            
+            // 更新图表
+            compositeChart.data.datasets[0].data = fData;
+            compositeChart.data.datasets[1].data = gData;
+            compositeChart.data.datasets[2].data = compositeData;
+            compositeChart.update();
+            
+            // 更新描述
+            const fName = document.getElementById('fFunctionSelect').options[document.getElementById('fFunctionSelect').selectedIndex].text;
+            const gName = document.getElementById('gFunctionSelect').options[document.getElementById('gFunctionSelect').selectedIndex].text;
+            document.getElementById('compositeDescription').innerHTML = 
+                `复合函数 \\( g(f(x)) = ${gName.replace('g(x) = ', '').replace('f(x) = ', '')}(${fName.replace('g(x) = ', '').replace('f(x) = ', '')}) \\)`;
+            
+            // 重新渲染MathJax
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+        }
+
+        // 显示复合函数解答
+        function showCompositeSolution() {
+            document.getElementById('compositeSolution').style.display = 'block';
+            if (window.MathJax) {
+                MathJax.typeset();
+            }
+        }
+
+        // 标签页功能
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            const tablinks = document.getElementsByClassName("tab");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // 初始化函数图像
+        window.onload = function() {
+            updateInverseFunction();
+            updateCompositeFunction();
+        };
+    </script>
+</body>
+</html>
