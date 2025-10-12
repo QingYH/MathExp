@@ -1,0 +1,936 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一元函数极限动态展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #fdbb2d;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: #a0c4ff;
+        }
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .graph-container {
+            flex: 2;
+            min-width: 500px;
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        canvas {
+            width: 100%;
+            height: 500px;
+            background: #0f1424;
+            border-radius: 8px;
+            display: block;
+        }
+        .control-group {
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fdbb2d;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: #a0c4ff;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            background: #1a2a6c;
+            color: white;
+            font-size: 1rem;
+        }
+        button {
+            background: linear-gradient(to right, #b21f1f, #fdbb2d);
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .info {
+            background: rgba(30, 30, 50, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .info h2 {
+            color: #fdbb2d;
+        }
+        .info p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .limit-display {
+            font-size: 1.3rem;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(26, 42, 108, 0.7);
+            border-radius: 8px;
+            color: #fdbb2d;
+        }
+        .point-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        .point-info span {
+            color: #a0c4ff;
+        }
+        .animation-points {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .point {
+            text-align: center;
+            padding: 10px;
+            background: rgba(26, 42, 108, 0.7);
+            border-radius: 8px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        .point-title {
+            font-weight: bold;
+            color: #fdbb2d;
+            margin-bottom: 5px;
+        }
+        .point-value {
+            font-size: 1.1rem;
+        }
+        .range-display {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #a0c4ff;
+        }
+        .zoom-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .zoom-controls button {
+            flex: 1;
+            padding: 8px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            .animation-points {
+                flex-direction: column;
+            }
+            .point {
+                margin: 5px 0;
+            }
+            .graph-container {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>一元函数极限动态展示</h1>
+        <p class="subtitle">通过动画直观理解函数极限的概念</p>
+        
+        <div class="content">
+            <div class="graph-container">
+                <canvas id="graphCanvas"></canvas>
+                <div class="limit-display" id="limitDisplay">极限值: 计算中...</div>
+                <div class="range-display" id="rangeDisplay">显示范围: x∈[-5,5], y∈[-3,3]</div>
+                
+                <div class="zoom-controls">
+                    <button id="zoomOut">缩小视图</button>
+                    <button id="zoomIn">放大视图</button>
+                    <button id="resetView">重置视图</button>
+                </div>
+                
+                <div class="animation-points">
+                    <div class="point">
+                        <div class="point-title">左侧逼近点</div>
+                        <div class="point-value" id="leftPoint">(0, 0)</div>
+                    </div>
+                    <div class="point">
+                        <div class="point-title">右侧逼近点</div>
+                        <div class="point-value" id="rightPoint">(0, 0)</div>
+                    </div>
+                    <div class="point">
+                        <div class="point-title">极限点</div>
+                        <div class="point-value" id="limitPoint">(0, 0)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <h2>控制面板</h2>
+                
+                <div class="control-group">
+                    <label for="functionSelect">选择函数:</label>
+                    <select id="functionSelect">
+                        <option value="sin">f(x) = sin(x)/x</option>
+                        <option value="quadratic">f(x) = x²</option>
+                        <option value="rational">f(x) = (x²-1)/(x-1)</option>
+                        <option value="exponential">f(x) = e^x</option>
+                        <option value="absolute">f(x) = |x|</option>
+                        <option value="step">f(x) = 阶梯函数</option>
+                        <option value="logarithm">f(x) = ln(x)</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="limitPointInput">极限点 x₀:</label>
+                    <input type="number" id="limitPointInput" value="0" step="0.5">
+                </div>
+                
+                <div class="control-group">
+                    <label for="directionSelect">趋近方向:</label>
+                    <select id="directionSelect">
+                        <option value="both">双侧趋近</option>
+                        <option value="left">左侧趋近</option>
+                        <option value="right">右侧趋近</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="speedControl">动画速度:</label>
+                    <input type="range" id="speedControl" min="1" max="10" value="5">
+                </div>
+
+                <div class="control-group">
+                    <label for="autoRange">显示模式:</label>
+                    <select id="autoRange">
+                        <option value="smart">智能范围</option>
+                        <option value="fixed">固定范围</option>
+                        <option value="focus">聚焦极限点</option>
+                    </select>
+                </div>
+                
+                <button id="startButton">开始动画</button>
+                <button id="resetButton">重置动画</button>
+            </div>
+        </div>
+        
+        <div class="info">
+            <h2>函数极限概念</h2>
+            <p>函数极限描述了当自变量x无限接近某个值x₀时，函数f(x)的变化趋势。</p>
+            <p>在动画中，您将看到：</p>
+            <ul>
+                <li><span style="color: #ff4d4d">红色点</span>表示自变量x从左侧趋近x₀</li>
+                <li><span style="color: #4d94ff">蓝色点</span>表示自变量x从右侧趋近x₀</li>
+                <li><span style="color: #fdbb2d">黄色曲线</span>表示函数f(x)的图像</li>
+                <li><span style="color: #00ff64">绿色水平线</span>表示函数的极限值</li>
+                <li><span style="color: #ff00ff">紫色点</span>表示极限点(x₀, L)</li>
+                <li>当x趋近x₀时，函数值f(x)趋近极限值L</li>
+            </ul>
+            <p>通过观察动画，您可以直观理解极限的定义和性质。</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        const functionSelect = document.getElementById('functionSelect');
+        const limitPointInput = document.getElementById('limitPointInput');
+        const directionSelect = document.getElementById('directionSelect');
+        const speedControl = document.getElementById('speedControl');
+        const autoRangeSelect = document.getElementById('autoRange');
+        const startButton = document.getElementById('startButton');
+        const resetButton = document.getElementById('resetButton');
+        const zoomOutButton = document.getElementById('zoomOut');
+        const zoomInButton = document.getElementById('zoomIn');
+        const resetViewButton = document.getElementById('resetView');
+        const limitDisplay = document.getElementById('limitDisplay');
+        const rangeDisplay = document.getElementById('rangeDisplay');
+        const leftPoint = document.getElementById('leftPoint');
+        const rightPoint = document.getElementById('rightPoint');
+        const limitPointElem = document.getElementById('limitPoint');
+
+        // 默认显示范围
+        const DEFAULT_X_MIN = -5, DEFAULT_X_MAX = 5;
+        const DEFAULT_Y_MIN = -3, DEFAULT_Y_MAX = 3;
+        
+        // 当前显示范围和缩放级别
+        let xMin = DEFAULT_X_MIN, xMax = DEFAULT_X_MAX;
+        let yMin = DEFAULT_Y_MIN, yMax = DEFAULT_Y_MAX;
+        let zoomLevel = 1;
+        
+        let originX, originY;
+        let scaleX, scaleY;
+        
+        // 动画状态
+        let animationId = null;
+        let isAnimating = false;
+        let leftX = 0, rightX = 0;
+        let direction = 'both';
+        let speed = 5;
+        
+        // 设置Canvas尺寸
+        function setCanvasSize() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        // 智能调整显示范围
+        function adjustRangeSmart() {
+            const x0 = parseFloat(limitPointInput.value);
+            const funcType = functionSelect.value;
+            const limitY = calculateLimit(funcType, x0);
+            
+            // 确定x范围 - 确保极限点居中且能看到函数的重要特征
+            let xRange, xCenter;
+            
+            if (funcType === 'logarithm') {
+                // 对数函数特殊处理
+                xCenter = Math.max(0.5, x0);
+                xRange = Math.max(4, Math.abs(xCenter) * 2);
+            } else if (funcType === 'exponential') {
+                // 指数函数特殊处理
+                xCenter = x0;
+                xRange = Math.max(4, Math.abs(x0) + 2);
+            } else {
+                xCenter = x0;
+                xRange = Math.max(4, Math.abs(x0) * 2 + 2);
+            }
+            
+            const xMinNew = xCenter - xRange / 2;
+            const xMaxNew = xCenter + xRange / 2;
+            
+            // 确定y范围 - 基于函数在x范围内的值
+            let yMinNew = Infinity;
+            let yMaxNew = -Infinity;
+            const samples = 200;
+            
+            for (let i = 0; i <= samples; i++) {
+                const x = xMinNew + (i / samples) * (xMaxNew - xMinNew);
+                try {
+                    const y = calculateFunction(x, funcType);
+                    if (!isNaN(y) && isFinite(y)) {
+                        yMinNew = Math.min(yMinNew, y);
+                        yMaxNew = Math.max(yMaxNew, y);
+                    }
+                } catch (e) {
+                    // 跳过无效点
+                }
+            }
+            
+            // 确保极限点在y范围内
+            if (limitY !== null && !isNaN(limitY) && isFinite(limitY)) {
+                yMinNew = Math.min(yMinNew, limitY);
+                yMaxNew = Math.max(yMaxNew, limitY);
+            }
+            
+            // 处理特殊情况
+            if (!isFinite(yMinNew) || !isFinite(yMaxNew)) {
+                yMinNew = -3;
+                yMaxNew = 3;
+            }
+            
+            // 确保范围不会太小
+            if (yMaxNew - yMinNew < 0.1) {
+                const center = (yMinNew + yMaxNew) / 2;
+                yMinNew = center - 2;
+                yMaxNew = center + 2;
+            }
+            
+            // 添加边距
+            const yMargin = (yMaxNew - yMinNew) * 0.15;
+            yMinNew -= yMargin;
+            yMaxNew += yMargin;
+            
+            return {
+                xMin: xMinNew,
+                xMax: xMaxNew,
+                yMin: yMinNew,
+                yMax: yMaxNew
+            };
+        }
+        
+        // 聚焦极限点范围
+        function adjustRangeFocus() {
+            const x0 = parseFloat(limitPointInput.value);
+            const funcType = functionSelect.value;
+            const limitY = calculateLimit(funcType, x0);
+            
+            // 聚焦在极限点附近
+            const xRange = 2;
+            let yRange = 2;
+            
+            // 根据极限值调整y范围
+            if (limitY !== null && !isNaN(limitY) && isFinite(limitY)) {
+                yRange = Math.max(1, Math.abs(limitY) * 0.5 + 1);
+            }
+            
+            return {
+                xMin: x0 - xRange,
+                xMax: x0 + xRange,
+                yMin: (limitY !== null && !isNaN(limitY) && isFinite(limitY)) ? limitY - yRange : -yRange,
+                yMax: (limitY !== null && !isNaN(limitY) && isFinite(limitY)) ? limitY + yRange : yRange
+            };
+        }
+        
+        // 应用显示范围
+        function applyRange(range) {
+            xMin = range.xMin;
+            xMax = range.xMax;
+            yMin = range.yMin;
+            yMax = range.yMax;
+            
+            // 确保范围有效
+            if (!isFinite(xMin) || !isFinite(xMax) || xMin >= xMax) {
+                xMin = DEFAULT_X_MIN;
+                xMax = DEFAULT_X_MAX;
+            }
+            if (!isFinite(yMin) || !isFinite(yMax) || yMin >= yMax) {
+                yMin = DEFAULT_Y_MIN;
+                yMax = DEFAULT_Y_MAX;
+            }
+            
+            // 更新范围显示
+            rangeDisplay.textContent = 
+                `显示范围: x∈[${xMin.toFixed(1)},${xMax.toFixed(1)}], y∈[${yMin.toFixed(1)},${yMax.toFixed(1)}]`;
+        }
+        
+        // 初始化绘图
+        function initGraph() {
+            setCanvasSize();
+            
+            // 根据模式调整范围
+            const mode = autoRangeSelect.value;
+            let range;
+            
+            if (mode === 'fixed') {
+                range = {
+                    xMin: DEFAULT_X_MIN,
+                    xMax: DEFAULT_X_MAX,
+                    yMin: DEFAULT_Y_MIN,
+                    yMax: DEFAULT_Y_MAX
+                };
+            } else if (mode === 'focus') {
+                range = adjustRangeFocus();
+            } else {
+                range = adjustRangeSmart();
+            }
+            
+            // 应用缩放
+            const centerX = (range.xMin + range.xMax) / 2;
+            const centerY = (range.yMin + range.yMax) / 2;
+            const rangeX = (range.xMax - range.xMin) * zoomLevel;
+            const rangeY = (range.yMax - range.yMin) * zoomLevel;
+            
+            applyRange({
+                xMin: centerX - rangeX / 2,
+                xMax: centerX + rangeX / 2,
+                yMin: centerY - rangeY / 2,
+                yMax: centerY + rangeY / 2
+            });
+            
+            // 计算坐标变换参数 - 修正坐标变换
+            scaleX = canvas.width / (xMax - xMin);
+            scaleY = canvas.height / (yMax - yMin);
+            originX = -xMin * scaleX;  // 修正：x=0对应的屏幕坐标
+            originY = canvas.height + yMin * scaleY;  // 修正：y=0对应的屏幕坐标
+            
+            // 绘制坐标轴和网格
+            drawGrid();
+            drawAxes();
+            
+            // 绘制函数
+            drawFunction();
+            
+            // 绘制极限点
+            drawLimitPoint();
+        }
+        
+        // 坐标转换函数 - 新增：将数学坐标转换为屏幕坐标
+        function toScreenX(x) {
+            return (x - xMin) * scaleX;
+        }
+        
+        function toScreenY(y) {
+            return canvas.height - (y - yMin) * scaleY;
+        }
+        
+        // 绘制网格
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(100, 100, 150, 0.2)';
+            ctx.lineWidth = 1;
+            
+            // 计算合适的网格间距
+            const xStep = getGridStep(xMax - xMin);
+            const yStep = getGridStep(yMax - yMin);
+            
+            // 垂直网格线
+            for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+                if (Math.abs(x) < 0.001) continue;
+                const screenX = toScreenX(x);
+                ctx.beginPath();
+                ctx.moveTo(screenX, 0);
+                ctx.lineTo(screenX, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 水平网格线
+            for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+                if (Math.abs(y) < 0.001) continue;
+                const screenY = toScreenY(y);
+                ctx.beginPath();
+                ctx.moveTo(0, screenY);
+                ctx.lineTo(canvas.width, screenY);
+                ctx.stroke();
+            }
+        }
+        
+        // 获取合适的网格步长
+        function getGridStep(range) {
+            const baseStep = Math.pow(10, Math.floor(Math.log10(range)));
+            if (range / baseStep > 5) return baseStep * 2;
+            if (range / baseStep > 2) return baseStep;
+            return baseStep / 2;
+        }
+        
+        // 绘制坐标轴
+        function drawAxes() {
+            ctx.strokeStyle = '#a0c4ff';
+            ctx.lineWidth = 2;
+            
+            // X轴
+            const xAxisScreenY = toScreenY(0);
+            if (xAxisScreenY >= 0 && xAxisScreenY <= canvas.height) {
+                ctx.beginPath();
+                ctx.moveTo(0, xAxisScreenY);
+                ctx.lineTo(canvas.width, xAxisScreenY);
+                ctx.stroke();
+            }
+            
+            // Y轴
+            const yAxisScreenX = toScreenX(0);
+            if (yAxisScreenX >= 0 && yAxisScreenX <= canvas.width) {
+                ctx.beginPath();
+                ctx.moveTo(yAxisScreenX, 0);
+                ctx.lineTo(yAxisScreenX, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 坐标轴标签
+            ctx.fillStyle = '#a0c4ff';
+            ctx.font = '14px Arial';
+            
+            // X轴刻度
+            const xStep = getGridStep(xMax - xMin);
+            for (let x = Math.ceil(xMin / xStep) * xStep; x <= xMax; x += xStep) {
+                if (Math.abs(x) < 0.001) continue;
+                const screenX = toScreenX(x);
+                const screenY = toScreenY(0);
+                
+                ctx.beginPath();
+                ctx.moveTo(screenX, screenY - 5);
+                ctx.lineTo(screenX, screenY + 5);
+                ctx.stroke();
+                
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(x.toString(), screenX, screenY + 10);
+            }
+            
+            // Y轴刻度
+            const yStep = getGridStep(yMax - yMin);
+            for (let y = Math.ceil(yMin / yStep) * yStep; y <= yMax; y += yStep) {
+                if (Math.abs(y) < 0.001) continue;
+                const screenX = toScreenX(0);
+                const screenY = toScreenY(y);
+                
+                ctx.beginPath();
+                ctx.moveTo(screenX - 5, screenY);
+                ctx.lineTo(screenX + 5, screenY);
+                ctx.stroke();
+                
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(y.toString(), screenX - 10, screenY);
+            }
+            
+            // 原点标签
+            if (xMin <= 0 && xMax >= 0 && yMin <= 0 && yMax >= 0) {
+                const originScreenX = toScreenX(0);
+                const originScreenY = toScreenY(0);
+                
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'top';
+                ctx.fillText('O', originScreenX - 5, originScreenY + 5);
+            }
+        }
+        
+        // 计算函数值
+        function calculateFunction(x, funcType) {
+            switch (funcType) {
+                case 'sin':
+                    return x === 0 ? 1 : Math.sin(x) / x;
+                case 'quadratic':
+                    return x * x;
+                case 'rational':
+                    return x === 1 ? 2 : (x * x - 1) / (x - 1);
+                case 'exponential':
+                    return Math.exp(x);
+                case 'absolute':
+                    return Math.abs(x);
+                case 'step':
+                    return x < 0 ? 0 : 1;
+                case 'logarithm':
+                    return x > 0 ? Math.log(x) : NaN;
+                default:
+                    return Math.sin(x) / x;
+            }
+        }
+        
+        // 计算极限值
+        function calculateLimit(funcType, x0) {
+            switch (funcType) {
+                case 'sin':
+                    return x0 === 0 ? 1 : Math.sin(x0) / x0;
+                case 'quadratic':
+                    return x0 * x0;
+                case 'rational':
+                    return x0 === 1 ? 2 : (x0 * x0 - 1) / (x0 - 1);
+                case 'exponential':
+                    return Math.exp(x0);
+                case 'absolute':
+                    return Math.abs(x0);
+                case 'step':
+                    return x0 !== 0 ? (x0 < 0 ? 0 : 1) : null;
+                case 'logarithm':
+                    return x0 > 0 ? Math.log(x0) : (x0 === 0 ? -Infinity : NaN);
+                default:
+                    return Math.sin(x0) / x0;
+            }
+        }
+        
+        // 检查极限是否存在
+        function limitExists(funcType, x0) {
+            const limit = calculateLimit(funcType, x0);
+            return limit !== null && !isNaN(limit) && isFinite(limit);
+        }
+        
+        // 绘制函数图像 - 使用正确的坐标转换
+        function drawFunction() {
+            const funcType = functionSelect.value;
+            ctx.strokeStyle = '#fdbb2d';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            let isFirstPoint = true;
+            const step = (xMax - xMin) / canvas.width;
+            
+            for (let screenX = 0; screenX < canvas.width; screenX++) {
+                const x = xMin + (screenX / canvas.width) * (xMax - xMin);
+                try {
+                    const y = calculateFunction(x, funcType);
+                    
+                    if (!isNaN(y) && isFinite(y) && y >= yMin && y <= yMax) {
+                        const screenY = toScreenY(y);
+                        
+                        if (isFirstPoint) {
+                            ctx.moveTo(screenX, screenY);
+                            isFirstPoint = false;
+                        } else {
+                            ctx.lineTo(screenX, screenY);
+                        }
+                    } else {
+                        isFirstPoint = true;
+                    }
+                } catch (e) {
+                    isFirstPoint = true;
+                }
+            }
+            
+            ctx.stroke();
+        }
+        
+        // 绘制极限点 - 使用正确的坐标转换
+        function drawLimitPoint() {
+            const x0 = parseFloat(limitPointInput.value);
+            const funcType = functionSelect.value;
+            
+            // 检查极限是否存在
+            const exists = limitExists(funcType, x0);
+            const limitY = exists ? calculateLimit(funcType, x0) : null;
+            
+            // 更新极限显示
+            if (exists) {
+                limitDisplay.textContent = `极限值: lim f(x) = ${limitY.toFixed(4)} (当 x → ${x0})`;
+                limitPointElem.textContent = `(${x0.toFixed(2)}, ${limitY.toFixed(4)})`;
+            } else {
+                limitDisplay.textContent = `极限不存在 (当 x → ${x0})`;
+                limitPointElem.textContent = `不存在`;
+            }
+            
+            // 绘制极限水平线 - 只有当极限存在时才绘制
+            if (exists && limitY >= yMin && limitY <= yMax) {
+                ctx.strokeStyle = 'rgba(0, 255, 100, 0.7)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                const screenY = toScreenY(limitY);
+                ctx.moveTo(0, screenY);
+                ctx.lineTo(canvas.width, screenY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制极限点 (x0, limitY)
+            if (exists && x0 >= xMin && x0 <= xMax && limitY >= yMin && limitY <= yMax) {
+                const screenX = toScreenX(x0);
+                const screenY = toScreenY(limitY);
+                
+                // 绘制极限点
+                ctx.fillStyle = '#ff00ff';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 添加极限点标签
+                ctx.fillStyle = '#ff00ff';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(`(${x0.toFixed(2)}, ${limitY.toFixed(2)})`, screenX + 10, screenY - 10);
+            }
+        }
+        
+        // 绘制动画点 - 使用正确的坐标转换
+        function drawAnimationPoints() {
+            const funcType = functionSelect.value;
+            const x0 = parseFloat(limitPointInput.value);
+            
+            // 绘制左侧逼近点
+            if (direction === 'both' || direction === 'left') {
+                const leftY = calculateFunction(leftX, funcType);
+                
+                if (!isNaN(leftY) && isFinite(leftY) && leftX >= xMin && leftX <= xMax && leftY >= yMin && leftY <= yMax) {
+                    // 绘制自变量点 (x轴上的红点)
+                    ctx.fillStyle = '#ff4d4d';
+                    const leftScreenX = toScreenX(leftX);
+                    const xAxisScreenY = toScreenY(0);
+                    ctx.beginPath();
+                    ctx.arc(leftScreenX, xAxisScreenY, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制函数值点 (曲线上的红点)
+                    const leftScreenY = toScreenY(leftY);
+                    ctx.beginPath();
+                    ctx.arc(leftScreenX, leftScreenY, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制连接线
+                    ctx.strokeStyle = 'rgba(255, 77, 77, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(leftScreenX, xAxisScreenY);
+                    ctx.lineTo(leftScreenX, leftScreenY);
+                    ctx.stroke();
+                    
+                    // 更新左侧点显示
+                    leftPoint.textContent = `(${leftX.toFixed(4)}, ${leftY.toFixed(4)})`;
+                }
+            }
+            
+            // 绘制右侧逼近点
+            if (direction === 'both' || direction === 'right') {
+                const rightY = calculateFunction(rightX, funcType);
+                
+                if (!isNaN(rightY) && isFinite(rightY) && rightX >= xMin && rightX <= xMax && rightY >= yMin && rightY <= yMax) {
+                    // 绘制自变量点 (x轴上的蓝点)
+                    ctx.fillStyle = '#4d94ff';
+                    const rightScreenX = toScreenX(rightX);
+                    const xAxisScreenY = toScreenY(0);
+                    ctx.beginPath();
+                    ctx.arc(rightScreenX, xAxisScreenY, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制函数值点 (曲线上的蓝点)
+                    const rightScreenY = toScreenY(rightY);
+                    ctx.beginPath();
+                    ctx.arc(rightScreenX, rightScreenY, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制连接线
+                    ctx.strokeStyle = 'rgba(77, 148, 255, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(rightScreenX, xAxisScreenY);
+                    ctx.lineTo(rightScreenX, rightScreenY);
+                    ctx.stroke();
+                    
+                    // 更新右侧点显示
+                    rightPoint.textContent = `(${rightX.toFixed(4)}, ${rightY.toFixed(4)})`;
+                }
+            }
+        }
+        
+        // 动画函数
+        function animate() {
+            if (!isAnimating) return;
+            
+            // 清除画布并重新绘制
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGrid();
+            drawAxes();
+            drawFunction();
+            drawLimitPoint();
+            drawAnimationPoints();
+            
+            // 更新当前X值
+            const x0 = parseFloat(limitPointInput.value);
+            const delta = 0.05 * (speed / 5);
+            
+            // 更新左侧点
+            if (direction === 'both' || direction === 'left') {
+                if (leftX < x0 - 0.01) {
+                    leftX += delta;
+                } else {
+                    // 重置左侧点
+                    leftX = x0 - 2;
+                }
+            }
+            
+            // 更新右侧点
+            if (direction === 'both' || direction === 'right') {
+                if (rightX > x0 + 0.01) {
+                    rightX -= delta;
+                } else {
+                    // 重置右侧点
+                    rightX = x0 + 2;
+                }
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 事件监听
+        startButton.addEventListener('click', function() {
+            if (isAnimating) {
+                isAnimating = false;
+                cancelAnimationFrame(animationId);
+                startButton.textContent = '开始动画';
+            } else {
+                isAnimating = true;
+                startButton.textContent = '暂停动画';
+                direction = directionSelect.value;
+                speed = parseInt(speedControl.value);
+                
+                // 设置初始点位置
+                const x0 = parseFloat(limitPointInput.value);
+                leftX = x0 - 2;
+                rightX = x0 + 2;
+                
+                animate();
+            }
+        });
+        
+        resetButton.addEventListener('click', function() {
+            isAnimating = false;
+            cancelAnimationFrame(animationId);
+            startButton.textContent = '开始动画';
+            
+            // 重置动画点位置
+            const x0 = parseFloat(limitPointInput.value);
+            leftX = x0 - 2;
+            rightX = x0 + 2;
+            
+            initGraph();
+        });
+        
+        zoomOutButton.addEventListener('click', function() {
+            zoomLevel *= 1.5;
+            initGraph();
+        });
+        
+        zoomInButton.addEventListener('click', function() {
+            zoomLevel /= 1.5;
+            if (zoomLevel < 0.1) zoomLevel = 0.1;
+            initGraph();
+        });
+        
+        resetViewButton.addEventListener('click', function() {
+            zoomLevel = 1;
+            initGraph();
+        });
+        
+        functionSelect.addEventListener('change', initGraph);
+        limitPointInput.addEventListener('change', initGraph);
+        speedControl.addEventListener('input', function() {
+            speed = parseInt(this.value);
+        });
+        autoRangeSelect.addEventListener('change', initGraph);
+        
+        // 初始化
+        setCanvasSize();
+        window.addEventListener('resize', setCanvasSize);
+        initGraph();
+    </script>
+</body>
+</html>
