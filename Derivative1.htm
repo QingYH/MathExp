@@ -1,0 +1,1252 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导数直观理解：完整可视化演示</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #e63946;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin: 25px 0 15px;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin: 20px 0 10px;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f8f9fa;
+            border: 2px solid var(--primary);
+            position: relative;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        select, button, input[type="range"] {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        select:hover, button:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        button {
+            background: var(--accent);
+        }
+        
+        button:hover {
+            background: #d9046d;
+        }
+        
+        input[type="range"] {
+            background: transparent;
+            padding: 0;
+        }
+        
+        .explanation {
+            background: rgba(76, 201, 240, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--success);
+        }
+        
+        .key-point {
+            background: rgba(248, 150, 30, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid var(--warning);
+        }
+        
+        .math {
+            font-family: 'Cambria Math', serif;
+            font-style: italic;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        .highlight {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        
+        .function-display {
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 10px;
+        }
+        
+        .car-track {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #333;
+        }
+        
+        .car {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background: var(--accent);
+            border-radius: 10px 10px 0 0;
+            bottom: 50px;
+            left: 50px;
+            transition: left 0.05s linear;
+            transform: translateX(-50%);
+        }
+        
+        .car::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            bottom: -10px;
+            left: 5px;
+        }
+        
+        .car::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #333;
+            border-radius: 50%;
+            bottom: -10px;
+            right: 5px;
+        }
+        
+        .car-top {
+            position: absolute;
+            width: 40px;
+            height: 20px;
+            background: var(--danger);
+            top: -20px;
+            left: 10px;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .data-panel {
+            background: rgba(67, 97, 238, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .data-label {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .data-value {
+            color: var(--primary);
+        }
+        
+        .speed-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            font-weight: bold;
+            border-left: 5px solid var(--success);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.7rem;
+            }
+            
+            .canvas-container {
+                height: 350px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>导数直观理解：完整可视化演示</h1>
+            <p>通过图形和动画直观展示导数的定义、几何意义、物理意义以及不可导情况</p>
+        </header>
+        
+        <section class="card">
+            <h2>导数的定义</h2>
+            <p>导数描述的是函数在某一点处的瞬时变化率，数学上定义为：</p>
+            <div class="function-display">
+                f'(x) = lim<sub>h→0</sub> [f(x+h) - f(x)] / h
+            </div>
+            <p>这个极限值如果存在，我们就说函数在点x处可导。</p>
+            
+            <div class="canvas-container">
+                <canvas id="derivativeDefinition"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="functionSelect">选择函数:</label>
+                    <select id="functionSelect">
+                        <option value="quadratic">二次函数: f(x) = x²</option>
+                        <option value="sin">正弦函数: f(x) = sin(x)</option>
+                        <option value="cubic">三次函数: f(x) = x³</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="pointSelect">选择点:</label>
+                    <input type="range" id="pointSelect" min="-3" max="3" step="0.1" value="1">
+                    <span id="pointValue">x = 1.0</span>
+                </div>
+                <div class="control-group">
+                    <label for="hValue">h值:</label>
+                    <input type="range" id="hValue" min="0.01" max="2" step="0.01" value="1">
+                    <span id="hValueDisplay">h = 1.00</span>
+                </div>
+                <button id="animateBtn">动画演示</button>
+            </div>
+            
+            <div class="explanation">
+                <h3>几何解释</h3>
+                <p>导数的几何意义是函数图像在某一点处的切线斜率。当h趋近于0时，割线逐渐接近切线。</p>
+                <p>在上面的演示中，红色线表示割线，蓝色线表示切线。当h值减小时，割线逐渐接近切线。</p>
+            </div>
+        </section>
+        
+        <section class="card">
+            <h2>不可导的情况</h2>
+            <p>并非所有函数在所有点都可导。函数在以下情况下可能不可导：</p>
+            <ul>
+                <li>函数在该点不连续</li>
+                <li>函数在该点有尖点（左右导数不相等）</li>
+                <li>函数在该点有垂直切线（导数为无穷大）</li>
+            </ul>
+            
+            <div class="canvas-container">
+                <canvas id="nonDifferentiable"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="nonDiffSelect">选择不可导类型:</label>
+                    <select id="nonDiffSelect">
+                        <option value="corner">尖点: f(x) = |x|</option>
+                        <option value="vertical">垂直切线: f(x) = x^(1/3)</option>
+                        <option value="discontinuous">不连续: f(x) = 1/x (x≠0)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="nonDiffPoint">选择点:</label>
+                    <input type="range" id="nonDiffPoint" min="-2" max="2" step="0.01" value="0">
+                    <span id="nonDiffPointValue">x = 0.0</span>
+                </div>
+                <button id="nonDiffAnimateBtn">在不可导点附近动态演示</button>
+            </div>
+            
+            <div class="key-point">
+                <h3>关键点</h3>
+                <p>在尖点处（如绝对值函数在x=0处），左右导数存在但不相等，因此函数在该点不可导。</p>
+                <p>在垂直切线处（如立方根函数在x=0处），导数趋于无穷大，因此函数在该点不可导。</p>
+                <p>在不连续点处，函数显然不可导。</p>
+            </div>
+        </section>
+        
+        <section class="card">
+            <h2>可导与连续的关系</h2>
+            <p>可导性与连续性之间有重要关系：</p>
+            <div class="function-display">
+                可导 ⇒ 连续
+            </div>
+            <p>但反过来不一定成立：连续 ⇏ 可导</p>
+            
+            <div class="canvas-container">
+                <canvas id="differentiableContinuous"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="relationSelect">选择函数:</label>
+                    <select id="relationSelect">
+                        <option value="differentiable">可导且连续: f(x) = x²</option>
+                        <option value="continuousNotDiff">连续但不可导: f(x) = |x|</option>
+                        <option value="notContinuous">不连续: f(x) = 1/x (x≠0)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="relationPoint">选择点:</label>
+                    <input type="range" id="relationPoint" min="-2" max="2" step="0.1" value="0">
+                    <span id="relationPointValue">x = 0.0</span>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <h3>关系解释</h3>
+                <p>如果一个函数在某点可导，那么它一定在该点连续。这是因为可导要求函数在该点的极限存在且等于函数值。</p>
+                <p>但是，连续的函数不一定可导。绝对值函数在x=0处是连续的，但不可导，因为左右导数不相等。</p>
+            </div>
+        </section>
+        
+        <section class="card">
+            <h2>导数的物理意义</h2>
+            <p>在物理学中，导数有广泛的应用：</p>
+            <ul>
+                <li>位移函数的导数是速度</li>
+                <li>速度函数的导数是加速度</li>
+                <li>在经济学中，成本函数的导数是边际成本</li>
+                <li>在生物学中，种群数量函数的导数是种群增长率</li>
+            </ul>
+            
+            <div class="canvas-container">
+                <canvas id="physicsMeaning"></canvas>
+                <div class="car-track"></div>
+                <div class="car" id="car">
+                    <div class="car-top"></div>
+                </div>
+                <div class="speed-indicator" id="speedIndicator">
+                    速度: 0.00 m/s
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="physicsSelect">选择物理量:</label>
+                    <select id="physicsSelect">
+                        <option value="position">位移函数</option>
+                        <option value="velocity">速度函数</option>
+                        <option value="acceleration">加速度函数</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button id="startMotion">开始运动</button>
+                    <button id="pauseMotion">暂停</button>
+                    <button id="resetMotion">重置</button>
+                </div>
+                <div class="control-group">
+                    <label for="timeScale">时间缩放:</label>
+                    <input type="range" id="timeScale" min="0.1" max="3" step="0.1" value="1">
+                    <span id="timeScaleValue">1.0x</span>
+                </div>
+            </div>
+            
+            <div class="data-panel">
+                <div class="data-item">
+                    <span class="data-label">时间:</span>
+                    <span class="data-value" id="timeValue">0.00 s</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">位移:</span>
+                    <span class="data-value" id="positionValue">0.00 m</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">速度:</span>
+                    <span class="data-value" id="velocityValue">0.00 m/s</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label">加速度:</span>
+                    <span class="data-value" id="accelerationValue">0.00 m/s²</span>
+                </div>
+            </div>
+            
+            <div class="key-point">
+                <h3>物理意义解释</h3>
+                <p>在位移-时间图中，某一点的切线斜率表示该时刻的瞬时速度。</p>
+                <p>在速度-时间图中，某一点的切线斜率表示该时刻的瞬时加速度。</p>
+                <p>导数帮助我们理解变化率，这是理解物理世界动态变化的关键。</p>
+                <p>观察小汽车的运动，可以看到位移、速度和加速度之间的关系。</p>
+            </div>
+        </section>
+        
+        <footer>
+            <p>导数直观理解演示 &copy; 2023 | 设计用于帮助学生直观理解导数概念</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取所有canvas元素和上下文
+        const derivativeCanvas = document.getElementById('derivativeDefinition');
+        const nonDiffCanvas = document.getElementById('nonDifferentiable');
+        const relationCanvas = document.getElementById('differentiableContinuous');
+        const physicsCanvas = document.getElementById('physicsMeaning');
+        
+        const derivativeCtx = derivativeCanvas.getContext('2d');
+        const nonDiffCtx = nonDiffCanvas.getContext('2d');
+        const relationCtx = relationCanvas.getContext('2d');
+        const physicsCtx = physicsCanvas.getContext('2d');
+        
+        // 获取小汽车元素和速度指示器
+        const car = document.getElementById('car');
+        const speedIndicator = document.getElementById('speedIndicator');
+        
+        // 设置canvas尺寸
+        function setCanvasSize(canvas) {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        // 初始化所有canvas尺寸
+        setCanvasSize(derivativeCanvas);
+        setCanvasSize(nonDiffCanvas);
+        setCanvasSize(relationCanvas);
+        setCanvasSize(physicsCanvas);
+        
+        // 窗口调整大小时重置canvas尺寸
+        window.addEventListener('resize', function() {
+            setCanvasSize(derivativeCanvas);
+            setCanvasSize(nonDiffCanvas);
+            setCanvasSize(relationCanvas);
+            setCanvasSize(physicsCanvas);
+            drawAll();
+        });
+        
+        // 坐标转换函数
+        function toCanvasX(x, canvas, xMin, xMax) {
+            return (x - xMin) / (xMax - xMin) * canvas.width;
+        }
+        
+        function toCanvasY(y, canvas, yMin, yMax) {
+            return canvas.height - (y - yMin) / (yMax - yMin) * canvas.height;
+        }
+        
+        // 绘制坐标轴
+        function drawAxes(ctx, canvas, xMin, xMax, yMin, yMax) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.lineWidth = 1;
+            
+            // 垂直网格线
+            for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+                if (x === 0) continue;
+                const canvasX = toCanvasX(x, canvas, xMin, xMax);
+                ctx.beginPath();
+                ctx.moveTo(canvasX, 0);
+                ctx.lineTo(canvasX, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 水平网格线
+            for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+                if (y === 0) continue;
+                const canvasY = toCanvasY(y, canvas, yMin, yMax);
+                ctx.beginPath();
+                ctx.moveTo(0, canvasY);
+                ctx.lineTo(canvas.width, canvasY);
+                ctx.stroke();
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            
+            // x轴
+            const xAxisY = toCanvasY(0, canvas, yMin, yMax);
+            ctx.beginPath();
+            ctx.moveTo(0, xAxisY);
+            ctx.lineTo(canvas.width, xAxisY);
+            ctx.stroke();
+            
+            // y轴
+            const yAxisX = toCanvasX(0, canvas, xMin, xMax);
+            ctx.beginPath();
+            ctx.moveTo(yAxisX, 0);
+            ctx.lineTo(yAxisX, canvas.height);
+            ctx.stroke();
+            
+            // 绘制刻度
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            
+            // x轴刻度
+            for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+                if (x === 0) continue;
+                const canvasX = toCanvasX(x, canvas, xMin, xMax);
+                ctx.beginPath();
+                ctx.moveTo(canvasX, xAxisY - 5);
+                ctx.lineTo(canvasX, xAxisY + 5);
+                ctx.stroke();
+                ctx.fillText(x.toString(), canvasX, xAxisY + 10);
+            }
+            
+            // y轴刻度
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+                if (y === 0) continue;
+                const canvasY = toCanvasY(y, canvas, yMin, yMax);
+                ctx.beginPath();
+                ctx.moveTo(yAxisX - 5, canvasY);
+                ctx.lineTo(yAxisX + 5, canvasY);
+                ctx.stroke();
+                ctx.fillText(y.toString(), yAxisX - 10, canvasY);
+            }
+            
+            // 原点标记
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'top';
+            ctx.fillText('O', yAxisX - 5, xAxisY + 5);
+        }
+        
+        // 函数定义
+        const functions = {
+            quadratic: x => x * x,
+            sin: x => Math.sin(x),
+            cubic: x => x * x * x,
+            absolute: x => Math.abs(x),
+            cubeRoot: x => Math.cbrt(x),
+            reciprocal: x => x !== 0 ? 1 / x : NaN
+        };
+        
+        // 导数定义（数值近似）
+        function derivative(f, x, h = 0.001) {
+            return (f(x + h) - f(x)) / h;
+        }
+        
+        // 绘制函数
+        function drawFunction(ctx, canvas, f, xMin, xMax, yMin, yMax, color = '#4361ee', lineWidth = 3) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.beginPath();
+            
+            let firstPoint = true;
+            for (let i = 0; i <= canvas.width; i++) {
+                const x = xMin + (i / canvas.width) * (xMax - xMin);
+                const y = f(x);
+                
+                if (isNaN(y) || !isFinite(y)) {
+                    firstPoint = true;
+                    continue;
+                }
+                
+                const canvasX = i;
+                const canvasY = toCanvasY(y, canvas, yMin, yMax);
+                
+                if (firstPoint) {
+                    ctx.moveTo(canvasX, canvasY);
+                    firstPoint = false;
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            
+            ctx.stroke();
+        }
+        
+        // 绘制割线和切线
+        function drawTangent(ctx, canvas, f, x, h, xMin, xMax, yMin, yMax) {
+            const canvasX = toCanvasX(x, canvas, xMin, xMax);
+            const canvasY = toCanvasY(f(x), canvas, yMin, yMax);
+            
+            // 绘制点
+            ctx.fillStyle = '#f72585';
+            ctx.beginPath();
+            ctx.arc(canvasX, canvasY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制割线
+            const slope = (f(x + h) - f(x)) / h;
+            const y1 = f(x) - slope * (x - xMin);
+            const y2 = f(x) + slope * (xMax - x);
+            
+            const canvasY1 = toCanvasY(y1, canvas, yMin, yMax);
+            const canvasY2 = toCanvasY(y2, canvas, yMin, yMax);
+            
+            ctx.strokeStyle = '#e63946';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, canvasY1);
+            ctx.lineTo(canvas.width, canvasY2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制切线（当h很小时）
+            if (h < 0.1) {
+                const exactSlope = derivative(f, x);
+                if (isFinite(exactSlope)) {
+                    const tangentY1 = f(x) - exactSlope * (x - xMin);
+                    const tangentY2 = f(x) + exactSlope * (xMax - x);
+                    
+                    const canvasTangentY1 = toCanvasY(tangentY1, canvas, yMin, yMax);
+                    const canvasTangentY2 = toCanvasY(tangentY2, canvas, yMin, yMax);
+                    
+                    ctx.strokeStyle = '#3a0ca3';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvasTangentY1);
+                    ctx.lineTo(canvas.width, canvasTangentY2);
+                    ctx.stroke();
+                }
+            }
+            
+            // 显示斜率值
+            ctx.fillStyle = '#000';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(`斜率: ${slope.toFixed(2)}`, 10, 10);
+        }
+        
+        // 绘制导数定义图形
+        function drawDerivativeDefinition() {
+            const xMin = -3, xMax = 3, yMin = -2, yMax = 10;
+            drawAxes(derivativeCtx, derivativeCanvas, xMin, xMax, yMin, yMax);
+            
+            const functionSelect = document.getElementById('functionSelect');
+            const pointSelect = document.getElementById('pointSelect');
+            const hValue = document.getElementById('hValue');
+            
+            const funcName = functionSelect.value;
+            const x = parseFloat(pointSelect.value);
+            const h = parseFloat(hValue.value);
+            
+            const f = functions[funcName];
+            
+            drawFunction(derivativeCtx, derivativeCanvas, f, xMin, xMax, yMin, yMax);
+            drawTangent(derivativeCtx, derivativeCanvas, f, x, h, xMin, xMax, yMin, yMax);
+        }
+        
+        // 绘制不可导情况
+        let nonDiffAnimation = null;
+        
+        function drawNonDifferentiable() {
+            const xMin = -2, xMax = 2, yMin = -2, yMax = 2;
+            drawAxes(nonDiffCtx, nonDiffCanvas, xMin, xMax, yMin, yMax);
+            
+            const nonDiffSelect = document.getElementById('nonDiffSelect');
+            const nonDiffPoint = document.getElementById('nonDiffPoint');
+            
+            const funcType = nonDiffSelect.value;
+            const x = parseFloat(nonDiffPoint.value);
+            
+            let f;
+            switch (funcType) {
+                case 'corner':
+                    f = functions.absolute;
+                    break;
+                case 'vertical':
+                    f = functions.cubeRoot;
+                    break;
+                case 'discontinuous':
+                    f = functions.reciprocal;
+                    break;
+            }
+            
+            drawFunction(nonDiffCtx, nonDiffCanvas, f, xMin, xMax, yMin, yMax);
+            
+            // 绘制点
+            const canvasX = toCanvasX(x, nonDiffCanvas, xMin, xMax);
+            const y = f(x);
+            
+            if (!isNaN(y) && isFinite(y)) {
+                const canvasY = toCanvasY(y, nonDiffCanvas, yMin, yMax);
+                
+                nonDiffCtx.fillStyle = '#f72585';
+                nonDiffCtx.beginPath();
+                nonDiffCtx.arc(canvasX, canvasY, 6, 0, Math.PI * 2);
+                nonDiffCtx.fill();
+                
+                // 尝试绘制切线
+                try {
+                    const slope = derivative(f, x);
+                    if (isFinite(slope)) {
+                        const tangentY1 = f(x) - slope * (x - xMin);
+                        const tangentY2 = f(x) + slope * (xMax - x);
+                        
+                        const canvasTangentY1 = toCanvasY(tangentY1, nonDiffCanvas, yMin, yMax);
+                        const canvasTangentY2 = toCanvasY(tangentY2, nonDiffCanvas, yMin, yMax);
+                        
+                        nonDiffCtx.strokeStyle = '#3a0ca3';
+                        nonDiffCtx.lineWidth = 2;
+                        nonDiffCtx.beginPath();
+                        nonDiffCtx.moveTo(0, canvasTangentY1);
+                        nonDiffCtx.lineTo(nonDiffCanvas.width, canvasTangentY2);
+                        nonDiffCtx.stroke();
+                        
+                        nonDiffCtx.fillStyle = '#000';
+                        nonDiffCtx.font = '16px Arial';
+                        nonDiffCtx.textAlign = 'left';
+                        nonDiffCtx.textBaseline = 'top';
+                        nonDiffCtx.fillText(`斜率: ${slope.toFixed(2)}`, 10, 10);
+                    } else {
+                        nonDiffCtx.fillStyle = '#e63946';
+                        nonDiffCtx.font = '16px Arial';
+                        nonDiffCtx.textAlign = 'left';
+                        nonDiffCtx.textBaseline = 'top';
+                        nonDiffCtx.fillText(`该点不可导`, 10, 10);
+                    }
+                } catch (e) {
+                    nonDiffCtx.fillStyle = '#e63946';
+                    nonDiffCtx.font = '16px Arial';
+                    nonDiffCtx.textAlign = 'left';
+                    nonDiffCtx.textBaseline = 'top';
+                    nonDiffCtx.fillText(`该点不可导`, 10, 10);
+                }
+            }
+        }
+        
+        // 在不可导点附近动态演示
+        function animateNonDifferentiable() {
+            if (nonDiffAnimation) clearInterval(nonDiffAnimation);
+            
+            const nonDiffSelect = document.getElementById('nonDiffSelect');
+            const nonDiffPoint = document.getElementById('nonDiffPoint');
+            
+            const funcType = nonDiffSelect.value;
+            let x = parseFloat(nonDiffPoint.value);
+            
+            // 设置动画参数
+            let direction = 1;
+            let speed = 0.01;
+            
+            nonDiffAnimation = setInterval(() => {
+                // 在不可导点附近移动
+                if (funcType === 'corner' || funcType === 'vertical') {
+                    // 对于尖点和垂直切线，在0附近移动
+                    x = x + direction * speed;
+                    
+                    if (x > 0.5) {
+                        direction = -1;
+                    } else if (x < -0.5) {
+                        direction = 1;
+                    }
+                } else if (funcType === 'discontinuous') {
+                    // 对于不连续点，在0附近移动，但不包括0
+                    x = x + direction * speed;
+                    
+                    if (x > -0.1 && x < 0.1) {
+                        // 跳过0点
+                        x = (direction > 0) ? 0.1 : -0.1;
+                    }
+                    
+                    if (x > 0.5) {
+                        direction = -1;
+                    } else if (x < -0.5) {
+                        direction = 1;
+                    }
+                }
+                
+                // 更新滑块和显示
+                nonDiffPoint.value = x;
+                document.getElementById('nonDiffPointValue').textContent = `x = ${x.toFixed(2)}`;
+                
+                // 重绘图形
+                drawNonDifferentiable();
+            }, 50);
+        }
+        
+        // 绘制可导与连续关系
+        function drawDifferentiableContinuous() {
+            const xMin = -2, xMax = 2, yMin = -2, yMax = 2;
+            drawAxes(relationCtx, relationCanvas, xMin, xMax, yMin, yMax);
+            
+            const relationSelect = document.getElementById('relationSelect');
+            const relationPoint = document.getElementById('relationPoint');
+            
+            const funcType = relationSelect.value;
+            const x = parseFloat(relationPoint.value);
+            
+            let f;
+            switch (funcType) {
+                case 'differentiable':
+                    f = functions.quadratic;
+                    break;
+                case 'continuousNotDiff':
+                    f = functions.absolute;
+                    break;
+                case 'notContinuous':
+                    f = functions.reciprocal;
+                    break;
+            }
+            
+            drawFunction(relationCtx, relationCanvas, f, xMin, xMax, yMin, yMax);
+            
+            // 绘制点
+            const canvasX = toCanvasX(x, relationCanvas, xMin, xMax);
+            const y = f(x);
+            
+            if (!isNaN(y) && isFinite(y)) {
+                const canvasY = toCanvasY(y, relationCanvas, yMin, yMax);
+                
+                relationCtx.fillStyle = '#f72585';
+                relationCtx.beginPath();
+                relationCtx.arc(canvasX, canvasY, 6, 0, Math.PI * 2);
+                relationCtx.fill();
+                
+                // 显示连续性信息
+                relationCtx.fillStyle = '#000';
+                relationCtx.font = '16px Arial';
+                relationCtx.textAlign = 'left';
+                relationCtx.textBaseline = 'top';
+                
+                let continuity = "连续";
+                let differentiability = "可导";
+                
+                if (funcType === 'notContinuous') {
+                    continuity = "不连续";
+                    differentiability = "不可导";
+                } else if (funcType === 'continuousNotDiff' && x === 0) {
+                    differentiability = "不可导";
+                }
+                
+                relationCtx.fillText(`连续性: ${continuity}`, 10, 10);
+                relationCtx.fillText(`可导性: ${differentiability}`, 10, 30);
+            }
+        }
+        
+        // 绘制物理意义
+        let motionTime = 0;
+        let motionInterval = null;
+        let isPaused = false;
+        let timeScale = 1.0;
+        
+        // 物理函数定义 - 使用更复杂的函数来展示变化
+        const positionFunc = t => 3 * Math.sin(0.5 * t) + 2 * Math.cos(0.3 * t) + 0.5 * t;
+        const velocityFunc = t => 1.5 * Math.cos(0.5 * t) - 0.6 * Math.sin(0.3 * t) + 0.5;
+        const accelerationFunc = t => -0.75 * Math.sin(0.5 * t) - 0.18 * Math.cos(0.3 * t);
+        
+        // 自适应坐标范围
+        function getAdaptiveRange() {
+            // 根据当前时间动态调整x轴范围
+            const xMin = Math.max(0, motionTime - 6);
+            const xMax = Math.max(12, motionTime + 6);
+            
+            // 根据当前函数值动态调整y轴范围
+            let yMin = -5;
+            let yMax = 5;
+            
+            const physicsSelect = document.getElementById('physicsSelect');
+            const funcType = physicsSelect.value;
+            
+            // 计算当前函数值范围
+            let currentMin = 0;
+            let currentMax = 0;
+            
+            for (let t = xMin; t <= xMax; t += 0.5) {
+                let value;
+                if (funcType === 'position') {
+                    value = positionFunc(t);
+                } else if (funcType === 'velocity') {
+                    value = velocityFunc(t);
+                } else {
+                    value = accelerationFunc(t);
+                }
+                
+                if (!isNaN(value)) {
+                    currentMin = Math.min(currentMin, value);
+                    currentMax = Math.max(currentMax, value);
+                }
+            }
+            
+            // 添加边距
+            const margin = Math.max(1, (currentMax - currentMin) * 0.2);
+            yMin = currentMin - margin;
+            yMax = currentMax + margin;
+            
+            return { xMin, xMax, yMin, yMax };
+        }
+        
+        // 绘制物理意义图形
+        function drawPhysicsMeaning() {
+            const { xMin, xMax, yMin, yMax } = getAdaptiveRange();
+            
+            drawAxes(physicsCtx, physicsCanvas, xMin, xMax, yMin, yMax);
+            
+            const physicsSelect = document.getElementById('physicsSelect');
+            const funcType = physicsSelect.value;
+            
+            let f;
+            if (funcType === 'position') {
+                f = positionFunc;
+            } else if (funcType === 'velocity') {
+                f = velocityFunc;
+            } else {
+                f = accelerationFunc;
+            }
+            
+            physicsCtx.strokeStyle = '#4361ee';
+            physicsCtx.lineWidth = 3;
+            physicsCtx.beginPath();
+            
+            let firstPoint = true;
+            const step = (xMax - xMin) / physicsCanvas.width;
+            
+            for (let x = xMin; x <= xMax; x += step) {
+                const y = f(x);
+                
+                if (isNaN(y) || !isFinite(y)) {
+                    firstPoint = true;
+                    continue;
+                }
+                
+                const canvasX = toCanvasX(x, physicsCanvas, xMin, xMax);
+                const canvasY = toCanvasY(y, physicsCanvas, yMin, yMax);
+                
+                if (firstPoint) {
+                    physicsCtx.moveTo(canvasX, canvasY);
+                    firstPoint = false;
+                } else {
+                    physicsCtx.lineTo(canvasX, canvasY);
+                }
+            }
+            
+            physicsCtx.stroke();
+            
+            // 绘制当前时间点
+            const currentY = f(motionTime);
+            if (!isNaN(currentY) && isFinite(currentY)) {
+                const canvasX = toCanvasX(motionTime, physicsCanvas, xMin, xMax);
+                const canvasY = toCanvasY(currentY, physicsCanvas, yMin, yMax);
+                
+                physicsCtx.fillStyle = '#f72585';
+                physicsCtx.beginPath();
+                physicsCtx.arc(canvasX, canvasY, 6, 0, Math.PI * 2);
+                physicsCtx.fill();
+                
+                // 绘制切线
+                const slope = derivative(f, motionTime);
+                if (isFinite(slope)) {
+                    const tangentY1 = f(motionTime) - slope * (motionTime - xMin);
+                    const tangentY2 = f(motionTime) + slope * (xMax - motionTime);
+                    
+                    const canvasTangentY1 = toCanvasY(tangentY1, physicsCanvas, yMin, yMax);
+                    const canvasTangentY2 = toCanvasY(tangentY2, physicsCanvas, yMin, yMax);
+                    
+                    physicsCtx.strokeStyle = '#3a0ca3';
+                    physicsCtx.lineWidth = 2;
+                    physicsCtx.setLineDash([5, 5]);
+                    physicsCtx.beginPath();
+                    physicsCtx.moveTo(0, canvasTangentY1);
+                    physicsCtx.lineTo(physicsCanvas.width, canvasTangentY2);
+                    physicsCtx.stroke();
+                    physicsCtx.setLineDash([]);
+                    
+                    // 显示斜率值
+                    physicsCtx.fillStyle = '#000';
+                    physicsCtx.font = '16px Arial';
+                    physicsCtx.textAlign = 'left';
+                    physicsCtx.textBaseline = 'top';
+                    
+                    let derivativeMeaning;
+                    if (funcType === 'position') {
+                        derivativeMeaning = "速度";
+                    } else if (funcType === 'velocity') {
+                        derivativeMeaning = "加速度";
+                    } else {
+                        derivativeMeaning = "加加速度";
+                    }
+                    
+                    physicsCtx.fillText(`瞬时${derivativeMeaning}: ${slope.toFixed(2)}`, 10, 10);
+                }
+            }
+            
+            updateCarPosition(xMin, xMax, yMin, yMax);
+            updateDataPanel();
+        }
+        
+        // 更新小汽车位置
+        function updateCarPosition(xMin, xMax, yMin, yMax) {
+            const carContainer = document.querySelector('.car-track');
+            const containerWidth = carContainer.offsetWidth;
+            
+            // 计算小汽车的水平位置（基于位移函数）
+            const currentPosition = positionFunc(motionTime);
+            
+            // 将位移映射到容器宽度
+            // 注意：这里需要将位移值映射到轨道的实际位置
+            const normalizedPosition = (currentPosition - yMin) / (yMax - yMin);
+            let carLeft = normalizedPosition * containerWidth;
+            
+            // 确保小汽车在容器内
+            carLeft = Math.max(30, Math.min(containerWidth - 30, carLeft));
+            
+            // 设置小汽车位置
+            car.style.left = `${carLeft}px`;
+            
+            // 根据速度改变小汽车颜色和方向
+            const currentVelocity = velocityFunc(motionTime);
+            
+            // 更新速度指示器
+            speedIndicator.textContent = `速度: ${currentVelocity.toFixed(2)} m/s`;
+            
+            // 根据速度改变颜色
+            if (currentVelocity > 1.5) {
+                car.style.background = '#4cc9f0'; // 快速正向 - 蓝色
+                speedIndicator.style.borderLeftColor = '#4cc9f0';
+            } else if (currentVelocity > 0.5) {
+                car.style.background = '#4361ee'; // 中速正向 - 深蓝
+                speedIndicator.style.borderLeftColor = '#4361ee';
+            } else if (currentVelocity > 0) {
+                car.style.background = '#f72585'; // 慢速正向 - 粉色
+                speedIndicator.style.borderLeftColor = '#f72585';
+            } else if (currentVelocity > -0.5) {
+                car.style.background = '#f8961e'; // 慢速反向 - 橙色
+                speedIndicator.style.borderLeftColor = '#f8961e';
+            } else if (currentVelocity > -1.5) {
+                car.style.background = '#e63946'; // 中速反向 - 红色
+                speedIndicator.style.borderLeftColor = '#e63946';
+            } else {
+                car.style.background = '#d90429'; // 快速反向 - 深红
+                speedIndicator.style.borderLeftColor = '#d90429';
+            }
+            
+            // 根据速度方向调整汽车方向
+            if (currentVelocity < 0) {
+                car.style.transform = 'translateX(-50%) scaleX(-1)';
+            } else {
+                car.style.transform = 'translateX(-50%) scaleX(1)';
+            }
+        }
+        
+        // 更新数据面板
+        function updateDataPanel() {
+            document.getElementById('timeValue').textContent = `${motionTime.toFixed(2)} s`;
+            document.getElementById('positionValue').textContent = `${positionFunc(motionTime).toFixed(2)} m`;
+            document.getElementById('velocityValue').textContent = `${velocityFunc(motionTime).toFixed(2)} m/s`;
+            document.getElementById('accelerationValue').textContent = `${accelerationFunc(motionTime).toFixed(2)} m/s²`;
+        }
+        
+        // 绘制所有图形
+        function drawAll() {
+            drawDerivativeDefinition();
+            drawNonDifferentiable();
+            drawDifferentiableContinuous();
+            drawPhysicsMeaning();
+        }
+        
+        // 初始化
+        drawAll();
+        
+        // 事件监听器
+        document.getElementById('functionSelect').addEventListener('change', drawDerivativeDefinition);
+        document.getElementById('pointSelect').addEventListener('input', function() {
+            document.getElementById('pointValue').textContent = `x = ${this.value}`;
+            drawDerivativeDefinition();
+        });
+        document.getElementById('hValue').addEventListener('input', function() {
+            document.getElementById('hValueDisplay').textContent = `h = ${parseFloat(this.value).toFixed(2)}`;
+            drawDerivativeDefinition();
+        });
+        
+        document.getElementById('nonDiffSelect').addEventListener('change', drawNonDifferentiable);
+        document.getElementById('nonDiffPoint').addEventListener('input', function() {
+            document.getElementById('nonDiffPointValue').textContent = `x = ${this.value}`;
+            drawNonDifferentiable();
+        });
+        
+        document.getElementById('relationSelect').addEventListener('change', drawDifferentiableContinuous);
+        document.getElementById('relationPoint').addEventListener('input', function() {
+            document.getElementById('relationPointValue').textContent = `x = ${this.value}`;
+            drawDifferentiableContinuous();
+        });
+        
+        document.getElementById('physicsSelect').addEventListener('change', drawPhysicsMeaning);
+        
+        // 动画演示按钮
+        document.getElementById('animateBtn').addEventListener('click', function() {
+            const hSlider = document.getElementById('hValue');
+            let h = parseFloat(hSlider.value);
+            
+            const animation = setInterval(() => {
+                h *= 0.9;
+                if (h < 0.01) {
+                    h = 0.01;
+                    clearInterval(animation);
+                }
+                hSlider.value = h;
+                document.getElementById('hValueDisplay').textContent = `h = ${h.toFixed(2)}`;
+                drawDerivativeDefinition();
+            }, 100);
+        });
+        
+        // 不可导点附近动态演示按钮
+        document.getElementById('nonDiffAnimateBtn').addEventListener('click', function() {
+            if (nonDiffAnimation) {
+                clearInterval(nonDiffAnimation);
+                nonDiffAnimation = null;
+                this.textContent = "在不可导点附近动态演示";
+            } else {
+                animateNonDifferentiable();
+                this.textContent = "停止演示";
+            }
+        });
+        
+        document.getElementById('timeScale').addEventListener('input', function() {
+            timeScale = parseFloat(this.value);
+            document.getElementById('timeScaleValue').textContent = `${timeScale.toFixed(1)}x`;
+        });
+        
+        // 运动控制按钮
+        document.getElementById('startMotion').addEventListener('click', function() {
+            if (motionInterval) clearInterval(motionInterval);
+            isPaused = false;
+            
+            motionInterval = setInterval(() => {
+                if (!isPaused) {
+                    motionTime += 0.05 * timeScale;
+                    drawPhysicsMeaning();
+                }
+            }, 50);
+        });
+        
+        document.getElementById('pauseMotion').addEventListener('click', function() {
+            isPaused = !isPaused;
+            this.textContent = isPaused ? '继续' : '暂停';
+        });
+        
+        document.getElementById('resetMotion').addEventListener('click', function() {
+            if (motionInterval) clearInterval(motionInterval);
+            motionTime = 0;
+            isPaused = false;
+            document.getElementById('pauseMotion').textContent = '暂停';
+            drawPhysicsMeaning();
+        });
+    </script>
+</body>
+</html>
