@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -648,6 +648,35 @@
             return (f(x + h) - f(x)) / h;
         }
         
+        // 自适应坐标范围 - 用于导数定义部分
+        function getDerivativeRange(funcName, x) {
+            let xMin, xMax, yMin, yMax;
+            
+            switch(funcName) {
+                case 'quadratic':
+                    xMin = -3; xMax = 3;
+                    yMin = -2; yMax = 10;
+                    break;
+                case 'sin':
+                    xMin = -3; xMax = 3;
+                    yMin = -2; yMax = 2;
+                    break;
+                case 'cubic':
+                    xMin = -3; xMax = 3;
+                    yMin = -10; yMax = 10;
+                    break;
+                default:
+                    xMin = -3; xMax = 3;
+                    yMin = -2; yMax = 10;
+            }
+            
+            // 确保当前点x在视野范围内
+            if (x < xMin) xMin = x - 1;
+            if (x > xMax) xMax = x + 1;
+            
+            return { xMin, xMax, yMin, yMax };
+        }
+        
         // 绘制函数
         function drawFunction(ctx, canvas, f, xMin, xMax, yMin, yMax, color = '#4361ee', lineWidth = 3) {
             ctx.strokeStyle = color;
@@ -735,9 +764,6 @@
         
         // 绘制导数定义图形
         function drawDerivativeDefinition() {
-            const xMin = -3, xMax = 3, yMin = -2, yMax = 10;
-            drawAxes(derivativeCtx, derivativeCanvas, xMin, xMax, yMin, yMax);
-            
             const functionSelect = document.getElementById('functionSelect');
             const pointSelect = document.getElementById('pointSelect');
             const hValue = document.getElementById('hValue');
@@ -748,6 +774,10 @@
             
             const f = functions[funcName];
             
+            // 使用自适应坐标范围
+            const { xMin, xMax, yMin, yMax } = getDerivativeRange(funcName, x);
+            
+            drawAxes(derivativeCtx, derivativeCanvas, xMin, xMax, yMin, yMax);
             drawFunction(derivativeCtx, derivativeCanvas, f, xMin, xMax, yMin, yMax);
             drawTangent(derivativeCtx, derivativeCanvas, f, x, h, xMin, xMax, yMin, yMax);
         }
@@ -881,6 +911,37 @@
             }, 50);
         }
         
+        // 判断函数在某点的连续性和可导性
+        function checkContinuityAndDifferentiability(funcType, x) {
+            let continuity = "连续";
+            let differentiability = "可导";
+            
+            switch(funcType) {
+                case 'differentiable':
+                    // f(x) = x² 在所有点都可导且连续
+                    continuity = "连续";
+                    differentiability = "可导";
+                    break;
+                case 'continuousNotDiff':
+                    // f(x) = |x| 在所有点连续，但在x=0不可导
+                    continuity = "连续";
+                    differentiability = (x === 0) ? "不可导" : "可导";
+                    break;
+                case 'notContinuous':
+                    // f(x) = 1/x 在x=0不连续，在其他点可导
+                    if (x === 0) {
+                        continuity = "不连续";
+                        differentiability = "不可导";
+                    } else {
+                        continuity = "连续";
+                        differentiability = "可导";
+                    }
+                    break;
+            }
+            
+            return { continuity, differentiability };
+        }
+        
         // 绘制可导与连续关系
         function drawDifferentiableContinuous() {
             const xMin = -2, xMax = 2, yMin = -2, yMax = 2;
@@ -918,26 +979,18 @@
                 relationCtx.beginPath();
                 relationCtx.arc(canvasX, canvasY, 6, 0, Math.PI * 2);
                 relationCtx.fill();
-                
-                // 显示连续性信息
-                relationCtx.fillStyle = '#000';
-                relationCtx.font = '16px Arial';
-                relationCtx.textAlign = 'left';
-                relationCtx.textBaseline = 'top';
-                
-                let continuity = "连续";
-                let differentiability = "可导";
-                
-                if (funcType === 'notContinuous') {
-                    continuity = "不连续";
-                    differentiability = "不可导";
-                } else if (funcType === 'continuousNotDiff' && x === 0) {
-                    differentiability = "不可导";
-                }
-                
-                relationCtx.fillText(`连续性: ${continuity}`, 10, 10);
-                relationCtx.fillText(`可导性: ${differentiability}`, 10, 30);
             }
+            
+            // 显示连续性信息 - 使用修正的判断函数
+            const { continuity, differentiability } = checkContinuityAndDifferentiability(funcType, x);
+            
+            relationCtx.fillStyle = '#000';
+            relationCtx.font = '16px Arial';
+            relationCtx.textAlign = 'left';
+            relationCtx.textBaseline = 'top';
+            
+            relationCtx.fillText(`连续性: ${continuity}`, 10, 10);
+            relationCtx.fillText(`可导性: ${differentiability}`, 10, 30);
         }
         
         // 绘制物理意义
