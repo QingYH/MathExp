@@ -34,7 +34,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
@@ -61,25 +61,7 @@
         }
         
         .content {
-            display: flex;
-            flex-wrap: wrap;
             padding: 20px;
-        }
-        
-        .main-content {
-            flex: 3;
-            min-width: 300px;
-            padding: 20px;
-        }
-        
-        .sidebar {
-            flex: 1;
-            min-width: 250px;
-            background: var(--light);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
         
         h2 {
@@ -251,6 +233,13 @@
             border-radius: 4px;
         }
         
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
         footer {
             text-align: center;
             padding: 20px;
@@ -275,6 +264,10 @@
             p, .highlight, .formula {
                 font-size: 1.1rem;
             }
+            
+            .concepts-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -286,163 +279,167 @@
         </header>
         
         <div class="content">
-            <div class="main-content">
-                <section>
-                    <h2>什么是微分？</h2>
-                    <div class="card">
-                        <p>微分是微积分中的基本概念，描述函数在某一点附近的<strong>局部线性近似</strong>。</p>
-                        <p>对于函数 \(y = f(x)\)，在点 \(x_0\) 处，如果函数可微，则存在一个线性函数：</p>
-                        <p>$$\Delta y = A \cdot \Delta x + o(\Delta x)$$</p>
-                        <p>其中 \(A\) 是与 \(\Delta x\) 无关的常数，\(o(\Delta x)\) 是比 \(\Delta x\) 高阶的无穷小。</p>
-                        <p>线性部分 \(A \cdot \Delta x\) 称为函数在 \(x_0\) 处的微分，记作 \(dy = A \cdot dx\)。</p>
-                    </div>
-                    
-                    <div class="formula">
-                        $$dy = f'(x_0) \cdot dx$$
-                    </div>
-                    
-                    <div class="highlight">
-                        <p>微分 \(dy\) 是函数增量 \(\Delta y\) 的线性主部，当 \(dx \to 0\) 时，\(\Delta y - dy\) 是比 \(dx\) 更高阶的无穷小。</p>
-                    </div>
-                </section>
+            <section>
+                <h2>什么是微分？</h2>
+                <div class="card">
+                    <p>微分是微积分中的基本概念，描述函数在某一点附近的<strong>局部线性近似</strong>。</p>
+                    <p>对于函数 \(y = f(x)\)，在点 \(x_0\) 处，如果函数可微，则存在一个线性函数：</p>
+                    <p>$$\Delta y = A \cdot \Delta x + o(\Delta x)$$</p>
+                    <p>其中 \(A\) 是与 \(\Delta x\) 无关的常数，\(o(\Delta x)\) 是比 \(\Delta x\) 高阶的无穷小。</p>
+                    <p>线性部分 \(A \cdot \Delta x\) 称为函数在 \(x_0\) 处的微分，记作 \(dy = A \cdot dx\)。</p>
+                </div>
                 
-                <section>
-                    <h2>微分的几何意义</h2>
-                    <div class="card">
-                        <p>从几何角度看，函数在点\(x_0\)处的微分\(dy = f'(x_0)dx\)表示函数曲线在该点处<strong class="blink">切线的纵坐标增量</strong>。</p>
-                        <p>当\(\Delta x\)非常小时，函数增量\(\Delta y \approx dy\)，这就是函数在\(x_0\)处的线性近似。</p>
-                    </div>
-                    
-                    <div class="graph-container">
-                        <h3>函数图像与切线</h3>
-                        <canvas id="graphCanvas"></canvas>
-                        <div class="controls">
-                            <div class="control-group">
-                                <label for="functionSelect">选择函数:</label>
-                                <select id="functionSelect" style="font-size: 1.2rem; padding: 8px;">
-                                    <option value="quadratic">\(f(x) = x^2\)</option>
-                                    <option value="cubic">\(f(x) = x^3 - 2x\)</option>
-                                    <option value="sin">\(f(x) = \sin(x)\)</option>
-                                    <option value="exp">\(f(x) = e^x\)</option>
-                                </select>
-                            </div>
-                            <div class="control-group">
-                                <label for="pointX">切点 \(x\) 坐标:</label>
-                                <input type="range" id="pointX" min="-3" max="3" step="0.1" value="1">
-                                <span id="pointXValue">1.0</span>
-                            </div>
-                            <div class="control-group">
-                                <label for="deltaX">\(dx\) 大小:</label>
-                                <input type="range" id="deltaX" min="0.1" max="3" step="0.1" value="1">
-                                <span id="deltaXValue">1.0</span>
-                            </div>
-                        </div>
-                        <div class="controls">
-                            <button id="showTangent">显示/隐藏切线</button>
-                            <button id="showDelta" class="btn-accent">显示\(\Delta y\)和\(dy\)</button>
-                            <button id="animate" class="pulse">动画演示</button>
-                            <button id="resetView">重置视图</button>
-                        </div>
-                        <div class="legend">
-                            <div class="legend-item">
-                                <div class="color-box" style="background-color: #4361ee;"></div>
-                                <span>函数曲线</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="color-box" style="background-color: #f72585;"></div>
-                                <span>切线</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="color-box" style="background-color: #4cc9f0;"></div>
-                                <span>\(\Delta y\)</span>
-                            </div>
-                            <div class="legend-item">
-                                <div class="color-box" style="background-color: #ff9e00;"></div>
-                                <span>微分 \(dy\)</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <div class="formula">
+                    $$dy = f'(x_0) \cdot dx$$
+                </div>
                 
-                <section>
-                    <h2>微分的物理意义</h2>
-                    <div class="card">
-                        <p>在物理学中，微分描述了物理量变化的<strong>瞬时速率</strong>和<strong>局部近似</strong>：</p>
-                        <ul style="font-size: 1.3rem; margin-left: 20px;">
-                            <li><strong>速度</strong>是位移对时间的导数：\(v = \frac{ds}{dt}\)</li>
-                            <li><strong>加速度</strong>是速度对时间的导数：\(a = \frac{dv}{dt}\)</li>
-                            <li><strong>电流</strong>是电荷对时间的导数：\(I = \frac{dq}{dt}\)</li>
-                            <li><strong>功率</strong>是功对时间的导数：\(P = \frac{dW}{dt}\)</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="example">
-                        <h3>实例：自由落体运动</h3>
-                        <p>物体自由落体的位移公式：\(s(t) = \frac{1}{2}gt^2\)</p>
-                        <p>速度是位移对时间的导数：\(v(t) = \frac{ds}{dt} = gt\)</p>
-                        <p>加速度是速度对时间的导数：\(a(t) = \frac{dv}{dt} = g\)</p>
-                        <p>在某一时刻 \(t_0\)，微小时间间隔 \(dt\) 内的位移微分为：</p>
-                        <p>$$ds = v(t_0) \cdot dt = gt_0 \cdot dt$$</p>
-                        <p>这表示在 \(t_0\) 时刻附近，位移可以用速度乘以时间增量来近似计算。</p>
-                    </div>
-                </section>
-            </div>
+                <div class="highlight">
+                    <p>微分 \(dy\) 是函数增量 \(\Delta y\) 的线性主部，当 \(dx \to 0\) 时，\(\Delta y - dy\) 是比 \(dx\) 更高阶的无穷小。</p>
+                </div>
+            </section>
             
-            <div class="sidebar">
+            <section>
+                <h2>微分的几何意义</h2>
+                <div class="card">
+                    <p>从几何角度看，函数在点\(x_0\)处的微分\(dy = f'(x_0)dx\)表示函数曲线在该点处<strong class="blink">切线的纵坐标增量</strong>。</p>
+                    <p>当\(\Delta x\)非常小时，函数增量\(\Delta y \approx dy\)，这就是函数在\(x_0\)处的线性近似。</p>
+                </div>
+                
+                <div class="graph-container">
+                    <h3>函数图像与切线</h3>
+                    <canvas id="graphCanvas"></canvas>
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="functionSelect">选择函数:</label>
+                            <select id="functionSelect" style="font-size: 1.2rem; padding: 8px;">
+                                <option value="quadratic">\(f(x) = x^2\)</option>
+                                <option value="cubic">\(f(x) = x^3 - 2x\)</option>
+                                <option value="sin">\(f(x) = \sin(x)\)</option>
+                                <option value="exp">\(f(x) = e^x\)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="pointX">切点 \(x\) 坐标:</label>
+                            <input type="range" id="pointX" min="-3" max="3" step="0.1" value="1">
+                            <span id="pointXValue">1.0</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="deltaX">\(dx\) 大小:</label>
+                            <input type="range" id="deltaX" min="0.1" max="3" step="0.1" value="1">
+                            <span id="deltaXValue">1.0</span>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button id="showTangent">显示/隐藏切线</button>
+                        <button id="showDelta" class="btn-accent">显示\(\Delta y\)和\(dy\)</button>
+                        <button id="animate" class="pulse">动画演示</button>
+                        <button id="resetView">重置视图</button>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #4361ee;"></div>
+                            <span>函数曲线</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #f72585;"></div>
+                            <span>切线</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #4cc9f0;"></div>
+                            <span>\(\Delta y\)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #ff9e00;"></div>
+                            <span>微分 \(dy\)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section>
+                <h2>微分的物理意义</h2>
+                <div class="card">
+                    <p>在物理学中，微分描述了物理量变化的<strong>瞬时速率</strong>和<strong>局部近似</strong>：</p>
+                    <ul style="font-size: 1.3rem; margin-left: 20px;">
+                        <li><strong>速度</strong>是位移对时间的导数：\(v = \frac{ds}{dt}\)</li>
+                        <li><strong>加速度</strong>是速度对时间的导数：\(a = \frac{dv}{dt}\)</li>
+                        <li><strong>电流</strong>是电荷对时间的导数：\(I = \frac{dq}{dt}\)</li>
+                        <li><strong>功率</strong>是功对时间的导数：\(P = \frac{dW}{dt}\)</li>
+                    </ul>
+                </div>
+                
+                <div class="example">
+                    <h3>实例：自由落体运动</h3>
+                    <p>物体自由落体的位移公式：\(s(t) = \frac{1}{2}gt^2\)</p>
+                    <p>速度是位移对时间的导数：\(v(t) = \frac{ds}{dt} = gt\)</p>
+                    <p>加速度是速度对时间的导数：\(a(t) = \frac{dv}{dt} = g\)</p>
+                    <p>在某一时刻 \(t_0\)，微小时间间隔 \(dt\) 内的位移微分为：</p>
+                    <p>$$ds = v(t_0) \cdot dt = gt_0 \cdot dt$$</p>
+                    <p>这表示在 \(t_0\) 时刻附近，位移可以用速度乘以时间增量来近似计算。</p>
+                </div>
+            </section>
+
+            <section>
                 <h2>核心概念</h2>
-                <div class="card">
-                    <h3>导数</h3>
-                    <p>函数在某一点的变化率，即切线的斜率。</p>
-                    <p>$$f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}$$</p>
+                <div class="concepts-grid">
+                    <div class="card">
+                        <h3>导数</h3>
+                        <p>函数在某一点的变化率，即切线的斜率。</p>
+                        <p>$$f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}$$</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>微分</h3>
+                        <p>函数在某一点的线性近似，\(dy = f'(x)dx\)。</p>
+                        <p>微分是函数增量的线性主部：</p>
+                        <p>$$\Delta y = dy + o(dx)$$</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>可微性</h3>
+                        <p>函数在某点可微，意味着在该点附近可以用直线很好地近似。</p>
+                    </div>
                 </div>
-                
-                <div class="card">
-                    <h3>微分</h3>
-                    <p>函数在某一点的线性近似，\(dy = f'(x)dx\)。</p>
-                    <p>微分是函数增量的线性主部：</p>
-                    <p>$$\Delta y = dy + o(dx)$$</p>
-                </div>
-                
-                <div class="card">
-                    <h3>可微性</h3>
-                    <p>函数在某点可微，意味着在该点附近可以用直线很好地近似。</p>
-                </div>
-                
+            </section>
+
+            <section>
                 <h2>微分法则</h2>
-                <div class="card">
-                    <h3>常数法则</h3>
-                    <p>$$d(c) = 0$$</p>
+                <div class="concepts-grid">
+                    <div class="card">
+                        <h3>常数法则</h3>
+                        <p>$$d(c) = 0$$</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>幂法则</h3>
+                        <p>$$d(x^n) = nx^{n-1}dx$$</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>和差法则</h3>
+                        <p>$$d[f(x) \pm g(x)] = df(x) \pm dg(x)$$</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>乘积法则</h3>
+                        <p>$$d[f(x)g(x)] = f(x)dg(x) + g(x)df(x)$$</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>商法则</h3>
+                        <p>$$d\left[\frac{f(x)}{g(x)}\right] = \frac{g(x)df(x) - f(x)dg(x)}{[g(x)]^2}$$</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>链式法则</h3>
+                        <p>$$d[f(g(x))] = f'(g(x)) \cdot dg(x)$$</p>
+                    </div>
                 </div>
-                
-                <div class="card">
-                    <h3>幂法则</h3>
-                    <p>$$d(x^n) = nx^{n-1}dx$$</p>
-                </div>
-                
-                <div class="card">
-                    <h3>和差法则</h3>
-                    <p>$$d[f(x) \pm g(x)] = df(x) \pm dg(x)$$</p>
-                </div>
-                
-                <div class="card">
-                    <h3>乘积法则</h3>
-                    <p>$$d[f(x)g(x)] = f(x)dg(x) + g(x)df(x)$$</p>
-                </div>
-                
-                <div class="card">
-                    <h3>商法则</h3>
-                    <p>$$d\left[\frac{f(x)}{g(x)}\right] = \frac{g(x)df(x) - f(x)dg(x)}{[g(x)]^2}$$</p>
-                </div>
-                
-                <div class="card">
-                    <h3>链式法则</h3>
-                    <p>$$d[f(g(x))] = f'(g(x)) \cdot dg(x)$$</p>
-                </div>
-            </div>
+            </section>
         </div>
         
         <footer>
-            <p>一元函数微分直观教学 &copy; 2023 | 设计用于微积分初学者</p>
+            <p>一元函数微分直观教学 &copy; 2025 | 设计用于微积分初学者</p>
         </footer>
     </div>
 
@@ -662,7 +659,7 @@
             ctx.stroke();
         }
         
-        // 绘制切线和微分
+        // 绘制切线和微分 - 调整线段粗细
         function drawTangentAndDifferential() {
             const func = functions[selectedFunction];
             const deriv = derivatives[selectedFunction];
@@ -701,7 +698,7 @@
                 ctx.fillText(`切线: y = ${slope.toFixed(2)}(x - ${pointX.toFixed(1)}) + ${y0.toFixed(2)}`, 20, 20);
             }
             
-            // 绘制dx、Δy和dy
+            // 绘制dx、Δy和dy - 调整线段粗细
             if (showDelta) {
                 const x1 = pointX;
                 const y1 = y0;
@@ -709,32 +706,37 @@
                 const y2 = func(x2);
                 const dy = slope * deltaX;
                 
-                // 绘制dx线段
+                // 1. 先绘制dy实线（在底层）- 加粗
+                ctx.setLineDash([]);
+                ctx.beginPath();
+                ctx.strokeStyle = '#ff9e00';
+                ctx.lineWidth = 6; // 加粗实线
+                ctx.moveTo(originX + x2 * scaleX, originY - y1 * scaleY);
+                ctx.lineTo(originX + x2 * scaleX, originY - (y1 + dy) * scaleY);
+                ctx.stroke();
+                
+                // 2. 再绘制dx和Δy虚线（在顶层）- 变细
+                ctx.setLineDash([6, 3]); // 虚线模式
+                
+                // 绘制dx线段 - 使用较细的虚线
                 ctx.beginPath();
                 ctx.strokeStyle = '#4cc9f0';
-                ctx.lineWidth = 3;
-                ctx.setLineDash([5, 5]);
-                
+                ctx.lineWidth = 2; // 较细的虚线
                 ctx.moveTo(originX + x1 * scaleX, originY - y1 * scaleY);
                 ctx.lineTo(originX + x2 * scaleX, originY - y1 * scaleY);
                 ctx.stroke();
                 
-                // 绘制Δy线段
+                // 绘制Δy线段 - 使用较细的虚线
                 ctx.beginPath();
                 ctx.moveTo(originX + x2 * scaleX, originY - y1 * scaleY);
                 ctx.lineTo(originX + x2 * scaleX, originY - y2 * scaleY);
                 ctx.stroke();
                 
-                // 绘制dy线段（微分近似）
-                ctx.beginPath();
-                ctx.strokeStyle = '#ff9e00';
+                // 恢复实线
                 ctx.setLineDash([]);
-                ctx.moveTo(originX + x2 * scaleX, originY - y1 * scaleY);
-                ctx.lineTo(originX + x2 * scaleX, originY - (y1 + dy) * scaleY);
-                ctx.stroke();
                 
                 // dx标签
-                ctx.font = '16px Arial';
+                ctx.font = 'bold 16px Arial';
                 ctx.fillStyle = '#4cc9f0';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'bottom';
@@ -749,7 +751,7 @@
                 ctx.textBaseline = 'middle';
                 ctx.fillText(
                     'Δy', 
-                    originX + x2 * scaleX + 10, 
+                    originX + x2 * scaleX + 15, 
                     originY - (y1 + (y2 - y1)/2) * scaleY
                 );
                 
@@ -757,7 +759,7 @@
                 ctx.fillStyle = '#ff9e00';
                 ctx.fillText(
                     'dy', 
-                    originX + x2 * scaleX + 10, 
+                    originX + x2 * scaleX + 15, 
                     originY - (y1 + dy/2) * scaleY
                 );
                 
@@ -813,11 +815,11 @@
                     const x2 = pointX + deltaX;
                     const y2 = func(x2);
                     
-                    // 闪烁Δy
+                    // 闪烁Δy虚线
                     ctx.beginPath();
                     ctx.strokeStyle = '#4cc9f0';
-                    ctx.lineWidth = 4;
-                    ctx.setLineDash([5, 5]);
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([6, 3]);
                     
                     ctx.moveTo(originX + x2 * scaleX, originY - y1 * scaleY);
                     ctx.lineTo(originX + x2 * scaleX, originY - y2 * scaleY);
@@ -883,12 +885,22 @@
                 }
             });
             
-            // 重置视图
+            // 重置视图 - 修复功能
             document.getElementById('resetView').addEventListener('click', function() {
+                // 重置所有参数
+                pointX = 1.0;
+                deltaX = 1.0;
+                document.getElementById('pointX').value = pointX;
+                document.getElementById('deltaX').value = deltaX;
+                document.getElementById('pointXValue').textContent = pointX.toFixed(1);
+                document.getElementById('deltaXValue').textContent = deltaX.toFixed(1);
+                
+                // 重置视图参数
                 scaleX = 50;
                 scaleY = 50;
                 originX = canvas.width / 2;
                 originY = canvas.height / 2;
+                
                 drawGraph();
             });
             
