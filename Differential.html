@@ -34,7 +34,7 @@
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
@@ -235,9 +235,34 @@
         
         .concepts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
             margin: 20px 0;
+        }
+        
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin: 20px 0;
+        }
+        
+        .graph-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+        
+        .graph-info p {
+            margin: 8px 0;
+            font-size: 1.1rem;
         }
         
         footer {
@@ -249,6 +274,10 @@
         }
         
         @media (max-width: 768px) {
+            .container {
+                max-width: 95%;
+            }
+            
             .content {
                 flex-direction: column;
             }
@@ -265,8 +294,16 @@
                 font-size: 1.1rem;
             }
             
-            .concepts-grid {
+            .concepts-grid, .rules-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .graph-info {
+                position: relative;
+                top: auto;
+                right: auto;
+                max-width: 100%;
+                margin-top: 15px;
             }
         }
     </style>
@@ -308,6 +345,9 @@
                 <div class="graph-container">
                     <h3>函数图像与切线</h3>
                     <canvas id="graphCanvas"></canvas>
+                    <div class="graph-info" id="graphInfo">
+                        <!-- 这里将通过JavaScript动态填充内容 -->
+                    </div>
                     <div class="controls">
                         <div class="control-group">
                             <label for="functionSelect">选择函数:</label>
@@ -404,7 +444,7 @@
 
             <section>
                 <h2>微分法则</h2>
-                <div class="concepts-grid">
+                <div class="rules-grid">
                     <div class="card">
                         <h3>常数法则</h3>
                         <p>$$d(c) = 0$$</p>
@@ -447,6 +487,7 @@
         // 获取Canvas元素和上下文
         const canvas = document.getElementById('graphCanvas');
         const ctx = canvas.getContext('2d');
+        const graphInfo = document.getElementById('graphInfo');
         
         // 设置Canvas尺寸
         canvas.width = canvas.offsetWidth;
@@ -482,6 +523,29 @@
         let scaleY = 50;
         let originX = canvas.width / 2;
         let originY = canvas.height / 2;
+        
+        // 更新图形信息显示
+        function updateGraphInfo() {
+            const func = functions[selectedFunction];
+            const deriv = derivatives[selectedFunction];
+            const y0 = func(pointX);
+            const slope = deriv(pointX);
+            const y2 = func(pointX + deltaX);
+            const dy = slope * deltaX;
+            
+            if (showDelta) {
+                graphInfo.innerHTML = `
+                    <p><strong>近似误差:</strong> ${Math.abs(y2 - y0 - dy).toFixed(4)}</p>
+                    <p><strong>微分公式:</strong></p>
+                    <p>dy = f'(${pointX.toFixed(1)})·dx</p>
+                    <p>= ${slope.toFixed(2)}·${deltaX.toFixed(2)}</p>
+                    <p>= ${dy.toFixed(2)}</p>
+                `;
+                graphInfo.style.display = 'block';
+            } else {
+                graphInfo.style.display = 'none';
+            }
+        }
         
         // 自适应坐标轴范围 - 确保坐标轴可见
         function autoScaleAxes() {
@@ -689,13 +753,6 @@
                 ctx.moveTo(originX + x1 * scaleX, originY - y1 * scaleY);
                 ctx.lineTo(originX + x2 * scaleX, originY - y2 * scaleY);
                 ctx.stroke();
-                
-                // 显示切线方程
-                ctx.font = '16px Arial';
-                ctx.fillStyle = '#f72585';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillText(`切线: y = ${slope.toFixed(2)}(x - ${pointX.toFixed(1)}) + ${y0.toFixed(2)}`, 20, 20);
             }
             
             // 绘制dx、Δy和dy - 调整线段粗细
@@ -762,23 +819,6 @@
                     originX + x2 * scaleX + 15, 
                     originY - (y1 + dy/2) * scaleY
                 );
-                
-                // 显示近似误差
-                ctx.fillStyle = '#333';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillText(
-                    `近似误差: ${Math.abs(y2 - y1 - dy).toFixed(4)}`, 
-                    20, 
-                    50
-                );
-                
-                // 显示微分公式
-                ctx.fillText(
-                    `微分公式: dy = f'(${pointX.toFixed(1)})·dx = ${slope.toFixed(2)}·${deltaX.toFixed(2)} = ${dy.toFixed(2)}`, 
-                    20, 
-                    80
-                );
             }
             
             // 动画效果
@@ -837,6 +877,7 @@
             drawAxes();
             drawFunction();
             drawTangentAndDifferential();
+            updateGraphInfo();
         }
         
         // 初始化事件监听
