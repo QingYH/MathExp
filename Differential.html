@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一元函数微分直观教学</title>
+    <!-- 引入MathJax用于数学公式渲染 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #ff9e00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .main-content {
+            flex: 3;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .sidebar {
+            flex: 1;
+            min-width: 250px;
+            background: var(--light);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            color: var(--secondary);
+            font-size: 2rem;
+            margin: 20px 0 15px;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin: 15px 0 10px;
+        }
+        
+        p {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--accent);
+        }
+        
+        .highlight {
+            background-color: rgba(76, 201, 240, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 1.3rem;
+        }
+        
+        .formula {
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .graph-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        label {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background: #d9047a;
+        }
+        
+        .example {
+            background: rgba(255, 158, 0, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .blink {
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+        
+        .color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 4px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--dark);
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            p, .highlight, .formula {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>一元函数微分直观教学</h1>
+            <p class="subtitle">通过实例、图形和动画理解微分的定义、几何意义与物理意义</p>
+        </header>
+        
+        <div class="content">
+            <div class="main-content">
+                <section>
+                    <h2>什么是微分？</h2>
+                    <div class="card">
+                        <p>微分是微积分中的基本概念，描述函数在某一点附近的<strong>局部线性近似</strong>。</p>
+                        <p>对于函数 \(y = f(x)\)，在点 \(x_0\) 处，如果函数可微，则存在一个线性函数：</p>
+                        <p>$$\Delta y = A \cdot \Delta x + o(\Delta x)$$</p>
+                        <p>其中 \(A\) 是与 \(\Delta x\) 无关的常数，\(o(\Delta x)\) 是比 \(\Delta x\) 高阶的无穷小。</p>
+                        <p>线性部分 \(A \cdot \Delta x\) 称为函数在 \(x_0\) 处的微分，记作 \(dy = A \cdot dx\)。</p>
+                    </div>
+                    
+                    <div class="formula">
+                        $$dy = f'(x_0) \cdot dx$$
+                    </div>
+                    
+                    <div class="highlight">
+                        <p>微分 \(dy\) 是函数增量 \(\Delta y\) 的线性主部，当 \(dx \to 0\) 时，\(\Delta y - dy\) 是比 \(dx\) 更高阶的无穷小。</p>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>微分的几何意义</h2>
+                    <div class="card">
+                        <p>从几何角度看，函数在点\(x_0\)处的微分\(dy = f'(x_0)dx\)表示函数曲线在该点处<strong class="blink">切线的纵坐标增量</strong>。</p>
+                        <p>当\(\Delta x\)非常小时，函数增量\(\Delta y \approx dy\)，这就是函数在\(x_0\)处的线性近似。</p>
+                    </div>
+                    
+                    <div class="graph-container">
+                        <h3>函数图像与切线</h3>
+                        <canvas id="graphCanvas"></canvas>
+                        <div class="controls">
+                            <div class="control-group">
+                                <label for="functionSelect">选择函数:</label>
+                                <select id="functionSelect" style="font-size: 1.2rem; padding: 8px;">
+                                    <option value="quadratic">\(f(x) = x^2\)</option>
+                                    <option value="cubic">\(f(x) = x^3 - 2x\)</option>
+                                    <option value="sin">\(f(x) = \sin(x)\)</option>
+                                    <option value="exp">\(f(x) = e^x\)</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label for="pointX">切点 \(x\) 坐标:</label>
+                                <input type="range" id="pointX" min="-3" max="3" step="0.1" value="1">
+                                <span id="pointXValue">1.0</span>
+                            </div>
+                            <div class="control-group">
+                                <label for="deltaX">\(dx\) 大小:</label>
+                                <input type="range" id="deltaX" min="0.1" max="3" step="0.1" value="1">
+                                <span id="deltaXValue">1.0</span>
+                            </div>
+                        </div>
+                        <div class="controls">
+                            <button id="showTangent">显示/隐藏切线</button>
+                            <button id="showDelta" class="btn-accent">显示\(\Delta y\)和\(dy\)</button>
+                            <button id="animate" class="pulse">动画演示</button>
+                            <button id="resetView">重置视图</button>
+                        </div>
+                        <div class="legend">
+                            <div class="legend-item">
+                                <div class="color-box" style="background-color: #4361ee;"></div>
+                                <span>函数曲线</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background-color: #f72585;"></div>
+                                <span>切线</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background-color: #4cc9f0;"></div>
+                                <span>\(\Delta y\)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="color-box" style="background-color: #ff9e00;"></div>
+                                <span>微分 \(dy\)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>微分的物理意义</h2>
+                    <div class="card">
+                        <p>在物理学中，微分描述了物理量变化的<strong>瞬时速率</strong>和<strong>局部近似</strong>：</p>
+                        <ul style="font-size: 1.3rem; margin-left: 20px;">
+                            <li><strong>速度</strong>是位移对时间的导数：\(v = \frac{ds}{dt}\)</li>
+                            <li><strong>加速度</strong>是速度对时间的导数：\(a = \frac{dv}{dt}\)</li>
+                            <li><strong>电流</strong>是电荷对时间的导数：\(I = \frac{dq}{dt}\)</li>
+                            <li><strong>功率</strong>是功对时间的导数：\(P = \frac{dW}{dt}\)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="example">
+                        <h3>实例：自由落体运动</h3>
+                        <p>物体自由落体的位移公式：\(s(t) = \frac{1}{2}gt^2\)</p>
+                        <p>速度是位移对时间的导数：\(v(t) = \frac{ds}{dt} = gt\)</p>
+                        <p>加速度是速度对时间的导数：\(a(t) = \frac{dv}{dt} = g\)</p>
+                        <p>在某一时刻 \(t_0\)，微小时间间隔 \(dt\) 内的位移微分为：</p>
+                        <p>$$ds = v(t_0) \cdot dt = gt_0 \cdot dt$$</p>
+                        <p>这表示在 \(t_0\) 时刻附近，位移可以用速度乘以时间增量来近似计算。</p>
+                    </div>
+                </section>
+            </div>
+            
+            <div class="sidebar">
+                <h2>核心概念</h2>
+                <div class="card">
+                    <h3>导数</h3>
+                    <p>函数在某一点的变化率，即切线的斜率。</p>
+                    <p>$$f'(x) = \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>微分</h3>
+                    <p>函数在某一点的线性近似，\(dy = f'(x)dx\)。</p>
+                    <p>微分是函数增量的线性主部：</p>
+                    <p>$$\Delta y = dy + o(dx)$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>可微性</h3>
+                    <p>函数在某点可微，意味着在该点附近可以用直线很好地近似。</p>
+                </div>
+                
+                <h2>微分法则</h2>
+                <div class="card">
+                    <h3>常数法则</h3>
+                    <p>$$d(c) = 0$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>幂法则</h3>
+                    <p>$$d(x^n) = nx^{n-1}dx$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>和差法则</h3>
+                    <p>$$d[f(x) \pm g(x)] = df(x) \pm dg(x)$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>乘积法则</h3>
+                    <p>$$d[f(x)g(x)] = f(x)dg(x) + g(x)df(x)$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>商法则</h3>
+                    <p>$$d\left[\frac{f(x)}{g(x)}\right] = \frac{g(x)df(x) - f(x)dg(x)}{[g(x)]^2}$$</p>
+                </div>
+                
+                <div class="card">
+                    <h3>链式法则</h3>
+                    <p>$$d[f(g(x))] = f'(g(x)) \cdot dg(x)$$</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>一元函数微分直观教学 &copy; 2023 | 设计用于微积分初学者</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        
+        // 图形参数
+        let pointX = 1.0;
+        let deltaX = 1.0;
+        let showTangent = true;
+        let showDelta = true;
+        let isAnimating = false;
+        let animationPhase = 0;
+        let selectedFunction = 'quadratic';
+        
+        // 函数定义
+        const functions = {
+            quadratic: (x) => x * x,
+            cubic: (x) => x * x * x - 2 * x,
+            sin: (x) => Math.sin(x),
+            exp: (x) => Math.exp(x)
+        };
+        
+        // 导数定义
+        const derivatives = {
+            quadratic: (x) => 2 * x,
+            cubic: (x) => 3 * x * x - 2,
+            sin: (x) => Math.cos(x),
+            exp: (x) => Math.exp(x)
+        };
+        
+        // 坐标变换参数
+        let scaleX = 50;
+        let scaleY = 50;
+        let originX = canvas.width / 2;
+        let originY = canvas.height / 2;
+        
+        // 自适应坐标轴范围 - 确保坐标轴可见
+        function autoScaleAxes() {
+            const func = functions[selectedFunction];
+            const deriv = derivatives[selectedFunction];
+            
+            // 计算关键点
+            const x0 = pointX;
+            const y0 = func(x0);
+            const x1 = pointX + deltaX;
+            const y1 = func(x1);
+            const slope = deriv(x0);
+            const dy = slope * deltaX;
+            
+            // 计算增量区域的范围
+            let minX = Math.min(x0, x1);
+            let maxX = Math.max(x0, x1);
+            let minY = Math.min(y0, y1, y0 + dy);
+            let maxY = Math.max(y0, y1, y0 + dy);
+            
+            // 确保包含坐标轴
+            minX = Math.min(minX, -0.5);
+            maxX = Math.max(maxX, 0.5);
+            minY = Math.min(minY, -0.5);
+            maxY = Math.max(maxY, 0.5);
+            
+            // 添加适当的边距
+            const xMargin = Math.max(1, (maxX - minX) * 0.3);
+            const yMargin = Math.max(1, (maxY - minY) * 0.3);
+            
+            minX -= xMargin;
+            maxX += xMargin;
+            minY -= yMargin;
+            maxY += yMargin;
+            
+            // 计算范围
+            const xRange = maxX - minX;
+            const yRange = maxY - minY;
+            
+            // 计算比例
+            scaleX = canvas.width / xRange;
+            scaleY = canvas.height / yRange;
+            
+            // 保持纵横比一致
+            const aspectRatio = Math.min(scaleX, scaleY);
+            scaleX = aspectRatio;
+            scaleY = aspectRatio;
+            
+            // 调整原点位置
+            originX = -minX * scaleX;
+            originY = canvas.height + minY * scaleY;
+        }
+        
+        // 绘制坐标轴 - 优化刻度密度
+        function drawAxes() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制坐标轴
+            ctx.beginPath();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            
+            // x轴
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvas.width, originY);
+            
+            // y轴
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvas.height);
+            
+            ctx.stroke();
+            
+            // 绘制刻度 - 优化密度
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            
+            // 计算合适的刻度间隔 - 基于视图范围
+            const xRange = canvas.width / scaleX;
+            const yRange = canvas.height / scaleY;
+            
+            // 动态计算刻度间隔，确保不会太密集
+            const xInterval = calculateOptimalInterval(xRange);
+            const yInterval = calculateOptimalInterval(yRange);
+            
+            // x轴刻度
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            
+            const startX = Math.floor((-originX / scaleX) / xInterval) * xInterval;
+            const endX = Math.floor((canvas.width - originX) / scaleX / xInterval) * xInterval;
+            
+            for (let x = startX; x <= endX; x += xInterval) {
+                if (Math.abs(x) > 0.01) { // 避免在原点附近绘制刻度
+                    const pixelX = originX + x * scaleX;
+                    ctx.beginPath();
+                    ctx.moveTo(pixelX, originY - 5);
+                    ctx.lineTo(pixelX, originY + 5);
+                    ctx.stroke();
+                    
+                    // 只在整数或合适的间隔显示标签
+                    if (Math.abs(x % 1) < 0.001 || Math.abs(x % 0.5) < 0.001) {
+                        ctx.fillText(x.toFixed(1), pixelX, originY + 10);
+                    }
+                }
+            }
+            
+            // y轴刻度
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            
+            const startY = Math.floor((-originY / scaleY) / yInterval) * yInterval;
+            const endY = Math.floor((canvas.height - originY) / scaleY / yInterval) * yInterval;
+            
+            for (let y = startY; y <= endY; y += yInterval) {
+                if (Math.abs(y) > 0.01) { // 避免在原点附近绘制刻度
+                    const pixelY = originY + y * scaleY;
+                    ctx.beginPath();
+                    ctx.moveTo(originX - 5, pixelY);
+                    ctx.lineTo(originX + 5, pixelY);
+                    ctx.stroke();
+                    
+                    // 只在整数或合适的间隔显示标签
+                    if (Math.abs(y % 1) < 0.001 || Math.abs(y % 0.5) < 0.001) {
+                        ctx.fillText((-y).toFixed(1), originX - 10, pixelY);
+                    }
+                }
+            }
+            
+            // 原点标记
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'top';
+            ctx.fillText('O', originX - 5, originY + 5);
+        }
+        
+        // 计算最优刻度间隔
+        function calculateOptimalInterval(range) {
+            if (range <= 2) return 0.5;
+            if (range <= 5) return 1;
+            if (range <= 10) return 2;
+            if (range <= 20) return 5;
+            return 10;
+        }
+        
+        // 绘制函数曲线
+        function drawFunction() {
+            ctx.beginPath();
+            ctx.strokeStyle = '#4361ee';
+            ctx.lineWidth = 3;
+            
+            const func = functions[selectedFunction];
+            let started = false;
+            
+            // 计算可见范围
+            const minVisibleX = -originX / scaleX;
+            const maxVisibleX = (canvas.width - originX) / scaleX;
+            
+            for (let pixelX = 0; pixelX <= canvas.width; pixelX++) {
+                const x = (pixelX - originX) / scaleX;
+                const y = func(x);
+                
+                if (isFinite(y) && x >= minVisibleX && x <= maxVisibleX) {
+                    const pixelY = originY - y * scaleY;
+                    
+                    if (!started) {
+                        ctx.moveTo(pixelX, pixelY);
+                        started = true;
+                    } else {
+                        ctx.lineTo(pixelX, pixelY);
+                    }
+                } else {
+                    started = false;
+                }
+            }
+            
+            ctx.stroke();
+        }
+        
+        // 绘制切线和微分
+        function drawTangentAndDifferential() {
+            const func = functions[selectedFunction];
+            const deriv = derivatives[selectedFunction];
+            
+            // 计算切点坐标
+            const y0 = func(pointX);
+            const slope = deriv(pointX);
+            
+            // 绘制切点
+            ctx.beginPath();
+            ctx.arc(originX + pointX * scaleX, originY - y0 * scaleY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#f72585';
+            ctx.fill();
+            
+            // 绘制切线
+            if (showTangent) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#f72585';
+                ctx.lineWidth = 2;
+                
+                // 计算切线两端点（延伸到视图边界）
+                const x1 = -originX / scaleX;
+                const y1 = y0 + slope * (x1 - pointX);
+                const x2 = (canvas.width - originX) / scaleX;
+                const y2 = y0 + slope * (x2 - pointX);
+                
+                ctx.moveTo(originX + x1 * scaleX, originY - y1 * scaleY);
+                ctx.lineTo(originX + x2 * scaleX, originY - y2 * scaleY);
+                ctx.stroke();
+                
+                // 显示切线方程
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#f72585';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText(`切线: y = ${slope.toFixed(2)}(x - ${pointX.toFixed(1)}) + ${y0.toFixed(2)}`, 20, 20);
+            }
+            
+            // 绘制dx、Δy和dy
+            if (showDelta) {
+                const x1 = pointX;
+                const y1 = y0;
+                const x2 = pointX + deltaX;
+                const y2 = func(x2);
+                const dy = slope * deltaX;
+                
+                // 绘制dx线段
+                ctx.beginPath();
+                ctx.strokeStyle = '#4cc9f0';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                
+                ctx.moveTo(originX + x1 * scaleX, originY - y1 * scaleY);
+                ctx.lineTo(originX + x2 * scaleX, originY - y1 * scaleY);
+                ctx.stroke();
+                
+                // 绘制Δy线段
+                ctx.beginPath();
+                ctx.moveTo(originX + x2 * scaleX, originY - y1 * scaleY);
+                ctx.lineTo(originX + x2 * scaleX, originY - y2 * scaleY);
+                ctx.stroke();
+                
+                // 绘制dy线段（微分近似）
+                ctx.beginPath();
+                ctx.strokeStyle = '#ff9e00';
+                ctx.setLineDash([]);
+                ctx.moveTo(originX + x2 * scaleX, originY - y1 * scaleY);
+                ctx.lineTo(originX + x2 * scaleX, originY - (y1 + dy) * scaleY);
+                ctx.stroke();
+                
+                // dx标签
+                ctx.font = '16px Arial';
+                ctx.fillStyle = '#4cc9f0';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(
+                    'dx', 
+                    originX + (x1 + deltaX/2) * scaleX, 
+                    originY - y1 * scaleY - 10
+                );
+                
+                // Δy标签
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(
+                    'Δy', 
+                    originX + x2 * scaleX + 10, 
+                    originY - (y1 + (y2 - y1)/2) * scaleY
+                );
+                
+                // dy标签
+                ctx.fillStyle = '#ff9e00';
+                ctx.fillText(
+                    'dy', 
+                    originX + x2 * scaleX + 10, 
+                    originY - (y1 + dy/2) * scaleY
+                );
+                
+                // 显示近似误差
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText(
+                    `近似误差: ${Math.abs(y2 - y1 - dy).toFixed(4)}`, 
+                    20, 
+                    50
+                );
+                
+                // 显示微分公式
+                ctx.fillText(
+                    `微分公式: dy = f'(${pointX.toFixed(1)})·dx = ${slope.toFixed(2)}·${deltaX.toFixed(2)} = ${dy.toFixed(2)}`, 
+                    20, 
+                    80
+                );
+            }
+            
+            // 动画效果
+            if (isAnimating) {
+                animationPhase += 0.008;
+                if (animationPhase > Math.PI * 2) {
+                    animationPhase = 0;
+                }
+                
+                // 闪烁效果
+                const alpha = 0.5 + 0.5 * Math.sin(animationPhase * 3);
+                
+                if (showTangent) {
+                    ctx.globalAlpha = alpha;
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#f72585';
+                    ctx.lineWidth = 4;
+                    
+                    const x1 = -originX / scaleX;
+                    const y1 = y0 + slope * (x1 - pointX);
+                    const x2 = (canvas.width - originX) / scaleX;
+                    const y2 = y0 + slope * (x2 - pointX);
+                    
+                    ctx.moveTo(originX + x1 * scaleX, originY - y1 * scaleY);
+                    ctx.lineTo(originX + x2 * scaleX, originY - y2 * scaleY);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+                
+                if (showDelta) {
+                    ctx.globalAlpha = alpha;
+                    const x1 = pointX;
+                    const y1 = y0;
+                    const x2 = pointX + deltaX;
+                    const y2 = func(x2);
+                    
+                    // 闪烁Δy
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#4cc9f0';
+                    ctx.lineWidth = 4;
+                    ctx.setLineDash([5, 5]);
+                    
+                    ctx.moveTo(originX + x2 * scaleX, originY - y1 * scaleY);
+                    ctx.lineTo(originX + x2 * scaleX, originY - y2 * scaleY);
+                    ctx.stroke();
+                    
+                    ctx.setLineDash([]);
+                    ctx.globalAlpha = 1;
+                }
+            }
+        }
+        
+        // 绘制图形
+        function drawGraph() {
+            autoScaleAxes();
+            drawAxes();
+            drawFunction();
+            drawTangentAndDifferential();
+        }
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 函数选择
+            document.getElementById('functionSelect').addEventListener('change', function() {
+                selectedFunction = this.value;
+                drawGraph();
+            });
+            
+            // 切点x坐标
+            document.getElementById('pointX').addEventListener('input', function() {
+                pointX = parseFloat(this.value);
+                document.getElementById('pointXValue').textContent = pointX.toFixed(1);
+                drawGraph();
+            });
+            
+            // dx大小
+            document.getElementById('deltaX').addEventListener('input', function() {
+                deltaX = parseFloat(this.value);
+                document.getElementById('deltaXValue').textContent = deltaX.toFixed(1);
+                drawGraph();
+            });
+            
+            // 显示/隐藏切线
+            document.getElementById('showTangent').addEventListener('click', function() {
+                showTangent = !showTangent;
+                drawGraph();
+            });
+            
+            // 显示/隐藏Δy和dy
+            document.getElementById('showDelta').addEventListener('click', function() {
+                showDelta = !showDelta;
+                drawGraph();
+            });
+            
+            // 动画演示
+            document.getElementById('animate').addEventListener('click', function() {
+                isAnimating = !isAnimating;
+                if (isAnimating) {
+                    this.classList.add('pulse');
+                    animationLoop();
+                } else {
+                    this.classList.remove('pulse');
+                    drawGraph();
+                }
+            });
+            
+            // 重置视图
+            document.getElementById('resetView').addEventListener('click', function() {
+                scaleX = 50;
+                scaleY = 50;
+                originX = canvas.width / 2;
+                originY = canvas.height / 2;
+                drawGraph();
+            });
+            
+            // 窗口大小变化时重绘
+            window.addEventListener('resize', function() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                originX = canvas.width / 2;
+                originY = canvas.height / 2;
+                drawGraph();
+            });
+        }
+        
+        // 动画循环
+        function animationLoop() {
+            if (isAnimating) {
+                // 在动画中改变dx，展示微分如何随自变量变化
+                deltaX = 0.1 + 2.9 * (0.5 + 0.5 * Math.sin(animationPhase));
+                document.getElementById('deltaX').value = deltaX;
+                document.getElementById('deltaXValue').textContent = deltaX.toFixed(2);
+                
+                drawGraph();
+                requestAnimationFrame(animationLoop);
+            }
+        }
+        
+        // 初始化
+        function init() {
+            drawGraph();
+            initEventListeners();
+            
+            // 初始化MathJax
+            if (window.MathJax) {
+                window.MathJax.typeset();
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
