@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>罗尔中值定理可视化演示</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            font-size: 1.8em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 10px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        select, input, button {
+            padding: 10px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: 1px solid #bdc3c7;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .canvas-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 20px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #fff;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+        .biography {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            align-items: flex-start;
+        }
+        .biography-text {
+            flex: 2;
+            font-size: 1.2em;
+            line-height: 1.8;
+            text-align: justify;
+        }
+        .biography-image {
+            flex: 1;
+            text-align: center;
+        }
+        .biography-image img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .theorem-statement {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-left: 5px solid #3498db;
+            margin: 20px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f4fc;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+        .explanation {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+        .interval-info {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .point-info {
+            background-color: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+        .physics-info {
+            background-color: #e8f6f3;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: space-between;
+        }
+        .direction-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .velocity-positive {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .velocity-negative {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .velocity-zero {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        .timeline {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        .timeline-item {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            border-left: 3px solid #3498db;
+        }
+        .timeline-year {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+        .timeline-event {
+            color: #555;
+            margin-top: 5px;
+        }
+        .contribution-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .contribution-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        .contribution-list li:before {
+            content: "•";
+            color: #3498db;
+            font-weight: bold;
+            position: absolute;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>罗尔中值定理可视化演示</h1>
+        
+        <div class="section">
+            <h2>定理陈述</h2>
+            <div class="theorem-statement">
+                如果函数f(x)满足以下条件：<br>
+                1. 在闭区间[a, b]上连续<br>
+                2. 在开区间(a, b)内可导<br>
+                3. f(a) = f(b)<br>
+                则在(a, b)内至少存在一点c，使得f'(c) = 0
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>几何意义演示</h2>
+            <div class="explanation">
+                <strong>几何意义：</strong>如果一条连续光滑的曲线在两个端点处高度相同，那么在这两个端点之间至少存在一个点，使得曲线在该点的切线是水平的（斜率为零）。
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="functionSelect">选择函数:</label>
+                    <select id="functionSelect">
+                        <option value="quadratic">二次函数: f(x) = x² - 4x + 3</option>
+                        <option value="cubic">三次函数: f(x) = x³ - 6x² + 9x</option>
+                        <option value="sine">正弦函数: f(x) = sin(x)</option>
+                        <option value="cosine">余弦函数: f(x) = cos(x)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button id="animateBtn">开始动画</button>
+                </div>
+            </div>
+            
+            <div class="interval-info" id="intervalInfo">
+                当前区间: [1, 3]，函数值: f(1) = 0，f(3) = 0，满足f(a) = f(b)
+            </div>
+            
+            <div class="point-info" id="pointInfo">
+                中值点信息将在这里显示
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="geometryCanvas"></canvas>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3498db;"></div>
+                    <span>函数曲线</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e74c3c;"></div>
+                    <span>端点连线</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #2ecc71;"></div>
+                    <span>切线</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f39c12;"></div>
+                    <span>中值点</span>
+                </div>
+            </div>
+            
+            <div class="status" id="geometryStatus">
+                选择一个函数并点击"开始动画"查看罗尔中值定理的几何意义。
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>物理意义演示</h2>
+            <div class="explanation">
+                <strong>物理意义：</strong>如果一个物体在时间区间[a, b]内做直线运动，并且起点和终点的位置相同（位移为零），那么在这段时间内至少存在一个时刻，物体的瞬时速度为零（静止状态）。<br>
+                <strong>说明：</strong>下方曲线表示位移函数s(t)，小车在水平轨道上做变速直线运动。小车从起点出发，在速度为零时停止，然后反向运动返回起点。
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <button id="startPhysics">开始物理演示</button>
+                </div>
+                <div class="control-group">
+                    <button id="resetPhysics">重置</button>
+                </div>
+            </div>
+            
+            <div class="physics-info" id="physicsInfo">
+                <div>时间: <span id="currentTime">0.00</span></div>
+                <div>位置: <span id="currentPosition">0.00</span></div>
+                <div>速度: <span id="currentVelocity">0.00</span><span id="directionIndicator" class="direction-indicator">●</span></div>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="physicsCanvas"></canvas>
+            </div>
+            
+            <div class="status" id="physicsStatus">
+                点击"开始物理演示"观察小车运动。小车从起点出发，在速度为零时停止，然后反向运动返回起点。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>数学家罗尔简介</h2>
+            <div class="biography">
+                <div class="biography-text">
+                    <p><strong>米歇尔·罗尔</strong>（Michel Rolle，1652年4月21日－1719年11月8日）是17世纪法国数学家，以其名字命名的<strong>罗尔中值定理</strong>而闻名于世。尽管他在数学史上的地位可能不如同时代的牛顿、莱布尼茨那样显赫，但他的工作为微积分的发展做出了重要贡献。</p>
+                    
+                    <h3>早年生活与教育</h3>
+                    <p>罗尔出生于法国昂贝尔的一个贫寒家庭。由于家境困难，他未能接受正规的大学教育，主要依靠自学成才。年轻时，罗尔在巴黎担任抄写员和会计师，这份工作让他有机会接触到各种数学问题。</p>
+                    
+                    <h3>数学成就</h3>
+                    <ul class="contribution-list">
+                        <li><strong>罗尔中值定理</strong>（1691年）：在其著作《方程解法》中首次提出，尽管当时仅用于多项式函数</li>
+                        <li><strong>代数方程理论</strong>：发展了"级联"方法来解决高阶方程</li>
+                        <li><strong>符号改进</strong>：对数学符号系统进行了重要改进</li>
+                        <li><strong>连分数</strong>：在连分数理论方面做出了贡献</li>
+                    </ul>
+                    
+                    <h3>对微积分的态度</h3>
+                    <p>有趣的是，罗尔最初强烈反对微积分，认为它缺乏严谨的数学基础。他公开批评牛顿和莱布尼茨的微积分方法，认为其中包含逻辑矛盾。然而，随着时间的推移，罗尔逐渐认识到微积分的价值，并最终接受了这一数学分支。</p>
+                    
+                    <h3>晚年与遗产</h3>
+                    <p>罗尔于1719年在巴黎逝世。他的主要数学贡献在他去世后才得到充分认识。罗尔中值定理成为微积分基本定理的重要组成部分，为拉格朗日、柯西等数学家的中值定理研究奠定了基础。</p>
+                    
+                    <div class="timeline">
+                        <h3>生平大事记</h3>
+                        <div class="timeline-item">
+                            <div class="timeline-year">1652年</div>
+                            <div class="timeline-event">出生于法国昂贝尔</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">1670年代</div>
+                            <div class="timeline-event">在巴黎担任抄写员和会计师，开始数学研究</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">1682年</div>
+                            <div class="timeline-event">因解决一个数学难题而获得认可</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">1691年</div>
+                            <div class="timeline-event">发表《方程解法》，首次提出罗尔定理</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">1699年</div>
+                            <div class="timeline-event">被选入法国科学院</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">1719年</div>
+                            <div class="timeline-event">在巴黎逝世，享年67岁</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="biography-image">
+                    <div style="width: 100%; height: 400px; background: linear-gradient(135deg, #3498db, #2c3e50); display: flex; align-items: center; justify-content: center; border-radius: 10px; color: white; flex-direction: column; padding: 20px;">
+                        <div style="font-size: 2em; margin-bottom: 20px;">米歇尔·罗尔</div>
+                        <div style="text-align: center; font-size: 1.1em;">
+                            <div>1652 - 1719</div>
+                            <div style="margin-top: 10px;">法国数学家</div>
+                            <div style="margin-top: 20px; font-size: 0.9em; color: #ecf0f1;">
+                                "罗尔中值定理的提出者"
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; text-align: center; color: #7f8c8d; font-style: italic;">
+                        罗尔的肖像（历史画像重建）
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const geometryCanvas = document.getElementById('geometryCanvas');
+        const physicsCanvas = document.getElementById('physicsCanvas');
+        const functionSelect = document.getElementById('functionSelect');
+        const animateBtn = document.getElementById('animateBtn');
+        const startPhysicsBtn = document.getElementById('startPhysics');
+        const resetPhysicsBtn = document.getElementById('resetPhysics');
+        const geometryStatus = document.getElementById('geometryStatus');
+        const physicsStatus = document.getElementById('physicsStatus');
+        const intervalInfo = document.getElementById('intervalInfo');
+        const pointInfo = document.getElementById('pointInfo');
+        const currentTime = document.getElementById('currentTime');
+        const currentPosition = document.getElementById('currentPosition');
+        const currentVelocity = document.getElementById('currentVelocity');
+        const directionIndicator = document.getElementById('directionIndicator');
+        
+        // 初始化Canvas上下文
+        const geometryCtx = geometryCanvas.getContext('2d');
+        const physicsCtx = physicsCanvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvases() {
+            geometryCanvas.width = geometryCanvas.offsetWidth;
+            geometryCanvas.height = geometryCanvas.offsetHeight;
+            
+            physicsCanvas.width = physicsCanvas.offsetWidth;
+            physicsCanvas.height = physicsCanvas.offsetHeight;
+            
+            drawGeometry();
+            drawPhysics();
+        }
+        
+        window.addEventListener('resize', resizeCanvases);
+        
+        // 定义几何意义函数
+        const geometryFunctions = {
+            quadratic: {
+                f: x => x*x - 4*x + 3,
+                fPrime: x => 2*x - 4,
+                defaultInterval: [1, 3],
+                description: "二次函数: f(x) = x² - 4x + 3"
+            },
+            cubic: {
+                f: x => x*x*x - 6*x*x + 9*x,
+                fPrime: x => 3*x*x - 12*x + 9,
+                defaultInterval: [0, 3],
+                description: "三次函数: f(x) = x³ - 6x² + 9x"
+            },
+            sine: {
+                f: x => Math.sin(x),
+                fPrime: x => Math.cos(x),
+                defaultInterval: [0, Math.PI],
+                description: "正弦函数: f(x) = sin(x)"
+            },
+            cosine: {
+                f: x => Math.cos(x),
+                fPrime: x => -Math.sin(x),
+                defaultInterval: [Math.PI/3, 5*Math.PI/3],
+                description: "余弦函数: f(x) = cos(x)"
+            }
+        };
+
+        // 定义物理意义位移函数
+        const physicsFunctions = {
+            quadratic: {
+                s: t => -t*t + 4*t - 3,
+                v: t => -2*t + 4,
+                defaultInterval: [1, 3],
+                description: "位移函数: s(t) = -t² + 4t - 3"
+            },
+            cubic: {
+                s: t => -t*t*t + 6*t*t - 9*t,
+                v: t => -3*t*t + 12*t - 9,
+                defaultInterval: [0, 3],
+                description: "位移函数: s(t) = -t³ + 6t² - 9t"
+            },
+            sine: {
+                s: t => Math.sin(t),
+                v: t => Math.cos(t),
+                defaultInterval: [0, Math.PI],
+                description: "位移函数: s(t) = sin(t)"
+            },
+            cosine: {
+                s: t => Math.cos(t) - 0.5,
+                v: t => -Math.sin(t),
+                defaultInterval: [Math.PI/3, 5*Math.PI/3],
+                description: "位移函数: s(t) = cos(t) - 0.5"
+            }
+        };
+        
+        // 几何演示变量
+        let animationId = null;
+        let isAnimating = false;
+        let currentGeometryFunction = geometryFunctions.quadratic;
+        let currentPhysicsFunction = physicsFunctions.quadratic;
+        let a = 1, b = 3;
+        
+        // 物理演示变量 - 修复版本
+        let physicsAnimationId = null;
+        let isPhysicsAnimating = false;
+        let physicsTime = a;
+        let lastTimestamp = 0;
+        let isReturning = false;
+        let isStopped = false;
+        let stopStartTime = 0;
+        let hasReachedZeroVelocity = false;
+
+        // 更新函数和区间
+        function updateFunctionAndInterval() {
+            const selectedFunction = functionSelect.value;
+            const functionKey = selectedFunction.split(':')[0].trim();
+            currentGeometryFunction = geometryFunctions[functionKey];
+            currentPhysicsFunction = physicsFunctions[functionKey];
+            
+            const defaultInterval = currentGeometryFunction.defaultInterval;
+            a = defaultInterval[0];
+            b = defaultInterval[1];
+            
+            // 重置物理演示
+            physicsTime = a;
+            isReturning = false;
+            isStopped = false;
+            hasReachedZeroVelocity = false;
+            
+            updateIntervalInfo();
+            drawGeometry();
+            drawPhysics();
+        }
+        
+        function updateIntervalInfo() {
+            const fa = currentGeometryFunction.f(a);
+            const fb = currentGeometryFunction.f(b);
+            intervalInfo.textContent = `当前区间: [${a.toFixed(4)}, ${b.toFixed(4)}]，函数值: f(${a.toFixed(4)}) = ${fa.toFixed(6)}，f(${b.toFixed(4)}) = ${fb.toFixed(6)}，满足f(a) = f(b)`;
+        }
+        
+        function updatePointInfo(c, y, slope) {
+            pointInfo.textContent = `中值点: c = ${c.toFixed(4)}，f(c) = ${y.toFixed(6)}，f'(c) = ${slope.toFixed(6)} ≈ 0`;
+        }
+        
+        // 修复的速度更新函数
+        function updatePhysicsInfo(time, position, velocity) {
+            currentTime.textContent = time.toFixed(2);
+            currentPosition.textContent = position.toFixed(4);
+            
+            // 清除所有样式类
+            currentVelocity.className = '';
+            
+            if (isStopped) {
+                // 停止状态
+                currentVelocity.textContent = '0.000000';
+                currentVelocity.classList.add('velocity-zero');
+                directionIndicator.textContent = '●';
+                directionIndicator.style.color = '#f39c12';
+            } else if (isReturning) {
+                // 返回状态 - 显示负速度
+                currentVelocity.textContent = (-Math.abs(velocity)).toFixed(6);
+                currentVelocity.classList.add('velocity-negative');
+                directionIndicator.textContent = '←';
+                directionIndicator.style.color = '#e74c3c';
+            } else {
+                // 前进状态 - 显示正速度
+                currentVelocity.textContent = Math.abs(velocity).toFixed(6);
+                currentVelocity.classList.add('velocity-positive');
+                directionIndicator.textContent = '→';
+                directionIndicator.style.color = '#27ae60';
+            }
+        }
+        
+        functionSelect.addEventListener('change', updateFunctionAndInterval);
+        
+        // 绘制几何图形
+        function drawGeometry() {
+            const width = geometryCanvas.width;
+            const height = geometryCanvas.height;
+            const padding = 40;
+            
+            geometryCtx.clearRect(0, 0, width, height);
+            
+            // 设置坐标变换
+            const xScale = (width - 2 * padding) / (b - a);
+            const yRange = getGeometryYRange();
+            const yScale = (height - 2 * padding) / (yRange.max - yRange.min);
+            
+            function toCanvasX(x) {
+                return padding + (x - a) * xScale;
+            }
+            
+            function toCanvasY(y) {
+                return height - padding - (y - yRange.min) * yScale;
+            }
+            
+            // 绘制坐标轴
+            geometryCtx.strokeStyle = '#7f8c8d';
+            geometryCtx.lineWidth = 1;
+            geometryCtx.beginPath();
+            geometryCtx.moveTo(padding, 0);
+            geometryCtx.lineTo(padding, height);
+            geometryCtx.moveTo(0, toCanvasY(0));
+            geometryCtx.lineTo(width, toCanvasY(0));
+            geometryCtx.stroke();
+            
+            // 绘制函数曲线
+            geometryCtx.strokeStyle = '#3498db';
+            geometryCtx.lineWidth = 3;
+            geometryCtx.beginPath();
+            
+            const step = (b - a) / 200;
+            for (let x = a; x <= b; x += step) {
+                const y = currentGeometryFunction.f(x);
+                const canvasX = toCanvasX(x);
+                const canvasY = toCanvasY(y);
+                
+                if (x === a) {
+                    geometryCtx.moveTo(canvasX, canvasY);
+                } else {
+                    geometryCtx.lineTo(canvasX, canvasY);
+                }
+            }
+            geometryCtx.stroke();
+            
+            // 绘制端点连线
+            geometryCtx.strokeStyle = '#e74c3c';
+            geometryCtx.lineWidth = 2;
+            geometryCtx.setLineDash([5, 5]);
+            geometryCtx.beginPath();
+            geometryCtx.moveTo(toCanvasX(a), toCanvasY(currentGeometryFunction.f(a)));
+            geometryCtx.lineTo(toCanvasX(b), toCanvasY(currentGeometryFunction.f(b)));
+            geometryCtx.stroke();
+            geometryCtx.setLineDash([]);
+            
+            // 绘制端点
+            geometryCtx.fillStyle = '#e74c3c';
+            geometryCtx.beginPath();
+            geometryCtx.arc(toCanvasX(a), toCanvasY(currentGeometryFunction.f(a)), 6, 0, Math.PI * 2);
+            geometryCtx.fill();
+            geometryCtx.beginPath();
+            geometryCtx.arc(toCanvasX(b), toCanvasY(currentGeometryFunction.f(b)), 6, 0, Math.PI * 2);
+            geometryCtx.fill();
+            
+            // 绘制中值点
+            const meanValuePoints = findMeanValuePoints();
+            if (meanValuePoints.length > 0) {
+                const c = meanValuePoints[0];
+                const y = currentGeometryFunction.f(c);
+                const slope = currentGeometryFunction.fPrime(c);
+                
+                updatePointInfo(c, y, slope);
+                
+                // 绘制中值点
+                geometryCtx.fillStyle = '#f39c12';
+                geometryCtx.beginPath();
+                geometryCtx.arc(toCanvasX(c), toCanvasY(y), 8, 0, Math.PI * 2);
+                geometryCtx.fill();
+                
+                // 绘制切线
+                geometryCtx.strokeStyle = '#2ecc71';
+                geometryCtx.lineWidth = 2;
+                const tangentLength = (b - a) / 4;
+                const x1 = c - tangentLength;
+                const y1 = y - slope * tangentLength;
+                const x2 = c + tangentLength;
+                const y2 = y + slope * tangentLength;
+                geometryCtx.beginPath();
+                geometryCtx.moveTo(toCanvasX(x1), toCanvasY(y1));
+                geometryCtx.lineTo(toCanvasX(x2), toCanvasY(y2));
+                geometryCtx.stroke();
+            }
+        }
+        
+        // 获取几何图形Y轴范围
+        function getGeometryYRange() {
+            const step = (b - a) / 100;
+            let min = currentGeometryFunction.f(a);
+            let max = currentGeometryFunction.f(a);
+            
+            for (let x = a; x <= b; x += step) {
+                const y = currentGeometryFunction.f(x);
+                if (y < min) min = y;
+                if (y > max) max = y;
+            }
+            
+            const margin = (max - min) * 0.1;
+            return { min: min - margin, max: max + margin };
+        }
+
+        // 获取物理图形Y轴范围
+        function getPhysicsYRange() {
+            const step = (b - a) / 100;
+            let min = currentPhysicsFunction.s(a);
+            let max = currentPhysicsFunction.s(a);
+            
+            for (let x = a; x <= b; x += step) {
+                const y = currentPhysicsFunction.s(x);
+                if (y < min) min = y;
+                if (y > max) max = y;
+            }
+            
+            const margin = (max - min) * 0.1;
+            return { min: min - margin, max: max + margin };
+        }
+        
+        // 查找中值点
+        function findMeanValuePoints() {
+            const points = [];
+            const step = (b - a) / 10000;
+            
+            for (let x = a + step; x < b - step; x += step) {
+                const derivative = currentGeometryFunction.fPrime(x);
+                if (Math.abs(derivative) < 0.001) {
+                    points.push(x);
+                    x += step * 10;
+                }
+            }
+            
+            return points;
+        }
+
+        // 查找零速度点
+        function findZeroVelocityPoints() {
+            const points = [];
+            const step = (b - a) / 10000;
+            
+            for (let x = a + step; x < b - step; x += step) {
+                const velocity = currentPhysicsFunction.v(x);
+                if (Math.abs(velocity) < 0.001) {
+                    points.push(x);
+                    x += step * 10;
+                }
+            }
+            
+            return points;
+        }
+        
+        // 几何动画
+        function animateGeometry() {
+            drawGeometry();
+            
+            if (isAnimating) {
+                animationId = requestAnimationFrame(animateGeometry);
+            }
+        }
+        
+        animateBtn.addEventListener('click', () => {
+            isAnimating = !isAnimating;
+            animateBtn.textContent = isAnimating ? '暂停动画' : '开始动画';
+            
+            if (isAnimating) {
+                animateGeometry();
+            } else {
+                cancelAnimationFrame(animationId);
+            }
+        });
+        
+        // 绘制物理演示
+        function drawPhysics() {
+            const width = physicsCanvas.width;
+            const height = physicsCanvas.height;
+            const padding = 40;
+            
+            physicsCtx.clearRect(0, 0, width, height);
+            
+            // 设置坐标变换
+            const xScale = (width - 2 * padding) / (b - a);
+            const yRange = getPhysicsYRange();
+            const yScale = (height - 2 * padding) / (yRange.max - yRange.min);
+            
+            function toCanvasX(x) {
+                return padding + (x - a) * xScale;
+            }
+            
+            function toCanvasY(y) {
+                return height - padding - (y - yRange.min) * yScale;
+            }
+            
+            // 绘制坐标轴
+            physicsCtx.strokeStyle = '#7f8c8d';
+            physicsCtx.lineWidth = 1;
+            physicsCtx.beginPath();
+            physicsCtx.moveTo(padding, 0);
+            physicsCtx.lineTo(padding, height);
+            physicsCtx.moveTo(0, toCanvasY(0));
+            physicsCtx.lineTo(width, toCanvasY(0));
+            physicsCtx.stroke();
+            
+            // 绘制位移函数曲线
+            physicsCtx.strokeStyle = '#3498db';
+            physicsCtx.lineWidth = 3;
+            physicsCtx.beginPath();
+            
+            const step = (b - a) / 200;
+            for (let x = a; x <= b; x += step) {
+                const y = currentPhysicsFunction.s(x);
+                const canvasX = toCanvasX(x);
+                const canvasY = toCanvasY(y);
+                
+                if (x === a) {
+                    physicsCtx.moveTo(canvasX, canvasY);
+                } else {
+                    physicsCtx.lineTo(canvasX, canvasY);
+                }
+            }
+            physicsCtx.stroke();
+            
+            // 绘制端点
+            physicsCtx.fillStyle = '#e74c3c';
+            physicsCtx.beginPath();
+            physicsCtx.arc(toCanvasX(a), toCanvasY(currentPhysicsFunction.s(a)), 6, 0, Math.PI * 2);
+            physicsCtx.fill();
+            physicsCtx.beginPath();
+            physicsCtx.arc(toCanvasX(b), toCanvasY(currentPhysicsFunction.s(b)), 6, 0, Math.PI * 2);
+            physicsCtx.fill();
+            
+            // 绘制小车轨道
+            const trackY = height - 60;
+            physicsCtx.strokeStyle = '#95a5a6';
+            physicsCtx.lineWidth = 2;
+            physicsCtx.beginPath();
+            physicsCtx.moveTo(padding, trackY);
+            physicsCtx.lineTo(width - padding, trackY);
+            physicsCtx.stroke();
+            
+            // 绘制小车
+            const carCanvasX = toCanvasX(physicsTime);
+            let carColor;
+            if (isStopped) {
+                carColor = '#f39c12'; // 停止时黄色
+            } else if (isReturning) {
+                carColor = '#e74c3c'; // 返回时红色
+            } else {
+                carColor = '#3498db'; // 前进时蓝色
+            }
+            physicsCtx.fillStyle = carColor;
+            physicsCtx.fillRect(carCanvasX - 15, trackY - 10, 30, 20);
+            
+            // 车轮
+            physicsCtx.fillStyle = '#2c3e50';
+            physicsCtx.beginPath();
+            physicsCtx.arc(carCanvasX - 8, trackY + 10, 5, 0, Math.PI * 2);
+            physicsCtx.fill();
+            physicsCtx.beginPath();
+            physicsCtx.arc(carCanvasX + 8, trackY + 10, 5, 0, Math.PI * 2);
+            physicsCtx.fill();
+            
+            // 绘制零速度点
+            const zeroVelocityPoints = findZeroVelocityPoints();
+            if (zeroVelocityPoints.length > 0) {
+                const c = zeroVelocityPoints[0];
+                const y = currentPhysicsFunction.s(c);
+                
+                physicsCtx.fillStyle = '#f39c12';
+                physicsCtx.beginPath();
+                physicsCtx.arc(toCanvasX(c), toCanvasY(y), 8, 0, Math.PI * 2);
+                physicsCtx.fill();
+                
+                // 绘制水平切线
+                physicsCtx.strokeStyle = '#2ecc71';
+                physicsCtx.lineWidth = 2;
+                physicsCtx.beginPath();
+                physicsCtx.moveTo(toCanvasX(c) - 30, toCanvasY(y));
+                physicsCtx.lineTo(toCanvasX(c) + 30, toCanvasY(y));
+                physicsCtx.stroke();
+            }
+            
+            // 更新物理信息显示
+            const velocity = currentPhysicsFunction.v(physicsTime);
+            updatePhysicsInfo(physicsTime, currentPhysicsFunction.s(physicsTime), velocity);
+        }
+        
+        // 修复的物理动画
+        function animatePhysics(timestamp) {
+            if (!lastTimestamp) {
+                lastTimestamp = timestamp;
+            }
+            
+            const deltaTime = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+            
+            // 计算当前速度
+            const velocity = currentPhysicsFunction.v(physicsTime);
+            
+            if (isStopped) {
+                // 停止状态 - 等待2秒后开始返回
+                if (timestamp - stopStartTime > 2000) {
+                    isStopped = false;
+                    isReturning = true;
+                    physicsStatus.innerHTML = `<span class="highlight">小车开始返回！</span> 速度方向改变。`;
+                }
+            } else if (!isReturning) {
+                // 前进状态
+                physicsTime += Math.abs(velocity) * deltaTime * 0.5;
+                
+                // 检测是否到达零速度点
+                if (Math.abs(velocity) < 0.01 && !hasReachedZeroVelocity) {
+                    hasReachedZeroVelocity = true;
+                    isStopped = true;
+                    stopStartTime = timestamp;
+                    physicsStatus.innerHTML = `<span class="highlight">小车已停止！</span> 在 t ≈ ${physicsTime.toFixed(4)} 时刻瞬时速度为零。`;
+                }
+            } else {
+                // 返回状态
+                physicsTime -= Math.abs(velocity) * deltaTime * 0.5;
+                
+                // 如果回到起点，重新开始
+                if (physicsTime <= a + 0.1) {
+                    isReturning = false;
+                    hasReachedZeroVelocity = false;
+                    physicsStatus.textContent = "小车已回到起点，开始新一轮运动。";
+                }
+            }
+            
+            // 边界检查
+            if (physicsTime > b) physicsTime = b;
+            if (physicsTime < a) physicsTime = a;
+            
+            drawPhysics();
+            
+            if (isPhysicsAnimating) {
+                physicsAnimationId = requestAnimationFrame(animatePhysics);
+            }
+        }
+        
+        // 物理演示控制
+        startPhysicsBtn.addEventListener('click', () => {
+            isPhysicsAnimating = !isPhysicsAnimating;
+            startPhysicsBtn.textContent = isPhysicsAnimating ? '暂停物理演示' : '开始物理演示';
+            
+            if (isPhysicsAnimating) {
+                lastTimestamp = 0;
+                physicsAnimationId = requestAnimationFrame(animatePhysics);
+                physicsStatus.textContent = '物理演示已开始，观察小车运动。小车从起点出发，在速度为零时停止，然后反向运动返回起点。';
+            } else {
+                cancelAnimationFrame(physicsAnimationId);
+                physicsStatus.textContent = '物理演示已暂停';
+            }
+        });
+        
+        resetPhysicsBtn.addEventListener('click', () => {
+            physicsTime = a;
+            isReturning = false;
+            isStopped = false;
+            hasReachedZeroVelocity = false;
+            drawPhysics();
+            physicsStatus.textContent = "小车已重置到起点。";
+        });
+        
+        // 初始化
+        resizeCanvases();
+        updateFunctionAndInterval();
+    </script>
+</body>
+</html>
