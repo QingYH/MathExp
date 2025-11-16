@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泰勒公式及其几何意义与应用</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.3.0/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --accent1: #ff7e5f;
+            --accent2: #feb47b;
+            --accent3: #6a11cb;
+            --accent4: #2575fc;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: var(--accent3);
+            font-size: 2rem;
+            border-bottom: 3px solid var(--accent2);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        
+        h3 {
+            color: var(--accent4);
+            font-size: 1.6rem;
+            margin-top: 30px;
+        }
+        
+        p {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .math-container {
+            background: rgba(248, 249, 250, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--accent1);
+            font-size: 1.2rem;
+            overflow-x: auto;
+        }
+        
+        .visualization {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            margin-right: 20px;
+        }
+        
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--accent3);
+            font-size: 1.1rem;
+        }
+        
+        input[type="range"] {
+            width: 200px;
+        }
+        
+        .value-display {
+            font-weight: bold;
+            color: var(--accent1);
+            font-size: 1.2rem;
+        }
+        
+        canvas {
+            border-radius: 10px;
+            background: #f8f9fa;
+            margin-top: 20px;
+            max-width: 100%;
+        }
+        
+        .application-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .application-card {
+            background: linear-gradient(135deg, var(--accent2) 0%, var(--accent1) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .application-card:hover {
+            transform: scale(1.03);
+        }
+        
+        .application-card h3 {
+            color: white;
+            margin-top: 0;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, var(--accent2) 0%, var(--accent1) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        
+        .bio-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .bio-image {
+            flex: 0 0 200px;
+            max-width: 200px;
+        }
+        
+        .bio-image img {
+            width: 100%;
+            border-radius: 50%;
+            border: 5px solid var(--accent2);
+        }
+        
+        .bio-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .zoom-btn {
+            background: var(--accent1);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .zoom-btn:hover {
+            background: var(--accent2);
+        }
+        
+        .zoom-btn.active {
+            background: var(--accent3);
+        }
+        
+        .zoom-info {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: var(--accent3);
+        }
+        
+        .zoom-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+        
+        .status-indicator.inactive {
+            background: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            p {
+                font-size: 1.1rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .bio-section {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>泰勒公式及其几何意义与应用</h1>
+            <div class="math-container">
+                \[f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!} (x-a)^n\]
+            </div>
+        </header>
+        
+        <div class="card">
+            <h2>布鲁克·泰勒简介</h2>
+            <div class="bio-section">
+                <div class="bio-image">
+                    <!-- 使用一个占位图像，实际应用中可替换为真实图像 -->
+                    <div style="width:200px; height:200px; background:linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:1.2rem; text-align:center;">
+                        布鲁克·泰勒<br>(1685-1731)
+                    </div>
+                </div>
+                <div class="bio-text">
+                    <p><strong>布鲁克·泰勒</strong>（Brook Taylor，1685年8月18日－1731年12月29日）是英国数学家，以泰勒公式和泰勒级数而闻名。</p>
+                    <p>泰勒出生于英格兰米德尔塞克斯的埃德蒙顿，毕业于剑桥大学圣约翰学院。他于1712年当选为英国皇家学会会员，并在1714年至1718年间担任学会秘书。</p>
+                    <p>他的主要著作《正和反的增量法》（1715年）中首次提出了泰勒定理，但并未给出证明。这个定理后来由约瑟夫·路易·拉格朗日证明，并成为数学分析中的基础工具。</p>
+                    <p>除了数学，泰勒还在音乐和绘画理论方面有所贡献。他晚年健康状况不佳，于1731年在伦敦去世。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>什么是泰勒公式？</h2>
+            <p>泰勒公式是数学分析中的一个重要工具，由英国数学家布鲁克·泰勒在18世纪提出。它允许我们用多项式来近似复杂的函数，尤其是在某一点附近。</p>
+            
+            <div class="math-container">
+                <p>函数 \(f(x)\) 在点 \(a\) 处的泰勒展开式为：</p>
+                <p>\[f(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f'''(a)}{3!}(x-a)^3 + \cdots + \frac{f^{(n)}(a)}{n!}(x-a)^n + R_n(x)\]</p>
+                <p>其中 \(R_n(x)\) 是余项，表示近似误差。</p>
+            </div>
+            
+            <p>泰勒公式的核心思想是：<span class="highlight">任何光滑函数都可以在某一点附近用多项式来近似表示</span>，多项式的系数由函数在该点的各阶导数决定。</p>
+        </div>
+        
+        <div class="card">
+            <h2>泰勒公式的几何意义</h2>
+            <p>泰勒公式的几何意义非常直观：</p>
+            <ul style="font-size: 1.3rem; line-height: 1.8;">
+                <li><strong>零阶近似</strong>：用水平直线 \(y = f(a)\) 近似函数，仅匹配函数值</li>
+                <li><strong>一阶近似</strong>：用切线 \(y = f(a) + f'(a)(x-a)\) 近似函数，匹配函数值和一阶导数</li>
+                <li><strong>二阶近似</strong>：用抛物线近似函数，匹配函数值、一阶和二阶导数</li>
+                <li><strong>高阶近似</strong>：随着阶数增加，多项式曲线越来越接近原函数</li>
+            </ul>
+            
+            <p>从几何角度看，泰勒展开是在逐步"贴合"原函数的曲线。每增加一阶，多项式就在更多方面（导数）与原函数保持一致，从而在展开点附近提供更好的近似。</p>
+        </div>
+        
+        <div class="visualization">
+            <h2>泰勒公式几何意义动态展示</h2>
+            <p>调整下面的参数，观察泰勒多项式如何近似函数：</p>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="function-select">选择函数：</label>
+                    <select id="function-select" style="font-size: 1.1rem; padding: 8px;">
+                        <option value="sin">sin(x)</option>
+                        <option value="cos">cos(x)</option>
+                        <option value="exp">e^x</option>
+                        <option value="ln">ln(1+x)</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label for="expansion-point">展开点 a：</label>
+                    <input type="range" id="expansion-point" min="-3" max="3" step="0.1" value="0">
+                    <span class="value-display" id="expansion-point-value">0</span>
+                </div>
+                
+                <div class="control-group">
+                    <label for="taylor-degree">泰勒级数阶数：</label>
+                    <input type="range" id="taylor-degree" min="0" max="10" step="1" value="0">
+                    <span class="value-display" id="taylor-degree-value">0</span>
+                </div>
+            </div>
+            
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="zoom-in">放大</button>
+                <button class="zoom-btn" id="zoom-out">缩小</button>
+                <button class="zoom-btn" id="reset-zoom">重置视图</button>
+                <button class="zoom-btn" id="rect-zoom">矩形放大</button>
+            </div>
+            
+            <div class="zoom-status">
+                <div class="status-indicator inactive" id="zoom-status-indicator"></div>
+                <span id="zoom-status-text">矩形放大模式已关闭 - 点击"矩形放大"按钮启用</span>
+            </div>
+            
+            <div class="zoom-info">
+                <p>提示：使用鼠标滚轮缩放，拖拽平移，或使用矩形放大工具选择特定区域</p>
+                <p>在矩形放大模式下，按住鼠标左键并拖动以选择要放大的区域</p>
+            </div>
+            
+            <div style="position: relative; height: 60vh; width: 100%;">
+                <canvas id="taylor-chart"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>泰勒公式的应用</h2>
+            <p>泰勒公式在数学、物理、工程和计算机科学等领域有广泛应用：</p>
+            
+            <div class="application-grid">
+                <div class="application-card">
+                    <h3>函数近似</h3>
+                    <p>在科学计算中，许多复杂函数（如三角函数、指数函数）的计算都是通过泰勒展开实现的，特别是在计算机和计算器中。</p>
+                </div>
+                
+                <div class="application-card">
+                    <h3>极限计算</h3>
+                    <p>泰勒展开可以简化复杂函数的极限计算，特别是在处理不定式时非常有效。</p>
+                </div>
+                
+                <div class="application-card">
+                    <h3>数值分析</h3>
+                    <p>在数值方法中，泰勒展开用于推导各种数值算法的误差估计，如数值积分和微分方程求解。</p>
+                </div>
+                
+                <div class="application-card">
+                    <h3>物理建模</h3>
+                    <p>在物理学中，泰勒展开用于简化复杂物理系统的数学模型，特别是在小振动、波动和近似计算中。</p>
+                </div>
+                
+                <div class="application-card">
+                    <h3>优化算法</h3>
+                    <p>在机器学习和优化理论中，泰勒展开用于推导梯度下降等优化算法。</p>
+                </div>
+                
+                <div class="application-card">
+                    <h3>工程应用</h3>
+                    <p>在工程领域，泰勒展开用于控制系统分析、信号处理和电路设计等。</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>麦克劳林级数</h2>
+            <p>当展开点 \(a = 0\) 时，泰勒级数称为麦克劳林级数：</p>
+            
+            <div class="math-container">
+                <p>\[f(x) = f(0) + f'(0)x + \frac{f''(0)}{2!}x^2 + \frac{f'''(0)}{3!}x^3 + \cdots\]</p>
+            </div>
+            
+            <p>一些常见函数的麦克劳林展开：</p>
+            
+            <div class="math-container">
+                <p>\[e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots \quad (-\infty < x < \infty)\]</p>
+                <p>\[\sin x = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots \quad (-\infty < x < \infty)\]</p>
+                <p>\[\cos x = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + \cdots \quad (-\infty < x < \infty)\]</p>
+                <p>\[\frac{1}{1-x} = 1 + x + x^2 + x^3 + \cdots \quad (-1 < x < 1)\]</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>泰勒公式 - 连接局部与整体的数学桥梁</p>
+        </footer>
+    </div>
+
+    <script>
+        // 初始化图表
+        const ctx = document.getElementById('taylor-chart').getContext('2d');
+        let taylorChart;
+        
+        // 获取DOM元素
+        const functionSelect = document.getElementById('function-select');
+        const expansionPointSlider = document.getElementById('expansion-point');
+        const expansionPointValue = document.getElementById('expansion-point-value');
+        const taylorDegreeSlider = document.getElementById('taylor-degree');
+        const taylorDegreeValue = document.getElementById('taylor-degree-value');
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const resetZoomBtn = document.getElementById('reset-zoom');
+        const rectZoomBtn = document.getElementById('rect-zoom');
+        const zoomStatusIndicator = document.getElementById('zoom-status-indicator');
+        const zoomStatusText = document.getElementById('zoom-status-text');
+        
+        // 固定坐标范围
+        const fixedXRange = [-3, 3];
+        const fixedYRange = [-2, 2];
+        
+        // 当前视图范围
+        let currentXRange = [...fixedXRange];
+        let currentYRange = [...fixedYRange];
+        let isRectZoomMode = false;
+        
+        // 更新显示值
+        expansionPointSlider.addEventListener('input', function() {
+            expansionPointValue.textContent = this.value;
+            updateChart();
+        });
+        
+        taylorDegreeSlider.addEventListener('input', function() {
+            taylorDegreeValue.textContent = this.value;
+            updateChart();
+        });
+        
+        functionSelect.addEventListener('change', updateChart);
+        
+        // 缩放控制
+        zoomInBtn.addEventListener('click', function() {
+            if (taylorChart) {
+                const xRange = currentXRange[1] - currentXRange[0];
+                const yRange = currentYRange[1] - currentYRange[0];
+                
+                currentXRange = [
+                    currentXRange[0] + xRange * 0.1,
+                    currentXRange[1] - xRange * 0.1
+                ];
+                
+                currentYRange = [
+                    currentYRange[0] + yRange * 0.1,
+                    currentYRange[1] - yRange * 0.1
+                ];
+                
+                updateChart();
+            }
+        });
+        
+        zoomOutBtn.addEventListener('click', function() {
+            if (taylorChart) {
+                const xRange = currentXRange[1] - currentXRange[0];
+                const yRange = currentYRange[1] - currentYRange[0];
+                
+                currentXRange = [
+                    currentXRange[0] - xRange * 0.1,
+                    currentXRange[1] + xRange * 0.1
+                ];
+                
+                currentYRange = [
+                    currentYRange[0] - yRange * 0.1,
+                    currentYRange[1] + yRange * 0.1
+                ];
+                
+                // 限制缩放范围
+                currentXRange[0] = Math.max(currentXRange[0], fixedXRange[0] - 5);
+                currentXRange[1] = Math.min(currentXRange[1], fixedXRange[1] + 5);
+                currentYRange[0] = Math.max(currentYRange[0], fixedYRange[0] - 5);
+                currentYRange[1] = Math.min(currentYRange[1], fixedYRange[1] + 5);
+                
+                updateChart();
+            }
+        });
+        
+        resetZoomBtn.addEventListener('click', function() {
+            currentXRange = [...fixedXRange];
+            currentYRange = [...fixedYRange];
+            updateChart();
+        });
+        
+        rectZoomBtn.addEventListener('click', function() {
+            isRectZoomMode = !isRectZoomMode;
+            rectZoomBtn.classList.toggle('active', isRectZoomMode);
+            
+            if (isRectZoomMode) {
+                zoomStatusIndicator.classList.remove('inactive');
+                zoomStatusText.textContent = '矩形放大模式已启用 - 按住鼠标左键并拖动以选择区域';
+                
+                // 启用矩形缩放
+                if (taylorChart) {
+                    taylorChart.options.plugins.zoom.zoom.drag.enabled = true;
+                    taylorChart.options.plugins.zoom.zoom.mode = 'xy';
+                    taylorChart.update();
+                }
+            } else {
+                zoomStatusIndicator.classList.add('inactive');
+                zoomStatusText.textContent = '矩形放大模式已关闭 - 点击"矩形放大"按钮启用';
+                
+                // 禁用矩形缩放
+                if (taylorChart) {
+                    taylorChart.options.plugins.zoom.zoom.drag.enabled = false;
+                    taylorChart.update();
+                }
+            }
+        });
+        
+        // 函数定义
+        const functions = {
+            sin: {
+                name: 'sin(x)',
+                func: x => Math.sin(x),
+                derivatives: a => {
+                    // 返回在点a处的各阶导数
+                    const derivatives = [Math.sin(a)];
+                    const derivativesPattern = [Math.sin(a), Math.cos(a), -Math.sin(a), -Math.cos(a)];
+                    
+                    for (let i = 1; i <= 10; i++) {
+                        derivatives.push(derivativesPattern[i % 4]);
+                    }
+                    
+                    return derivatives;
+                }
+            },
+            cos: {
+                name: 'cos(x)',
+                func: x => Math.cos(x),
+                derivatives: a => {
+                    const derivatives = [Math.cos(a)];
+                    const derivativesPattern = [Math.cos(a), -Math.sin(a), -Math.cos(a), Math.sin(a)];
+                    
+                    for (let i = 1; i <= 10; i++) {
+                        derivatives.push(derivativesPattern[i % 4]);
+                    }
+                    
+                    return derivatives;
+                }
+            },
+            exp: {
+                name: 'e^x',
+                func: x => Math.exp(x),
+                derivatives: a => {
+                    const derivatives = [];
+                    for (let i = 0; i <= 10; i++) {
+                        derivatives.push(Math.exp(a));
+                    }
+                    return derivatives;
+                }
+            },
+            ln: {
+                name: 'ln(1+x)',
+                func: x => Math.log(1 + x),
+                derivatives: a => {
+                    const derivatives = [Math.log(1 + a)];
+                    for (let i = 1; i <= 10; i++) {
+                        // ln(1+x)的n阶导数: (-1)^(n-1) * (n-1)! / (1+x)^n
+                        derivatives.push(Math.pow(-1, i-1) * factorial(i-1) / Math.pow(1+a, i));
+                    }
+                    return derivatives;
+                }
+            }
+        };
+        
+        // 阶乘函数
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+        
+        // 计算泰勒多项式在x处的值
+        function taylorPolynomial(x, a, derivatives, degree) {
+            let result = 0;
+            for (let n = 0; n <= degree; n++) {
+                result += derivatives[n] * Math.pow(x - a, n) / factorial(n);
+            }
+            return result;
+        }
+        
+        // 生成数据点
+        function generateData(func, a, derivatives, degree, xMin, xMax, pointCount = 500) {
+            const labels = [];
+            const originalData = [];
+            const taylorData = [];
+            
+            // 根据视图范围调整点数，放大时增加点数
+            const range = xMax - xMin;
+            const adaptivePointCount = Math.max(500, Math.min(2000, Math.floor(500 * (3 / range))));
+            
+            const step = range / adaptivePointCount;
+            
+            for (let x = xMin; x <= xMax; x += step) {
+                labels.push(x.toFixed(2));
+                originalData.push({x: x, y: func.func(x)});
+                taylorData.push({x: x, y: taylorPolynomial(x, a, derivatives, degree)});
+            }
+            
+            return { labels, originalData, taylorData };
+        }
+        
+        // 更新图表
+        function updateChart() {
+            const funcName = functionSelect.value;
+            const a = parseFloat(expansionPointSlider.value);
+            const degree = parseInt(taylorDegreeSlider.value);
+            
+            const func = functions[funcName];
+            const derivatives = func.derivatives(a);
+            
+            // 生成数据点 - 使用当前视图范围
+            const { labels, originalData, taylorData } = generateData(
+                func, a, derivatives, degree, 
+                currentXRange[0], currentXRange[1]
+            );
+            
+            // 如果图表已存在，销毁它
+            if (taylorChart) {
+                taylorChart.destroy();
+            }
+            
+            // 创建新图表
+            taylorChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: `原函数: ${func.name}`,
+                            data: originalData,
+                            borderColor: '#4e54c8',
+                            backgroundColor: 'rgba(78, 84, 200, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            showLine: true,
+                            fill: false,
+                            tension: 0
+                        },
+                        {
+                            label: `泰勒多项式 (n=${degree})`,
+                            data: taylorData,
+                            borderColor: '#ff7e5f',
+                            backgroundColor: 'rgba(255, 126, 95, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            borderDash: [5, 5],
+                            showLine: true,
+                            fill: false,
+                            tension: 0
+                        },
+                        {
+                            label: '展开点',
+                            data: [{x: a, y: func.func(a)}],
+                            pointBackgroundColor: '#6a11cb',
+                            pointBorderColor: '#6a11cb',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `函数 ${func.name} 在 x=${a} 处的泰勒展开 (n=${degree}) - 视图范围: [${currentXRange[0].toFixed(2)}, ${currentXRange[1].toFixed(2)}]`,
+                            font: {
+                                size: 18
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        zoom: {
+                            zoom: {
+                                wheel: {
+                                    enabled: true,
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                mode: 'xy',
+                                drag: {
+                                    enabled: isRectZoomMode,
+                                    backgroundColor: 'rgba(106, 17, 203, 0.3)',
+                                    borderColor: '#6a11cb',
+                                    borderWidth: 1
+                                }
+                            },
+                            pan: {
+                                enabled: true,
+                                mode: 'xy',
+                            },
+                            limits: {
+                                x: {min: fixedXRange[0] - 5, max: fixedXRange[1] + 5},
+                                y: {min: fixedYRange[0] - 5, max: fixedYRange[1] + 5}
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            min: currentXRange[0],
+                            max: currentXRange[1],
+                            title: {
+                                display: true,
+                                text: 'x',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            min: currentYRange[0],
+                            max: currentYRange[1],
+                            title: {
+                                display: true,
+                                text: 'y',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 监听缩放事件，更新当前视图范围
+            taylorChart.options.plugins.zoom.zoom.onZoomComplete = ({ chart }) => {
+                const xScale = chart.scales.x;
+                const yScale = chart.scales.y;
+                
+                currentXRange = [xScale.min, xScale.max];
+                currentYRange = [yScale.min, yScale.max];
+                
+                updateChart();
+            };
+            
+            // 监听平移事件，更新当前视图范围
+            taylorChart.options.plugins.zoom.pan.onPanComplete = ({ chart }) => {
+                const xScale = chart.scales.x;
+                const yScale = chart.scales.y;
+                
+                currentXRange = [xScale.min, xScale.max];
+                currentYRange = [yScale.min, yScale.max];
+                
+                updateChart();
+            };
+        }
+        
+        // 初始化图表
+        updateChart();
+    </script>
+</body>
+</html>
