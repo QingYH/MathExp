@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定积分交互式学习指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 添加MathJax支持数学公式 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #ef476f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            color: var(--accent);
+        }
+        
+        .content-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .text-content {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .visualization {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 5px solid var(--success);
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background-color: white;
+            border: 1px solid #ddd;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            background-color: #f1f3f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+            height: 8px;
+            border-radius: 4px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+        
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .formula {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            border-left: 5px solid var(--warning);
+            overflow-x: auto;
+        }
+        
+        .math {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1.2rem;
+        }
+        
+        .definition-box {
+            background-color: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .example-box {
+            background-color: #fff0f7;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--accent);
+        }
+        
+        .warning-box {
+            background-color: #fff5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--danger);
+        }
+        
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .property-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-top: 5px solid var(--success);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .property-card h4 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .animation-area {
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .riemann-rect {
+            position: absolute;
+            bottom: 0;
+            background-color: rgba(67, 97, 238, 0.5);
+            border: 1px solid rgba(67, 97, 238, 0.8);
+        }
+        
+        .function-graph {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            font-size: 1rem;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .speed-control label {
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+        
+        .speed-control input {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .content-row {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .properties-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .speed-control {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-calculator"></i> 定积分交互式学习指南</h1>
+            <p class="subtitle">通过图形、动画和交互实例深入理解定积分的定义、几何意义、性质和微积分基本定理</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- 定义部分 -->
+        <section class="section" id="definition">
+            <h2><i class="fas fa-book"></i> 定积分的定义与可积条件</h2>
+            <div class="content-row">
+                <div class="text-content">
+                    <p>定积分是微积分中的核心概念之一，用于计算曲线下的面积，或更一般地说，是函数在某个区间上的累积效应。</p>
+                    
+                    <div class="definition-box">
+                        <h3>黎曼和的极限定义</h3>
+                        <p>设函数 \( f(x) \) 在区间 \([a, b]\) 上有定义。将区间 \([a, b]\) 分成 \( n \) 个小区间，每个小区间的长度为 \(\Delta x = \frac{b-a}{n}\)，在每个小区间 \([x_{i-1}, x_i]\) 上取一点 \(\xi_i\)，则黎曼和为：</p>
+                        <div class="formula">
+                            $$ S_n = \sum_{i=1}^{n} f(\xi_i) \Delta x $$
+                        </div>
+                        <p>当 \( n \to \infty \) 且最大小区间长度趋于0时，如果黎曼和的极限存在且与区间分法和 \(\xi_i\) 的取法无关，则称此极限为 \( f(x) \) 在 \([a, b]\) 上的定积分，记作：</p>
+                        <div class="formula">
+                            $$ \int_{a}^{b} f(x) \, dx = \lim_{n \to \infty} \sum_{i=1}^{n} f(\xi_i) \Delta x $$
+                        </div>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <h3>函数可积的充分条件</h3>
+                        <p>一个函数在区间 \([a, b]\) 上可积（即定积分存在）的充分条件包括：</p>
+                        <ul>
+                            <li><strong>连续函数</strong>：在闭区间上连续的函数一定可积</li>
+                            <li><strong>只有有限个间断点的有界函数</strong>：间断点不影响可积性</li>
+                            <li><strong>单调有界函数</strong>：在闭区间上单调且有界的函数可积</li>
+                            <li><strong>有界且间断点集测度为0的函数</strong>：更一般的可积条件</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h3>不可积函数的例子</h3>
+                        <p>以下函数在指定区间上不可积：</p>
+                        <ul>
+                            <li><strong>Dirichlet函数</strong>：\( D(x) = \begin{cases} 1, & x \in \mathbb{Q} \\ 0, & x \notin \mathbb{Q} \end{cases} \) 在任何区间上都不可积</li>
+                            <li><strong>无界函数</strong>：如 \( f(x) = \frac{1}{x} \) 在包含0的区间上不可积</li>
+                            <li><strong>无限振荡函数</strong>：如 \( f(x) = \sin\left(\frac{1}{x}\right) \) 在 \( x=0 \) 附近不可积</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="visualization">
+                    <h3><i class="fas fa-chart-area"></i> 黎曼和可视化</h3>
+                    <div class="canvas-container">
+                        <canvas id="riemannCanvas"></canvas>
+                    </div>
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="nSlider">分割数 n: <span id="nValue">10</span></label>
+                            <input type="range" id="nSlider" min="2" max="100" value="10" step="1">
+                            <div class="value-display">
+                                <span>少</span>
+                                <span>多</span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="methodSelect">近似方法:</label>
+                            <select id="methodSelect" class="method-select">
+                                <option value="left">左端点</option>
+                                <option value="right">右端点</option>
+                                <option value="midpoint" selected>中点</option>
+                                <option value="trapezoid">梯形法</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="speed-control">
+                                <label for="speedSlider">动画速度:</label>
+                                <input type="range" id="speedSlider" min="1" max="10" value="3" step="1">
+                                <span id="speedValue">中速</span>
+                            </div>
+                        </div>
+                        
+                        <div class="buttons">
+                            <button id="animateBtn"><i class="fas fa-play"></i> 动画演示</button>
+                            <button id="increaseBtn"><i class="fas fa-plus"></i> 增加分割</button>
+                            <button id="decreaseBtn"><i class="fas fa-minus"></i> 减少分割</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 不可积函数示例部分 -->
+        <section class="section" id="non-integrable">
+            <h2><i class="fas fa-exclamation-triangle"></i> 不可积函数示例</h2>
+            <div class="content-row">
+                <div class="text-content">
+                    <p>并非所有函数都是可积的。理解不可积函数的例子有助于深入理解定积分的定义和可积条件。</p>
+                    
+                    <div class="definition-box">
+                        <h3>Dirichlet函数</h3>
+                        <p>Dirichlet函数是数学中一个著名的处处不连续、处处不可导且在任意区间上都不可积的函数：</p>
+                        <div class="formula">
+                            $$ D(x) = \begin{cases} 1, & \text{如果 } x \in \mathbb{Q} \\ 0, & \text{如果 } x \notin \mathbb{Q} \end{cases} $$
+                        </div>
+                        <p>这个函数在任何区间上都没有黎曼积分，因为无论区间多小，其中既有有理数也有无理数，导致黎曼和无法收敛到一个确定的极限值。</p>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <h3>无界函数示例</h3>
+                        <p>函数 \( f(x) = \frac{1}{x} \) 在区间 \([0, 1]\) 上不可积，因为它在 \( x=0 \) 处趋于无穷大：</p>
+                        <div class="formula">
+                            $$ \lim_{x \to 0^+} \frac{1}{x} = \infty $$
+                        </div>
+                        <p>无界函数在包含奇点的区间上不可积，因为黎曼和可以趋于无穷大。</p>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h3>振荡函数示例</h3>
+                        <p>函数 \( f(x) = \sin\left(\frac{1}{x}\right) \) 在 \( x=0 \) 附近无限振荡：</p>
+                        <div class="formula">
+                            $$ \lim_{x \to 0} \sin\left(\frac{1}{x}\right) \text{ 不存在} $$
+                        </div>
+                        <p>尽管该函数在原点附近有界，但由于振荡频率无限增加，它在包含0的区间上不可积。</p>
+                    </div>
+                </div>
+                
+                <div class="visualization">
+                    <h3><i class="fas fa-chart-line"></i> 不可积函数可视化</h3>
+                    <div class="canvas-container">
+                        <canvas id="nonIntegrableCanvas"></canvas>
+                    </div>
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="nonIntegrableSelect">选择不可积函数:</label>
+                            <select id="nonIntegrableSelect" class="method-select">
+                                <option value="dirichlet">Dirichlet函数（离散近似）</option>
+                                <option value="unbounded">无界函数 f(x)=1/x</option>
+                                <option value="oscillating">振荡函数 f(x)=sin(1/x)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="nonIntegrableN">采样点数: <span id="nonIntegrableNValue">100</span></label>
+                            <input type="range" id="nonIntegrableN" min="10" max="500" value="100" step="10">
+                            <div class="value-display">
+                                <span>少</span>
+                                <span>多</span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="nonIntegrableRange">x范围: <span id="nonIntegrableRangeValue">[-1,1]</span></label>
+                            <input type="range" id="nonIntegrableRange" min="1" max="10" value="5" step="1">
+                            <div class="value-display">
+                                <span>窄</span>
+                                <span>宽</span>
+                            </div>
+                        </div>
+                        
+                        <div class="buttons">
+                            <button id="showExplanationBtn" class="btn-danger"><i class="fas fa-info-circle"></i> 解释不可积原因</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 几何意义部分 -->
+        <section class="section" id="geometric-meaning">
+            <h2><i class="fas fa-shapes"></i> 定积分的几何意义</h2>
+            <div class="content-row">
+                <div class="text-content">
+                    <p>定积分 \(\int_{a}^{b} f(x) \, dx\) 的几何意义是曲线 \( y = f(x) \) 与直线 \( x = a \), \( x = b \) 以及 x 轴所围成的曲边梯形的面积。</p>
+                    
+                    <div class="definition-box">
+                        <h3>面积的正负</h3>
+                        <ul>
+                            <li>当 \( f(x) \geq 0 \) 时，定积分表示曲边梯形在 x 轴上方的面积</li>
+                            <li>当 \( f(x) \leq 0 \) 时，定积分表示曲边梯形在 x 轴下方的面积的相反数</li>
+                            <li>如果函数在区间上有正有负，则定积分表示各部分面积的代数和</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="example-box">
+                        <h4>示例：计算曲边梯形面积</h4>
+                        <p>计算函数 \( f(x) = x^2 \) 在区间 \([0, 2]\) 上与 x 轴围成的面积：</p>
+                        <div class="formula">
+                            $$ \int_{0}^{2} x^2 \, dx = \left[ \frac{x^3}{3} \right]_{0}^{2} = \frac{8}{3} - 0 = \frac{8}{3} $$
+                        </div>
+                        <p>这表示抛物线 \( y = x^2 \) 从 \( x=0 \) 到 \( x=2 \) 与 x 轴围成的面积为 \( \frac{8}{3} \) 平方单位。</p>
+                    </div>
+                </div>
+                
+                <div class="visualization">
+                    <h3><i class="fas fa-chart-bar"></i> 面积可视化</h3>
+                    <div class="canvas-container">
+                        <canvas id="areaCanvas"></canvas>
+                    </div>
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="functionSelect">选择函数:</label>
+                            <select id="functionSelect" class="method-select">
+                                <option value="x^2">f(x) = x²</option>
+                                <option value="sin(x)">f(x) = sin(x)</option>
+                                <option value="x^3-2x">f(x) = x³ - 2x</option>
+                                <option value="sqrt(x)">f(x) = √x</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="intervalA">区间起点 a: <span id="aValue">0</span></label>
+                            <input type="range" id="intervalA" min="-2" max="2" value="0" step="0.1">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="intervalB">区间终点 b: <span id="bValue">2</span></label>
+                            <input type="range" id="intervalB" min="-2" max="4" value="2" step="0.1">
+                        </div>
+                        
+                        <div class="buttons">
+                            <button id="showAreaBtn" class="btn-accent"><i class="fas fa-fill-drip"></i> 显示/隐藏面积</button>
+                            <button id="calcAreaBtn"><i class="fas fa-calculator"></i> 计算面积</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 微积分基本定理部分 -->
+        <section class="section" id="fundamental-theorem">
+            <h2><i class="fas fa-crown"></i> 微积分基本定理（牛顿-莱布尼茨公式）</h2>
+            <div class="content-row">
+                <div class="text-content">
+                    <p>微积分基本定理建立了微分与积分之间的深刻联系，是微积分的核心定理。</p>
+                    
+                    <div class="definition-box">
+                        <h3>第一部分：导数与积分的关系</h3>
+                        <p>如果函数 \( f(x) \) 在区间 \([a, b]\) 上连续，那么函数</p>
+                        <div class="formula">
+                            $$ F(x) = \int_a^x f(t) \, dt $$
+                        </div>
+                        <p>在 \([a, b]\) 上可导，并且 \( F'(x) = f(x) \)。即积分上限函数的导数等于被积函数。</p>
+                    </div>
+                    
+                    <div class="definition-box">
+                        <h3>第二部分：牛顿-莱布尼茨公式</h3>
+                        <p>如果函数 \( f(x) \) 在区间 \([a, b]\) 上连续，且 \( F(x) \) 是 \( f(x) \) 的一个原函数，即 \( F'(x) = f(x) \)，那么：</p>
+                        <div class="formula">
+                            $$ \int_a^b f(x) \, dx = F(b) - F(a) = \left. F(x) \right|_a^b $$
+                        </div>
+                        <p>这个公式将定积分的计算转化为求原函数在区间端点处的差值。</p>
+                    </div>
+                </div>
+                
+                <div class="visualization">
+                    <h3><i class="fas fa-project-diagram"></i> 微积分基本定理可视化</h3>
+                    <div class="canvas-container">
+                        <canvas id="ftcCanvas"></canvas>
+                    </div>
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="ftcFunctionSelect">选择函数:</label>
+                            <select id="ftcFunctionSelect" class="method-select">
+                                <option value="x^2">f(x) = x²</option>
+                                <option value="2x+1">f(x) = 2x + 1</option>
+                                <option value="sin(x)">f(x) = sin(x)</option>
+                                <option value="cos(x)">f(x) = cos(x)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="ftcASlider">积分起点 a: <span id="ftcA">1</span></label>
+                            <input type="range" id="ftcASlider" min="0" max="3" value="1" step="0.1">
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="ftcBSlider">积分终点 b: <span id="ftcB">3</span></label>
+                            <input type="range" id="ftcBSlider" min="1" max="5" value="3" step="0.1">
+                        </div>
+                        
+                        <div class="buttons">
+                            <button id="showFTCBtn" class="btn-success"><i class="fas fa-eye"></i> 显示原函数</button>
+                            <button id="calculateFTCBtn"><i class="fas fa-bolt"></i> 计算定积分</button>
+                        </div>
+                    </div>
+                    
+                    <div id="ftcResult" style="margin-top: 15px; padding: 10px; background-color: #e7f9ed; border-radius: 8px; display: none;">
+                        <h4>计算结果:</h4>
+                        <p id="ftcResultText"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="footer-note">
+            <p><i class="fas fa-lightbulb"></i> 提示：尝试与所有滑块、按钮和下拉菜单交互，观察图形变化，加深对定积分概念的理解。</p>
+            <p>© 2023 定积分交互式学习指南 | 设计用于数学教育</p>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentFunction = 'x^2';
+        let n = 10;
+        let method = 'midpoint';
+        let animationId = null;
+        let showArea = true;
+        let intervalA = 0;
+        let intervalB = 2;
+        let animationSpeed = 3; // 默认速度（1-10，越大越慢）
+        let animationFrameCount = 0;
+        
+        // 等待页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 重新计算Canvas尺寸并初始化
+            setTimeout(() => {
+                initCanvases();
+                setupEventListeners();
+                // 重新渲染MathJax公式
+                if (window.MathJax) {
+                    MathJax.typesetPromise();
+                }
+            }, 100);
+        });
+        
+        // 初始化所有Canvas
+        function initCanvases() {
+            initRiemannCanvas();
+            initNonIntegrableCanvas();
+            initAreaCanvas();
+            initFTCanvas();
+        }
+        
+        // 初始化黎曼和画布
+        function initRiemannCanvas() {
+            const canvas = document.getElementById('riemannCanvas');
+            const container = canvas.parentElement;
+            
+            // 设置画布尺寸为容器尺寸
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            
+            drawRiemannSum(ctx, container.clientWidth, container.clientHeight);
+        }
+        
+        // 绘制黎曼和
+        function drawRiemannSum(ctx, width, height) {
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制坐标轴标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('x', width - padding + 5, height - padding);
+            ctx.fillText('y', padding, padding - 10);
+            
+            // 函数 f(x) = x^2
+            const f = x => x * x;
+            
+            // 计算x的范围和缩放比例
+            const xMin = 0;
+            const xMax = 2;
+            const xScale = graphWidth / (xMax - xMin);
+            
+            // 计算y的范围和缩放比例
+            const yValues = [];
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + i / xScale;
+                yValues.push(f(x));
+            }
+            const yMax = Math.max(...yValues);
+            const yScale = graphHeight / yMax;
+            
+            // 绘制函数曲线
+            ctx.beginPath();
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + i / xScale;
+                const y = f(x);
+                const canvasX = padding + i;
+                const canvasY = height - padding - y * yScale;
+                
+                if (i === 0) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制黎曼矩形
+            const dx = (xMax - xMin) / n;
+            let totalArea = 0;
+            
+            for (let i = 0; i < n; i++) {
+                const xStart = xMin + i * dx;
+                let sampleX;
+                
+                // 根据选择的方法确定采样点
+                switch(method) {
+                    case 'left':
+                        sampleX = xStart;
+                        break;
+                    case 'right':
+                        sampleX = xStart + dx;
+                        break;
+                    case 'midpoint':
+                        sampleX = xStart + dx / 2;
+                        break;
+                    case 'trapezoid':
+                        // 梯形法特殊处理
+                        const xEnd = xStart + dx;
+                        const yStart = f(xStart);
+                        const yEnd = f(xEnd);
+                        const avgHeight = (yStart + yEnd) / 2;
+                        
+                        const rectX = padding + xStart * xScale;
+                        const rectWidth = dx * xScale;
+                        const rectHeight = avgHeight * yScale;
+                        
+                        ctx.fillStyle = 'rgba(76, 201, 240, 0.5)';
+                        ctx.fillRect(rectX, height - padding - rectHeight, rectWidth, rectHeight);
+                        ctx.strokeStyle = 'rgba(76, 201, 240, 0.8)';
+                        ctx.strokeRect(rectX, height - padding - rectHeight, rectWidth, rectHeight);
+                        
+                        totalArea += avgHeight * dx;
+                        continue;
+                }
+                
+                const y = f(sampleX);
+                totalArea += y * dx;
+                
+                // 绘制矩形
+                const rectX = padding + xStart * xScale;
+                const rectWidth = dx * xScale;
+                const rectHeight = y * yScale;
+                
+                ctx.fillStyle = 'rgba(67, 97, 238, 0.5)';
+                ctx.fillRect(rectX, height - padding - rectHeight, rectWidth, rectHeight);
+                ctx.strokeStyle = 'rgba(67, 97, 238, 0.8)';
+                ctx.strokeRect(rectX, height - padding - rectHeight, rectWidth, rectHeight);
+            }
+            
+            // 显示总面积
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`黎曼和 ≈ ${totalArea.toFixed(4)}`, width / 2, padding - 10);
+            ctx.fillText(`精确值 = ${(8/3).toFixed(4)}`, width / 2, padding + 15);
+            
+            // 显示分割数
+            ctx.font = '14px Arial';
+            ctx.fillText(`n = ${n}`, width - padding - 30, padding + 20);
+        }
+        
+        // 初始化不可积函数画布
+        function initNonIntegrableCanvas() {
+            const canvas = document.getElementById('nonIntegrableCanvas');
+            const container = canvas.parentElement;
+            
+            // 设置画布尺寸为容器尺寸
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            
+            drawNonIntegrableFunction(ctx, container.clientWidth, container.clientHeight);
+        }
+        
+        // 绘制不可积函数
+        function drawNonIntegrableFunction(ctx, width, height) {
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制坐标轴标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('x', width - padding + 5, height - padding);
+            ctx.fillText('y', padding, padding - 10);
+            
+            // 获取选择的函数类型
+            const funcType = document.getElementById('nonIntegrableSelect').value;
+            const samplePoints = parseInt(document.getElementById('nonIntegrableN').value);
+            const rangeScale = parseFloat(document.getElementById('nonIntegrableRange').value);
+            
+            // 计算x的范围和缩放比例
+            const xMin = -rangeScale/2;
+            const xMax = rangeScale/2;
+            const xScale = graphWidth / (xMax - xMin);
+            
+            // 绘制函数
+            ctx.beginPath();
+            
+            if (funcType === 'dirichlet') {
+                // Dirichlet函数（离散近似）
+                for (let i = 0; i <= samplePoints; i++) {
+                    const x = xMin + i * (xMax - xMin) / samplePoints;
+                    // 简单判断有理数：如果x的小数部分接近0或0.5，我们近似为有理数
+                    const isRational = Math.abs(x - Math.round(x * 10) / 10) < 0.05;
+                    const y = isRational ? 1 : 0;
+                    
+                    const canvasX = padding + (x - xMin) * xScale;
+                    const canvasY = height - padding - y * graphHeight;
+                    
+                    // 绘制点
+                    ctx.beginPath();
+                    ctx.arc(canvasX, canvasY, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = isRational ? '#ef476f' : '#4361ee';
+                    ctx.fill();
+                }
+                
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('Dirichlet函数: 有理点值为1(红), 无理点值为0(蓝)', width / 2, padding - 10);
+                
+            } else if (funcType === 'unbounded') {
+                // 无界函数 f(x) = 1/x
+                const f = x => 1/x;
+                
+                // 设置y的范围
+                const yMin = -5;
+                const yMax = 5;
+                const yScale = graphHeight / (yMax - yMin);
+                
+                // 绘制渐近线
+                ctx.beginPath();
+                ctx.moveTo(padding + (-xMin) * xScale, padding);
+                ctx.lineTo(padding + (-xMin) * xScale, height - padding);
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 绘制函数曲线（避开奇点）
+                for (let i = 0; i <= samplePoints; i++) {
+                    const x = xMin + i * (xMax - xMin) / samplePoints;
+                    if (Math.abs(x) < 0.05) continue; // 跳过接近0的点
+                    
+                    const y = f(x);
+                    if (Math.abs(y) > 10) continue; // 跳过过大的y值
+                    
+                    const canvasX = padding + (x - xMin) * xScale;
+                    const canvasY = height - padding - (y - yMin) * yScale;
+                    
+                    if (i === 0 || Math.abs(x - xMin) < 0.1) {
+                        ctx.moveTo(canvasX, canvasY);
+                    } else {
+                        ctx.lineTo(canvasX, canvasY);
+                    }
+                }
+                
+                ctx.strokeStyle = '#ef476f';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('无界函数 f(x) = 1/x: 在x=0处趋于无穷', width / 2, padding - 10);
+                
+            } else if (funcType === 'oscillating') {
+                // 振荡函数 f(x) = sin(1/x)
+                const f = x => Math.sin(1/x);
+                
+                // 设置y的范围
+                const yMin = -1.5;
+                const yMax = 1.5;
+                const yScale = graphHeight / (yMax - yMin);
+                
+                // 绘制函数曲线
+                let firstPoint = true;
+                for (let i = 0; i <= samplePoints; i++) {
+                    const x = xMin + i * (xMax - xMin) / samplePoints;
+                    if (Math.abs(x) < 0.01) continue; // 跳过接近0的点
+                    
+                    const y = f(x);
+                    const canvasX = padding + (x - xMin) * xScale;
+                    const canvasY = height - padding - (y - yMin) * yScale;
+                    
+                    if (firstPoint) {
+                        ctx.moveTo(canvasX, canvasY);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(canvasX, canvasY);
+                    }
+                }
+                
+                ctx.strokeStyle = '#f8961e';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('振荡函数 f(x) = sin(1/x): 在x=0附近无限振荡', width / 2, padding - 10);
+            }
+        }
+        
+        // 初始化面积画布
+        function initAreaCanvas() {
+            const canvas = document.getElementById('areaCanvas');
+            const container = canvas.parentElement;
+            
+            // 设置画布尺寸为容器尺寸
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            
+            drawAreaUnderCurve(ctx, container.clientWidth, container.clientHeight);
+        }
+        
+        // 绘制曲线下面积
+        function drawAreaUnderCurve(ctx, width, height) {
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            drawAxes(ctx, width, height, padding);
+            
+            // 获取当前函数
+            const f = getCurrentFunction();
+            
+            // 计算x的范围和缩放比例
+            const xMin = -2;
+            const xMax = 4;
+            const xScale = graphWidth / (xMax - xMin);
+            
+            // 计算y的范围和缩放比例
+            const yValues = [];
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + i / xScale;
+                yValues.push(f(x));
+            }
+            const yMin = Math.min(...yValues);
+            const yMax = Math.max(...yValues);
+            const yRange = yMax - yMin;
+            const yScale = graphHeight / (yRange || 1);
+            
+            // 绘制函数曲线
+            ctx.beginPath();
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + i / xScale;
+                const y = f(x);
+                const canvasX = padding + i;
+                const canvasY = height - padding - (y - yMin) * yScale;
+                
+                if (i === 0) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制面积（如果启用）
+            if (showArea && intervalA !== intervalB) {
+                const a = Math.min(intervalA, intervalB);
+                const b = Math.max(intervalA, intervalB);
+                
+                // 找到a和b在画布上的位置
+                const aCanvasX = padding + (a - xMin) * xScale;
+                const bCanvasX = padding + (b - xMin) * xScale;
+                
+                // 填充曲线下的面积
+                ctx.beginPath();
+                ctx.moveTo(aCanvasX, height - padding);
+                
+                // 从a到b绘制曲线
+                for (let i = aCanvasX; i <= bCanvasX; i++) {
+                    const x = xMin + (i - padding) / xScale;
+                    const y = f(x);
+                    const canvasY = height - padding - (y - yMin) * yScale;
+                    ctx.lineTo(i, canvasY);
+                }
+                
+                // 从b到a绘制底部直线
+                ctx.lineTo(bCanvasX, height - padding);
+                ctx.lineTo(aCanvasX, height - padding);
+                
+                ctx.fillStyle = 'rgba(247, 37, 133, 0.3)';
+                ctx.fill();
+                
+                // 显示积分区间
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(`a = ${a.toFixed(2)}`, aCanvasX - 20, height - padding + 20);
+                ctx.fillText(`b = ${b.toFixed(2)}`, bCanvasX - 20, height - padding + 20);
+                
+                // 显示垂直线
+                ctx.beginPath();
+                ctx.moveTo(aCanvasX, height - padding);
+                ctx.lineTo(aCanvasX, height - padding - (f(a) - yMin) * yScale);
+                ctx.moveTo(bCanvasX, height - padding);
+                ctx.lineTo(bCanvasX, height - padding - (f(b) - yMin) * yScale);
+                ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 计算并显示面积
+                const area = approximateIntegral(f, a, b, 1000);
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText(`面积 ≈ ${area.toFixed(4)}`, width / 2, padding - 10);
+            }
+        }
+        
+        // 初始化微积分基本定理画布
+        function initFTCanvas() {
+            const canvas = document.getElementById('ftcCanvas');
+            const container = canvas.parentElement;
+            
+            // 设置画布尺寸为容器尺寸
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            
+            drawFTC(ctx, container.clientWidth, container.clientHeight);
+        }
+        
+        // 绘制微积分基本定理
+        function drawFTC(ctx, width, height) {
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            drawAxes(ctx, width, height, padding);
+            
+            // 获取当前函数
+            const f = getFTCFunction();
+            
+            // 计算x的范围和缩放比例
+            const xMin = 0;
+            const xMax = 5;
+            const xScale = graphWidth / (xMax - xMin);
+            
+            // 计算y的范围和缩放比例（用于函数f）
+            const yValues = [];
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + i / xScale;
+                yValues.push(f(x));
+            }
+            const yMin = Math.min(...yValues);
+            const yMax = Math.max(...yValues);
+            const yScale = graphHeight / (yMax - yMin || 1);
+            
+            // 绘制函数f(x)的曲线
+            ctx.beginPath();
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + i / xScale;
+                const y = f(x);
+                const canvasX = padding + i;
+                const canvasY = height - padding - (y - yMin) * yScale;
+                
+                if (i === 0) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 获取a和b的值
+            const a = parseFloat(document.getElementById('ftcASlider').value);
+            const b = parseFloat(document.getElementById('ftcBSlider').value);
+            
+            // 在曲线上标记a和b点
+            const aCanvasX = padding + (a - xMin) * xScale;
+            const bCanvasX = padding + (b - xMin) * xScale;
+            const aY = f(a);
+            const bY = f(b);
+            const aCanvasY = height - padding - (aY - yMin) * yScale;
+            const bCanvasY = height - padding - (bY - yMin) * yScale;
+            
+            // 绘制a和b点
+            ctx.beginPath();
+            ctx.arc(aCanvasX, aCanvasY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(bCanvasX, bCanvasY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--success');
+            ctx.fill();
+            
+            // 标记a和b
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(`a = ${a.toFixed(1)}`, aCanvasX - 20, aCanvasY - 15);
+            ctx.fillText(`F(a)`, aCanvasX - 20, aCanvasY + 25);
+            
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--success');
+            ctx.fillText(`b = ${b.toFixed(1)}`, bCanvasX - 20, bCanvasY - 15);
+            ctx.fillText(`F(b)`, bCanvasX - 20, bCanvasY + 25);
+            
+            // 显示牛顿-莱布尼茨公式
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`∫${a.toFixed(1)}${b.toFixed(1)} f(x)dx = F(b) - F(a)`, width / 2, padding - 10);
+        }
+        
+        // 绘制坐标轴
+        function drawAxes(ctx, width, height, padding) {
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制坐标轴标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('x', width - padding + 5, height - padding);
+            ctx.fillText('y', padding, padding - 10);
+            
+            // 绘制刻度
+            // x轴刻度
+            for (let i = 0; i <= 10; i++) {
+                const x = padding + (i * (width - 2 * padding)) / 10;
+                ctx.beginPath();
+                ctx.moveTo(x, height - padding);
+                ctx.lineTo(x, height - padding + 5);
+                ctx.stroke();
+                
+                // 刻度值
+                ctx.fillText(i - 2, x - 5, height - padding + 20);
+            }
+            
+            // y轴刻度
+            for (let i = 0; i <= 10; i++) {
+                const y = height - padding - (i * (height - 2 * padding)) / 10;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(padding - 5, y);
+                ctx.stroke();
+            }
+        }
+        
+        // 获取当前函数
+        function getCurrentFunction() {
+            const funcType = document.getElementById('functionSelect').value;
+            
+            switch(funcType) {
+                case 'x^2':
+                    return x => x * x;
+                case 'sin(x)':
+                    return x => Math.sin(x);
+                case 'x^3-2x':
+                    return x => x * x * x - 2 * x;
+                case 'sqrt(x)':
+                    return x => Math.sqrt(Math.max(x, 0));
+                default:
+                    return x => x * x;
+            }
+        }
+        
+        // 获取FTC函数
+        function getFTCFunction() {
+            const funcType = document.getElementById('ftcFunctionSelect').value;
+            
+            switch(funcType) {
+                case 'x^2':
+                    return x => x * x;
+                case '2x+1':
+                    return x => 2 * x + 1;
+                case 'sin(x)':
+                    return x => Math.sin(x);
+                case 'cos(x)':
+                    return x => Math.cos(x);
+                default:
+                    return x => x * x;
+            }
+        }
+        
+        // 近似计算积分
+        function approximateIntegral(f, a, b, n) {
+            const dx = (b - a) / n;
+            let sum = 0;
+            
+            for (let i = 0; i < n; i++) {
+                const x = a + i * dx + dx / 2; // 中点法
+                sum += f(x) * dx;
+            }
+            
+            return sum;
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 黎曼和控件
+            document.getElementById('nSlider').addEventListener('input', function() {
+                n = parseInt(this.value);
+                document.getElementById('nValue').textContent = n;
+                initRiemannCanvas();
+            });
+            
+            document.getElementById('methodSelect').addEventListener('change', function() {
+                method = this.value;
+                initRiemannCanvas();
+            });
+            
+            document.getElementById('speedSlider').addEventListener('input', function() {
+                animationSpeed = parseInt(this.value);
+                const speedText = ['极慢', '很慢', '慢', '中慢', '中速', '中快', '快', '很快', '极快', '最快'][animationSpeed-1];
+                document.getElementById('speedValue').textContent = speedText;
+            });
+            
+            document.getElementById('animateBtn').addEventListener('click', function() {
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                    this.innerHTML = '<i class="fas fa-play"></i> 动画演示';
+                    animationFrameCount = 0;
+                } else {
+                    this.innerHTML = '<i class="fas fa-pause"></i> 停止动画';
+                    animateRiemannSum();
+                }
+            });
+            
+            document.getElementById('increaseBtn').addEventListener('click', function() {
+                n = Math.min(n + 5, 100);
+                document.getElementById('nSlider').value = n;
+                document.getElementById('nValue').textContent = n;
+                initRiemannCanvas();
+            });
+            
+            document.getElementById('decreaseBtn').addEventListener('click', function() {
+                n = Math.max(n - 5, 2);
+                document.getElementById('nSlider').value = n;
+                document.getElementById('nValue').textContent = n;
+                initRiemannCanvas();
+            });
+            
+            // 不可积函数控件
+            document.getElementById('nonIntegrableSelect').addEventListener('change', function() {
+                initNonIntegrableCanvas();
+            });
+            
+            document.getElementById('nonIntegrableN').addEventListener('input', function() {
+                document.getElementById('nonIntegrableNValue').textContent = this.value;
+                initNonIntegrableCanvas();
+            });
+            
+            document.getElementById('nonIntegrableRange').addEventListener('input', function() {
+                const rangeValue = parseFloat(this.value);
+                const range = rangeValue/2;
+                document.getElementById('nonIntegrableRangeValue').textContent = `[-${range.toFixed(1)},${range.toFixed(1)}]`;
+                initNonIntegrableCanvas();
+            });
+            
+            document.getElementById('showExplanationBtn').addEventListener('click', function() {
+                const funcType = document.getElementById('nonIntegrableSelect').value;
+                let explanation = '';
+                
+                switch(funcType) {
+                    case 'dirichlet':
+                        explanation = 'Dirichlet函数不可积的原因：\n\n在任意区间内，既有有理数也有无理数。如果取样本点为有理数，黎曼和趋于区间长度；如果取样本点为无理数，黎曼和趋于0。因此极限不存在，函数不可积。';
+                        break;
+                    case 'unbounded':
+                        explanation = '函数 f(x)=1/x 在包含0的区间上不可积的原因：\n\n当x趋近于0时，函数值趋于无穷大，不是有界函数。定积分要求函数在积分区间上有界，否则黎曼和可能发散到无穷大。';
+                        break;
+                    case 'oscillating':
+                        explanation = '函数 f(x)=sin(1/x) 在包含0的区间上不可积的原因：\n\n当x趋近于0时，函数在-1和1之间无限振荡。尽管函数有界，但振荡频率无限增加，导致黎曼和不收敛。';
+                        break;
+                }
+                
+                alert(explanation);
+            });
+            
+            // 面积控件
+            document.getElementById('functionSelect').addEventListener('change', function() {
+                initAreaCanvas();
+            });
+            
+            document.getElementById('intervalA').addEventListener('input', function() {
+                intervalA = parseFloat(this.value);
+                document.getElementById('aValue').textContent = intervalA.toFixed(1);
+                initAreaCanvas();
+            });
+            
+            document.getElementById('intervalB').addEventListener('input', function() {
+                intervalB = parseFloat(this.value);
+                document.getElementById('bValue').textContent = intervalB.toFixed(1);
+                initAreaCanvas();
+            });
+            
+            document.getElementById('showAreaBtn').addEventListener('click', function() {
+                showArea = !showArea;
+                this.innerHTML = showArea ? 
+                    '<i class="fas fa-fill-drip"></i> 隐藏面积' : 
+                    '<i class="fas fa-fill-drip"></i> 显示面积';
+                initAreaCanvas();
+            });
+            
+            document.getElementById('calcAreaBtn').addEventListener('click', function() {
+                const f = getCurrentFunction();
+                const a = Math.min(intervalA, intervalB);
+                const b = Math.max(intervalA, intervalB);
+                const area = approximateIntegral(f, a, b, 1000);
+                
+                alert(`函数在区间 [${a.toFixed(2)}, ${b.toFixed(2)}] 上的面积近似值为: ${area.toFixed(4)}`);
+            });
+            
+            // FTC控件
+            document.getElementById('ftcFunctionSelect').addEventListener('change', function() {
+                initFTCanvas();
+            });
+            
+            document.getElementById('ftcASlider').addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                document.getElementById('ftcA').textContent = value.toFixed(1);
+                initFTCanvas();
+            });
+            
+            document.getElementById('ftcBSlider').addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                document.getElementById('ftcB').textContent = value.toFixed(1);
+                initFTCanvas();
+            });
+            
+            document.getElementById('showFTCBtn').addEventListener('click', function() {
+                const fType = document.getElementById('ftcFunctionSelect').value;
+                let antiderivative = '';
+                
+                switch(fType) {
+                    case 'x^2':
+                        antiderivative = 'F(x) = x³/3 + C';
+                        break;
+                    case '2x+1':
+                        antiderivative = 'F(x) = x² + x + C';
+                        break;
+                    case 'sin(x)':
+                        antiderivative = 'F(x) = -cos(x) + C';
+                        break;
+                    case 'cos(x)':
+                        antiderivative = 'F(x) = sin(x) + C';
+                        break;
+                }
+                
+                alert(`微积分基本定理表明：∫ₐᵇ f(x)dx = F(b) - F(a)\n\n对于 f(x) = ${fType}，原函数是：\n${antiderivative}`);
+            });
+            
+            document.getElementById('calculateFTCBtn').addEventListener('click', function() {
+                const f = getFTCFunction();
+                const a = parseFloat(document.getElementById('ftcASlider').value);
+                const b = parseFloat(document.getElementById('ftcBSlider').value);
+                
+                // 计算积分近似值
+                const integral = approximateIntegral(f, a, b, 10000);
+                
+                // 显示结果
+                const resultDiv = document.getElementById('ftcResult');
+                const resultText = document.getElementById('ftcResultText');
+                
+                resultText.innerHTML = `
+                    ∫<sub>${a.toFixed(1)}</sub><sup>${b.toFixed(1)}</sup> f(x) dx ≈ ${integral.toFixed(4)}<br>
+                    这表示函数 f(x) 在区间 [${a.toFixed(1)}, ${b.toFixed(1)}] 上的定积分近似值。
+                `;
+                
+                resultDiv.style.display = 'block';
+            });
+            
+            // 窗口大小调整时重新初始化画布
+            window.addEventListener('resize', function() {
+                initCanvases();
+            });
+        }
+        
+        // 黎曼和动画（改进版：更慢的速度）
+        function animateRiemannSum() {
+            animationFrameCount++;
+            
+            // 根据动画速度控制更新频率
+            // 速度值越大，动画越慢（需要更多帧才更新一次）
+            if (animationFrameCount >= (12 - animationSpeed)) {
+                n += 1;
+                if (n > 100) {
+                    n = 2;
+                }
+                
+                document.getElementById('nSlider').value = n;
+                document.getElementById('nValue').textContent = n;
+                initRiemannCanvas();
+                animationFrameCount = 0;
+            }
+            
+            animationId = requestAnimationFrame(animateRiemannSum);
+        }
+    </script>
+</body>
+</html>
