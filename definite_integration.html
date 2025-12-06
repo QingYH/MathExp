@@ -329,6 +329,90 @@
             flex: 1;
         }
         
+        .integral-display {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 1.5rem;
+            position: relative;
+            display: inline-block;
+            padding: 0 10px;
+        }
+        
+        .integral-display sup,
+        .integral-display sub {
+            font-size: 0.8rem;
+            position: absolute;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        
+        .integral-display sup {
+            top: -0.8em;
+        }
+        
+        .integral-display sub {
+            bottom: -0.8em;
+        }
+        
+        .formula-display {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.1rem;
+            overflow-x: auto;
+        }
+        
+        .calculation-steps {
+            background-color: #f0f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid var(--primary);
+        }
+        
+        .calculation-step {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .result-display {
+            background-color: #e7f9ed;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid var(--success);
+        }
+        
+        .physical-meaning {
+            background-color: #fff5e6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid var(--warning);
+        }
+        
+        .meaning-icon {
+            font-size: 1.5rem;
+            color: var(--warning);
+            margin-right: 10px;
+        }
+        
+        .fraction {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .fraction span {
+            display: block;
+        }
+        
+        .fraction .numerator {
+            border-bottom: 1px solid black;
+        }
+        
         @media (max-width: 768px) {
             .content-row {
                 flex-direction: column;
@@ -496,15 +580,15 @@
                         <div class="control-group">
                             <label for="nonIntegrableSelect">选择不可积函数:</label>
                             <select id="nonIntegrableSelect" class="method-select">
-                                <option value="dirichlet">Dirichlet函数（离散近似）</option>
+                                <option value="dirichlet">Dirichlet函数</option>
                                 <option value="unbounded">无界函数 f(x)=1/x</option>
                                 <option value="oscillating">振荡函数 f(x)=sin(1/x)</option>
                             </select>
                         </div>
                         
                         <div class="control-group">
-                            <label for="nonIntegrableN">采样点数: <span id="nonIntegrableNValue">100</span></label>
-                            <input type="range" id="nonIntegrableN" min="10" max="500" value="100" step="10">
+                            <label for="nonIntegrableN">采样点数: <span id="nonIntegrableNValue">500</span></label>
+                            <input type="range" id="nonIntegrableN" min="50" max="1000" value="500" step="50">
                             <div class="value-display">
                                 <span>少</span>
                                 <span>多</span>
@@ -513,7 +597,7 @@
                         
                         <div class="control-group">
                             <label for="nonIntegrableRange">x范围: <span id="nonIntegrableRangeValue">[-1,1]</span></label>
-                            <input type="range" id="nonIntegrableRange" min="1" max="10" value="5" step="1">
+                            <input type="range" id="nonIntegrableRange" min="1" max="10" value="2" step="1">
                             <div class="value-display">
                                 <span>窄</span>
                                 <span>宽</span>
@@ -522,6 +606,7 @@
                         
                         <div class="buttons">
                             <button id="showExplanationBtn" class="btn-danger"><i class="fas fa-info-circle"></i> 解释不可积原因</button>
+                            <button id="toggleRationalBtn" class="btn-accent"><i class="fas fa-eye"></i> 切换有理数显示</button>
                         </div>
                     </div>
                 </div>
@@ -592,6 +677,40 @@
         <!-- 微积分基本定理部分 -->
         <section class="section" id="fundamental-theorem">
             <h2><i class="fas fa-crown"></i> 微积分基本定理（牛顿-莱布尼茨公式）</h2>
+            
+            <!-- 物理意义解释 -->
+            <div class="physical-meaning">
+                <h3><i class="fas fa-atom meaning-icon"></i> 物理意义解释</h3>
+                <p>牛顿-莱布尼茨公式不仅在数学上有重要意义，在物理学中也有深刻的应用：</p>
+                <div class="properties-grid">
+                    <div class="property-card">
+                        <h4><i class="fas fa-tachometer-alt"></i> 速度与位移</h4>
+                        <p>如果 \( v(t) \) 表示物体的速度函数，那么物体从时间 \( t=a \) 到 \( t=b \) 的位移为：</p>
+                        <div class="formula" style="font-size: 1rem;">
+                            $$ \text{位移} = \int_a^b v(t) \, dt = s(b) - s(a) $$
+                        </div>
+                        <p>其中 \( s(t) \) 是位置函数，\( s'(t) = v(t) \)。</p>
+                    </div>
+                    
+                    <div class="property-card">
+                        <h4><i class="fas fa-bolt"></i> 功率与能量</h4>
+                        <p>如果 \( P(t) \) 表示功率函数，那么从时间 \( t=a \) 到 \( t=b \) 消耗的能量为：</p>
+                        <div class="formula" style="font-size: 1rem;">
+                            $$ \text{能量} = \int_a^b P(t) \, dt = E(b) - E(a) $$
+                        </div>
+                        <p>其中 \( E(t) \) 是能量函数，\( E'(t) = P(t) \)。</p>
+                    </div>
+                    
+                    <div class="property-card">
+                        <h4><i class="fas fa-chart-line"></i> 变化率的累积</h4>
+                        <p>牛顿-莱布尼茨公式的核心思想是：一个量的变化率的积分等于该量的净变化量。这是微积分连接局部与整体的关键。</p>
+                        <div class="formula" style="font-size: 1rem;">
+                            $$ \int_a^b f'(x) \, dx = f(b) - f(a) $$
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="content-row">
                 <div class="text-content">
                     <p>微积分基本定理建立了微分与积分之间的深刻联系，是微积分的核心定理。</p>
@@ -613,43 +732,90 @@
                         </div>
                         <p>这个公式将定积分的计算转化为求原函数在区间端点处的差值。</p>
                     </div>
+                    
+                    <!-- 图形展示说明 -->
+                    <div class="example-box">
+                        <h4><i class="fas fa-chart-area"></i> 图形展示说明</h4>
+                        <p>右侧的可视化展示了牛顿-莱布尼茨公式的几何意义：</p>
+                        <ul>
+                            <li><strong>蓝色曲线</strong>：表示被积函数 \( f(x) \)</li>
+                            <li><strong>红色点 (a)</strong>：积分起点，对应原函数值 \( F(a) \)</li>
+                            <li><strong>绿色点 (b)</strong>：积分终点，对应原函数值 \( F(b) \)</li>
+                            <li><strong>浅蓝色区域</strong>：表示定积分 \( \int_a^b f(x) \, dx \) 的值</li>
+                            <li><strong>垂直距离</strong>：\( F(b) - F(a) \) 的几何表示</li>
+                        </ul>
+                        <p>图形直观地展示了：曲线下的面积（定积分）等于原函数在区间端点处的差值。</p>
+                    </div>
                 </div>
                 
                 <div class="visualization">
                     <h3><i class="fas fa-project-diagram"></i> 微积分基本定理可视化</h3>
+                    
+                    <!-- 微积分基本定理公式显示在图形上方 -->
+                    <div class="formula-display" id="ftcFormulaDisplay">
+                        <div id="ftcFormulaText">
+                            牛顿-莱布尼茨公式：<br>
+                            $$ \int_{a}^{b} f(x) \, dx = F(b) - F(a) $$
+                        </div>
+                    </div>
+                    
                     <div class="canvas-container">
                         <canvas id="ftcCanvas"></canvas>
                     </div>
+                    
+                    <!-- 图形标注说明 -->
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.9rem;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 15px; height: 15px; background-color: #4361ee; margin-right: 5px;"></div>
+                            <span>被积函数 f(x)</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 15px; height: 15px; background-color: rgba(76, 201, 240, 0.3); margin-right: 5px;"></div>
+                            <span>定积分值</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 8px; height: 8px; background-color: #f72585; border-radius: 50%; margin-right: 5px;"></div>
+                            <span>F(a)</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 8px; height: 8px; background-color: #4cc9f0; border-radius: 50%; margin-right: 5px;"></div>
+                            <span>F(b)</span>
+                        </div>
+                    </div>
+                    
                     <div class="controls">
                         <div class="control-group">
                             <label for="ftcFunctionSelect">选择函数:</label>
                             <select id="ftcFunctionSelect" class="method-select">
-                                <option value="x^2">f(x) = x²</option>
-                                <option value="2x+1">f(x) = 2x + 1</option>
-                                <option value="sin(x)">f(x) = sin(x)</option>
-                                <option value="cos(x)">f(x) = cos(x)</option>
+                                <option value="x^2">f(x) = x² (抛物线)</option>
+                                <option value="2x+1">f(x) = 2x + 1 (直线)</option>
+                                <option value="sin(x)">f(x) = sin(x) (正弦波)</option>
+                                <option value="cos(x)">f(x) = cos(x) (余弦波)</option>
+                                <option value="e^x">f(x) = eˣ (指数函数)</option>
                             </select>
                         </div>
                         
                         <div class="control-group">
-                            <label for="ftcASlider">积分起点 a: <span id="ftcA">1</span></label>
+                            <label for="ftcASlider">积分起点 a: <span id="ftcA">1.0</span></label>
                             <input type="range" id="ftcASlider" min="0" max="3" value="1" step="0.1">
                         </div>
                         
                         <div class="control-group">
-                            <label for="ftcBSlider">积分终点 b: <span id="ftcB">3</span></label>
+                            <label for="ftcBSlider">积分终点 b: <span id="ftcB">3.0</span></label>
                             <input type="range" id="ftcBSlider" min="1" max="5" value="3" step="0.1">
                         </div>
                         
                         <div class="buttons">
                             <button id="showFTCBtn" class="btn-success"><i class="fas fa-eye"></i> 显示原函数</button>
                             <button id="calculateFTCBtn"><i class="fas fa-bolt"></i> 计算定积分</button>
+                            <button id="showPhysicalExampleBtn" class="btn-accent"><i class="fas fa-atom"></i> 物理示例</button>
                         </div>
                     </div>
                     
-                    <div id="ftcResult" style="margin-top: 15px; padding: 10px; background-color: #e7f9ed; border-radius: 8px; display: none;">
-                        <h4>计算结果:</h4>
-                        <p id="ftcResultText"></p>
+                    <!-- 计算结果区域 -->
+                    <div id="ftcResult" class="result-display" style="display: none;">
+                        <h4><i class="fas fa-calculator"></i> 计算结果:</h4>
+                        <div id="ftcResultText"></div>
                     </div>
                 </div>
             </div>
@@ -657,7 +823,7 @@
         
         <div class="footer-note">
             <p><i class="fas fa-lightbulb"></i> 提示：尝试与所有滑块、按钮和下拉菜单交互，观察图形变化，加深对定积分概念的理解。</p>
-            <p>© 2023 定积分交互式学习指南 | 设计用于数学教育</p>
+            <p>© 2025 定积分交互式学习指南 | 设计用于数学教育</p>
         </div>
     </div>
 
@@ -672,6 +838,7 @@
         let intervalB = 2;
         let animationSpeed = 3; // 默认速度（1-10，越大越慢）
         let animationFrameCount = 0;
+        let showRationalOnly = false; // 是否只显示有理数点
         
         // 等待页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -679,6 +846,7 @@
             setTimeout(() => {
                 initCanvases();
                 setupEventListeners();
+                updateFTCFormula(); // 初始化FTC公式显示
                 // 重新渲染MathJax公式
                 if (window.MathJax) {
                     MathJax.typesetPromise();
@@ -766,7 +934,7 @@
                     ctx.lineTo(canvasX, canvasY);
                 }
             }
-            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            ctx.strokeStyle = '#4361ee';
             ctx.lineWidth = 3;
             ctx.stroke();
             
@@ -850,6 +1018,37 @@
             drawNonIntegrableFunction(ctx, container.clientWidth, container.clientHeight);
         }
         
+        // 判断一个数是否"有理数"（近似判断）
+        function isRationalApprox(x) {
+            // 在实际的Dirichlet函数中，有理数和无理数都是稠密的
+            // 这里我们用一种简单的方法来近似：如果x可以表示为p/q的形式（q不太大），则认为是"有理数"
+            // 注意：这只是一个教学可视化中的近似
+            
+            // 检查是否是常见的分数
+            const fractions = [0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, -0.25, -0.5, -0.75, -1];
+            if (fractions.some(f => Math.abs(x - f) < 0.01)) {
+                return true;
+            }
+            
+            // 检查是否接近整数
+            if (Math.abs(x - Math.round(x)) < 0.01) {
+                return true;
+            }
+            
+            // 检查是否接近分数 p/q，其中q <= 10
+            for (let q = 1; q <= 10; q++) {
+                for (let p = -20; p <= 20; p++) {
+                    const fraction = p / q;
+                    if (Math.abs(x - fraction) < 0.01) {
+                        return true;
+                    }
+                }
+            }
+            
+            // 否则认为是"无理数"
+            return false;
+        }
+        
         // 绘制不可积函数
         function drawNonIntegrableFunction(ctx, width, height) {
             const padding = 40;
@@ -886,14 +1085,18 @@
             const xScale = graphWidth / (xMax - xMin);
             
             // 绘制函数
-            ctx.beginPath();
-            
             if (funcType === 'dirichlet') {
                 // Dirichlet函数（离散近似）
+                let rationalCount = 0;
+                let irrationalCount = 0;
+                
                 for (let i = 0; i <= samplePoints; i++) {
                     const x = xMin + i * (xMax - xMin) / samplePoints;
-                    // 简单判断有理数：如果x的小数部分接近0或0.5，我们近似为有理数
-                    const isRational = Math.abs(x - Math.round(x * 10) / 10) < 0.05;
+                    const isRational = isRationalApprox(x);
+                    
+                    // 如果只显示有理数点，跳过无理数点
+                    if (showRationalOnly && !isRational) continue;
+                    
                     const y = isRational ? 1 : 0;
                     
                     const canvasX = padding + (x - xMin) * xScale;
@@ -904,11 +1107,15 @@
                     ctx.arc(canvasX, canvasY, 3, 0, Math.PI * 2);
                     ctx.fillStyle = isRational ? '#ef476f' : '#4361ee';
                     ctx.fill();
+                    
+                    if (isRational) rationalCount++;
+                    else irrationalCount++;
                 }
                 
                 ctx.fillStyle = '#333';
                 ctx.font = 'bold 14px Arial';
-                ctx.fillText('Dirichlet函数: 有理点值为1(红), 无理点值为0(蓝)', width / 2, padding - 10);
+                ctx.fillText('Dirichlet函数: 有理点=1(红), 无理点=0(蓝)', width / 2, padding - 10);
+                ctx.fillText(`有理点: ${rationalCount}, 无理点: ${irrationalCount}`, width / 2, padding + 15);
                 
             } else if (funcType === 'unbounded') {
                 // 无界函数 f(x) = 1/x
@@ -930,20 +1137,39 @@
                 ctx.setLineDash([]);
                 
                 // 绘制函数曲线（避开奇点）
+                ctx.beginPath();
+                let firstPointLeft = true;
+                let firstPointRight = true;
+                
                 for (let i = 0; i <= samplePoints; i++) {
                     const x = xMin + i * (xMax - xMin) / samplePoints;
-                    if (Math.abs(x) < 0.05) continue; // 跳过接近0的点
+                    
+                    // 跳过接近0的点
+                    if (Math.abs(x) < 0.05) continue;
                     
                     const y = f(x);
-                    if (Math.abs(y) > 10) continue; // 跳过过大的y值
+                    
+                    // 跳过过大的y值
+                    if (Math.abs(y) > 10) continue;
                     
                     const canvasX = padding + (x - xMin) * xScale;
                     const canvasY = height - padding - (y - yMin) * yScale;
                     
-                    if (i === 0 || Math.abs(x - xMin) < 0.1) {
-                        ctx.moveTo(canvasX, canvasY);
+                    // 分别处理左右两侧的曲线
+                    if (x < 0) {
+                        if (firstPointLeft) {
+                            ctx.moveTo(canvasX, canvasY);
+                            firstPointLeft = false;
+                        } else {
+                            ctx.lineTo(canvasX, canvasY);
+                        }
                     } else {
-                        ctx.lineTo(canvasX, canvasY);
+                        if (firstPointRight) {
+                            ctx.moveTo(canvasX, canvasY);
+                            firstPointRight = false;
+                        } else {
+                            ctx.lineTo(canvasX, canvasY);
+                        }
                     }
                 }
                 
@@ -965,7 +1191,10 @@
                 const yScale = graphHeight / (yMax - yMin);
                 
                 // 绘制函数曲线
-                let firstPoint = true;
+                ctx.beginPath();
+                let firstPointLeft = true;
+                let firstPointRight = true;
+                
                 for (let i = 0; i <= samplePoints; i++) {
                     const x = xMin + i * (xMax - xMin) / samplePoints;
                     if (Math.abs(x) < 0.01) continue; // 跳过接近0的点
@@ -974,11 +1203,21 @@
                     const canvasX = padding + (x - xMin) * xScale;
                     const canvasY = height - padding - (y - yMin) * yScale;
                     
-                    if (firstPoint) {
-                        ctx.moveTo(canvasX, canvasY);
-                        firstPoint = false;
+                    // 分别处理左右两侧的曲线
+                    if (x < 0) {
+                        if (firstPointLeft) {
+                            ctx.moveTo(canvasX, canvasY);
+                            firstPointLeft = false;
+                        } else {
+                            ctx.lineTo(canvasX, canvasY);
+                        }
                     } else {
-                        ctx.lineTo(canvasX, canvasY);
+                        if (firstPointRight) {
+                            ctx.moveTo(canvasX, canvasY);
+                            firstPointRight = false;
+                        } else {
+                            ctx.lineTo(canvasX, canvasY);
+                        }
                     }
                 }
                 
@@ -1006,6 +1245,24 @@
             ctx.scale(dpr, dpr);
             
             drawAreaUnderCurve(ctx, container.clientWidth, container.clientHeight);
+        }
+        
+        // 绘制坐标轴辅助函数
+        function drawAxes(ctx, width, height, padding) {
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制坐标轴标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#333';
+            ctx.fillText('x', width - padding + 5, height - padding);
+            ctx.fillText('y', padding, padding - 10);
         }
         
         // 绘制曲线下面积
@@ -1053,7 +1310,7 @@
                     ctx.lineTo(canvasX, canvasY);
                 }
             }
-            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            ctx.strokeStyle = '#4361ee';
             ctx.lineWidth = 3;
             ctx.stroke();
             
@@ -1086,7 +1343,7 @@
                 ctx.fill();
                 
                 // 显示积分区间
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+                ctx.fillStyle = '#f72585';
                 ctx.font = 'bold 14px Arial';
                 ctx.fillText(`a = ${a.toFixed(2)}`, aCanvasX - 20, height - padding + 20);
                 ctx.fillText(`b = ${b.toFixed(2)}`, bCanvasX - 20, height - padding + 20);
@@ -1097,7 +1354,7 @@
                 ctx.lineTo(aCanvasX, height - padding - (f(a) - yMin) * yScale);
                 ctx.moveTo(bCanvasX, height - padding);
                 ctx.lineTo(bCanvasX, height - padding - (f(b) - yMin) * yScale);
-                ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+                ctx.strokeStyle = '#f72585';
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 
@@ -1123,6 +1380,47 @@
             ctx.scale(dpr, dpr);
             
             drawFTC(ctx, container.clientWidth, container.clientHeight);
+        }
+        
+        // 更新微积分基本定理公式显示
+        function updateFTCFormula() {
+            const funcType = document.getElementById('ftcFunctionSelect').value;
+            const a = parseFloat(document.getElementById('ftcASlider').value);
+            const b = parseFloat(document.getElementById('ftcBSlider').value);
+            
+            let fTex;
+            
+            switch(funcType) {
+                case 'x^2':
+                    fTex = 'x^2';
+                    break;
+                case '2x+1':
+                    fTex = '2x+1';
+                    break;
+                case 'sin(x)':
+                    fTex = '\\sin(x)';
+                    break;
+                case 'cos(x)':
+                    fTex = '\\cos(x)';
+                    break;
+                case 'e^x':
+                    fTex = 'e^x';
+                    break;
+                default:
+                    fTex = 'x^2';
+            }
+            
+            const formulaHtml = `
+                牛顿-莱布尼茨公式：<br>
+                $$ \\int_{${a.toFixed(1)}}^{${b.toFixed(1)}} ${fTex} \\, dx = F(${b.toFixed(1)}) - F(${a.toFixed(1)}) $$
+            `;
+            
+            document.getElementById('ftcFormulaText').innerHTML = formulaHtml;
+            
+            // 重新渲染MathJax公式
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
         }
         
         // 绘制微积分基本定理
@@ -1169,7 +1467,7 @@
                     ctx.lineTo(canvasX, canvasY);
                 }
             }
-            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary');
+            ctx.strokeStyle = '#4361ee';
             ctx.lineWidth = 3;
             ctx.stroke();
             
@@ -1185,71 +1483,54 @@
             const aCanvasY = height - padding - (aY - yMin) * yScale;
             const bCanvasY = height - padding - (bY - yMin) * yScale;
             
+            // 绘制曲线下面积（a到b）
+            if (a < b) {
+                // 填充曲线下的面积
+                ctx.beginPath();
+                ctx.moveTo(aCanvasX, height - padding);
+                
+                // 从a到b绘制曲线
+                for (let i = aCanvasX; i <= bCanvasX; i++) {
+                    const x = xMin + (i - padding) / xScale;
+                    const y = f(x);
+                    const canvasY = height - padding - (y - yMin) * yScale;
+                    ctx.lineTo(i, canvasY);
+                }
+                
+                // 从b到a绘制底部直线
+                ctx.lineTo(bCanvasX, height - padding);
+                ctx.lineTo(aCanvasX, height - padding);
+                
+                ctx.fillStyle = 'rgba(76, 201, 240, 0.3)';
+                ctx.fill();
+            }
+            
             // 绘制a和b点
             ctx.beginPath();
             ctx.arc(aCanvasX, aCanvasY, 6, 0, Math.PI * 2);
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+            ctx.fillStyle = '#f72585';
             ctx.fill();
             
             ctx.beginPath();
             ctx.arc(bCanvasX, bCanvasY, 6, 0, Math.PI * 2);
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--success');
+            ctx.fillStyle = '#4cc9f0';
             ctx.fill();
             
             // 标记a和b
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+            ctx.fillStyle = '#f72585';
             ctx.font = 'bold 14px Arial';
             ctx.fillText(`a = ${a.toFixed(1)}`, aCanvasX - 20, aCanvasY - 15);
             ctx.fillText(`F(a)`, aCanvasX - 20, aCanvasY + 25);
             
-            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--success');
+            ctx.fillStyle = '#4cc9f0';
             ctx.fillText(`b = ${b.toFixed(1)}`, bCanvasX - 20, bCanvasY - 15);
             ctx.fillText(`F(b)`, bCanvasX - 20, bCanvasY + 25);
             
-            // 显示牛顿-莱布尼茨公式
+            // 显示定积分值
+            const integralValue = calculateExactIntegralValue(document.getElementById('ftcFunctionSelect').value, a, b);
             ctx.fillStyle = '#333';
             ctx.font = 'bold 16px Arial';
-            ctx.fillText(`∫${a.toFixed(1)}${b.toFixed(1)} f(x)dx = F(b) - F(a)`, width / 2, padding - 10);
-        }
-        
-        // 绘制坐标轴
-        function drawAxes(ctx, width, height, padding) {
-            ctx.beginPath();
-            ctx.moveTo(padding, height - padding);
-            ctx.lineTo(width - padding, height - padding);
-            ctx.moveTo(padding, padding);
-            ctx.lineTo(padding, height - padding);
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            // 绘制坐标轴标签
-            ctx.font = '14px Arial';
-            ctx.fillStyle = '#333';
-            ctx.fillText('x', width - padding + 5, height - padding);
-            ctx.fillText('y', padding, padding - 10);
-            
-            // 绘制刻度
-            // x轴刻度
-            for (let i = 0; i <= 10; i++) {
-                const x = padding + (i * (width - 2 * padding)) / 10;
-                ctx.beginPath();
-                ctx.moveTo(x, height - padding);
-                ctx.lineTo(x, height - padding + 5);
-                ctx.stroke();
-                
-                // 刻度值
-                ctx.fillText(i - 2, x - 5, height - padding + 20);
-            }
-            
-            // y轴刻度
-            for (let i = 0; i <= 10; i++) {
-                const y = height - padding - (i * (height - 2 * padding)) / 10;
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(padding - 5, y);
-                ctx.stroke();
-            }
+            ctx.fillText(`∫ₐᵇ f(x)dx = ${integralValue}`, width / 2, padding - 10);
         }
         
         // 获取当前函数
@@ -1283,6 +1564,8 @@
                     return x => Math.sin(x);
                 case 'cos(x)':
                     return x => Math.cos(x);
+                case 'e^x':
+                    return x => Math.exp(x);
                 default:
                     return x => x * x;
             }
@@ -1299,6 +1582,300 @@
             }
             
             return sum;
+        }
+        
+        // 获取原函数信息
+        function getAntiderivative(funcType) {
+            switch(funcType) {
+                case 'x^2':
+                    return {
+                        tex: 'F(x) = \\frac{x^3}{3} + C',
+                        latex: '\\frac{x^3}{3}',
+                        evalText: function(x) { 
+                            if (x === 0) return '0';
+                            const xFixed = x.toFixed(1);
+                            return `\\frac{${xFixed}^3}{3}`;
+                        }
+                    };
+                case '2x+1':
+                    return {
+                        tex: 'F(x) = x^2 + x + C',
+                        latex: 'x^2 + x',
+                        evalText: function(x) { 
+                            const xFixed = x.toFixed(1);
+                            return `${xFixed}^2 + ${xFixed}`;
+                        }
+                    };
+                case 'sin(x)':
+                    return {
+                        tex: 'F(x) = -\\cos(x) + C',
+                        latex: '-\\cos(x)',
+                        evalText: function(x) { 
+                            const xFixed = x.toFixed(1);
+                            return `-\\cos(${xFixed})`;
+                        }
+                    };
+                case 'cos(x)':
+                    return {
+                        tex: 'F(x) = \\sin(x) + C',
+                        latex: '\\sin(x)',
+                        evalText: function(x) { 
+                            const xFixed = x.toFixed(1);
+                            return `\\sin(${xFixed})`;
+                        }
+                    };
+                case 'e^x':
+                    return {
+                        tex: 'F(x) = e^x + C',
+                        latex: 'e^x',
+                        evalText: function(x) { 
+                            const xFixed = x.toFixed(1);
+                            return `e^{${xFixed}}`;
+                        }
+                    };
+                default:
+                    return {
+                        tex: 'F(x) = \\frac{x^3}{3} + C',
+                        latex: '\\frac{x^3}{3}',
+                        evalText: function(x) { 
+                            const xFixed = x.toFixed(1);
+                            return `\\frac{${xFixed}^3}{3}`;
+                        }
+                    };
+            }
+        }
+        
+        // 获取被积函数的TeX表示
+        function getIntegrandTex(funcType) {
+            switch(funcType) {
+                case 'x^2': return 'x^2';
+                case '2x+1': return '2x+1';
+                case 'sin(x)': return '\\sin(x)';
+                case 'cos(x)': return '\\cos(x)';
+                case 'e^x': return 'e^x';
+                default: return 'x^2';
+            }
+        }
+        
+        // 计算定积分的精确值（用于图形显示）
+        function calculateExactIntegralValue(funcType, a, b) {
+            switch(funcType) {
+                case 'x^2':
+                    const a3 = Math.pow(a, 3);
+                    const b3 = Math.pow(b, 3);
+                    const numerator = b3 - a3;
+                    
+                    if (Number.isInteger(numerator)) {
+                        if (numerator % 3 === 0) {
+                            return (numerator/3).toString();
+                        } else {
+                            return `\\frac{${numerator}}{3}`;
+                        }
+                    } else {
+                        return `\\frac{${b.toFixed(1)}^3 - ${a.toFixed(1)}^3}{3}`;
+                    }
+                    
+                case '2x+1':
+                    const result = (b*b + b) - (a*a + a);
+                    return result.toFixed(2);
+                    
+                case 'sin(x)':
+                    const sinResult = -Math.cos(b) + Math.cos(a);
+                    return sinResult.toFixed(3);
+                    
+                case 'cos(x)':
+                    const cosResult = Math.sin(b) - Math.sin(a);
+                    return cosResult.toFixed(3);
+                    
+                case 'e^x':
+                    const expResult = Math.exp(b) - Math.exp(a);
+                    return expResult.toFixed(3);
+                    
+                default:
+                    return '';
+            }
+        }
+        
+        // 获取计算过程的文本表示
+        function getCalculationText(funcType, a, b) {
+            const antiderivative = getAntiderivative(funcType);
+            const integrand = getIntegrandTex(funcType);
+            const aFixed = a.toFixed(1);
+            const bFixed = b.toFixed(1);
+            
+            let calculationText = '';
+            
+            // 根据函数类型生成不同的计算过程
+            switch(funcType) {
+                case 'x^2':
+                    calculationText = `
+                        \\begin{aligned}
+                        \\int_{${aFixed}}^{${bFixed}} ${integrand} \\, dx &= \\left[ ${antiderivative.latex} \\right]_{${aFixed}}^{${bFixed}} \\\\
+                        &= ${antiderivative.evalText(b)} - ${antiderivative.evalText(a)} \\\\
+                        &= \\frac{${bFixed}^3}{3} - \\frac{${aFixed}^3}{3} \\\\
+                        &= \\frac{${bFixed}^3 - ${aFixed}^3}{3}
+                        \\end{aligned}
+                    `;
+                    break;
+                    
+                case '2x+1':
+                    calculationText = `
+                        \\begin{aligned}
+                        \\int_{${aFixed}}^{${bFixed}} ${integrand} \\, dx &= \\left[ ${antiderivative.latex} \\right]_{${aFixed}}^{${bFixed}} \\\\
+                        &= ${antiderivative.evalText(b)} - ${antiderivative.evalText(a)} \\\\
+                        &= (${bFixed}^2 + ${bFixed}) - (${aFixed}^2 + ${aFixed})
+                        \\end{aligned}
+                    `;
+                    break;
+                    
+                case 'sin(x)':
+                    calculationText = `
+                        \\begin{aligned}
+                        \\int_{${aFixed}}^{${bFixed}} ${integrand} \\, dx &= \\left[ ${antiderivative.latex} \\right]_{${aFixed}}^{${bFixed}} \\\\
+                        &= ${antiderivative.evalText(b)} - ${antiderivative.evalText(a)} \\\\
+                        &= -\\cos(${bFixed}) + \\cos(${aFixed}) \\\\
+                        &= \\cos(${aFixed}) - \\cos(${bFixed})
+                        \\end{aligned}
+                    `;
+                    break;
+                    
+                case 'cos(x)':
+                    calculationText = `
+                        \\begin{aligned}
+                        \\int_{${aFixed}}^{${bFixed}} ${integrand} \\, dx &= \\left[ ${antiderivative.latex} \\right]_{${aFixed}}^{${bFixed}} \\\\
+                        &= ${antiderivative.evalText(b)} - ${antiderivative.evalText(a)} \\\\
+                        &= \\sin(${bFixed}) - \\sin(${aFixed})
+                        \\end{aligned}
+                    `;
+                    break;
+                    
+                case 'e^x':
+                    calculationText = `
+                        \\begin{aligned}
+                        \\int_{${aFixed}}^{${bFixed}} ${integrand} \\, dx &= \\left[ ${antiderivative.latex} \\right]_{${aFixed}}^{${bFixed}} \\\\
+                        &= ${antiderivative.evalText(b)} - ${antiderivative.evalText(a)} \\\\
+                        &= e^{${bFixed}} - e^{${aFixed}}
+                        \\end{aligned}
+                    `;
+                    break;
+                    
+                default:
+                    calculationText = `
+                        \\begin{aligned}
+                        \\int_{${aFixed}}^{${bFixed}} ${integrand} \\, dx &= \\left[ ${antiderivative.latex} \\right]_{${aFixed}}^{${bFixed}} \\\\
+                        &= ${antiderivative.evalText(b)} - ${antiderivative.evalText(a)}
+                        \\end{aligned}
+                    `;
+            }
+            
+            return calculationText;
+        }
+        
+        // 获取最终结果表达式（包含数值近似）
+        function getFinalResult(funcType, a, b) {
+            const aFixed = a.toFixed(1);
+            const bFixed = b.toFixed(1);
+            
+            let symbolicResult = '';
+            let numericResult = '';
+            
+            switch(funcType) {
+                case 'x^2':
+                    const a3 = Math.pow(a, 3);
+                    const b3 = Math.pow(b, 3);
+                    const numerator = b3 - a3;
+                    
+                    // 符号结果
+                    if (Number.isInteger(a) && Number.isInteger(b)) {
+                        symbolicResult = `\\frac{${b}^3 - ${a}^3}{3}`;
+                    } else {
+                        symbolicResult = `\\frac{${bFixed}^3 - ${aFixed}^3}{3}`;
+                    }
+                    
+                    // 数值结果
+                    numericResult = (numerator / 3).toFixed(4);
+                    break;
+                    
+                case '2x+1':
+                    const result = (b*b + b) - (a*a + a);
+                    symbolicResult = `(${bFixed}^2 + ${bFixed}) - (${aFixed}^2 + ${aFixed})`;
+                    numericResult = result.toFixed(4);
+                    break;
+                    
+                case 'sin(x)':
+                    const sinResult = -Math.cos(b) + Math.cos(a);
+                    symbolicResult = `\\cos(${aFixed}) - \\cos(${bFixed})`;
+                    numericResult = sinResult.toFixed(4);
+                    break;
+                    
+                case 'cos(x)':
+                    const cosResult = Math.sin(b) - Math.sin(a);
+                    symbolicResult = `\\sin(${bFixed}) - \\sin(${aFixed})`;
+                    numericResult = cosResult.toFixed(4);
+                    break;
+                    
+                case 'e^x':
+                    const expResult = Math.exp(b) - Math.exp(a);
+                    symbolicResult = `e^{${bFixed}} - e^{${aFixed}}`;
+                    numericResult = expResult.toFixed(4);
+                    break;
+                    
+                default:
+                    symbolicResult = '';
+                    numericResult = '';
+            }
+            
+            return { symbolic: symbolicResult, numeric: numericResult };
+        }
+        
+        // 获取物理意义示例
+        function getPhysicalExample(funcType, a, b) {
+            const aFixed = a.toFixed(1);
+            const bFixed = b.toFixed(1);
+            
+            switch(funcType) {
+                case 'x^2':
+                    return {
+                        title: "变速直线运动的位移",
+                        description: `假设物体的加速度为 $a(t) = 2$ m/s²，则速度 $v(t) = 2t$ m/s，位移 $s(t) = t^2$ m。从 $t=${aFixed}$ s 到 $t=${bFixed}$ s，物体的位移为：`,
+                        formula: `\\int_{${aFixed}}^{${bFixed}} 2t \\, dt = \\left. t^2 \\right|_{${aFixed}}^{${bFixed}} = ${bFixed}^2 - ${aFixed}^2 = ${(b*b - a*a).toFixed(2)} \\text{ m}`
+                    };
+                    
+                case '2x+1':
+                    return {
+                        title: "匀加速运动的位移",
+                        description: `假设物体的速度 $v(t) = 2t + 1$ m/s，则位移 $s(t) = t^2 + t$ m。从 $t=${aFixed}$ s 到 $t=${bFixed}$ s，物体的位移为：`,
+                        formula: `\\int_{${aFixed}}^{${bFixed}} (2t + 1) \\, dt = \\left. (t^2 + t) \\right|_{${aFixed}}^{${bFixed}} = (${bFixed}^2 + ${bFixed}) - (${aFixed}^2 + ${aFixed}) = ${((b*b + b) - (a*a + a)).toFixed(2)} \\text{ m}`
+                    };
+                    
+                case 'sin(x)':
+                    return {
+                        title: "简谐振动的能量",
+                        description: `假设振动系统的势能变化率为 $P(t) = \\sin(t)$ W，则总能量 $E(t) = -\\cos(t)$ J。从 $t=${aFixed}$ s 到 $t=${bFixed}$ s，系统获得的能量为：`,
+                        formula: `\\int_{${aFixed}}^{${bFixed}} \\sin(t) \\, dt = \\left. (-\\cos(t)) \\right|_{${aFixed}}^{${bFixed}} = \\cos(${aFixed}) - \\cos(${bFixed}) \\approx ${(-Math.cos(b) + Math.cos(a)).toFixed(3)} \\text{ J}`
+                    };
+                    
+                case 'cos(x)':
+                    return {
+                        title: "交流电路中的电量",
+                        description: `假设交流电流为 $I(t) = \\cos(t)$ A，则电量 $Q(t) = \\sin(t)$ C。从 $t=${aFixed}$ s 到 $t=${bFixed}$ s，通过电路的电量为：`,
+                        formula: `\\int_{${aFixed}}^{${bFixed}} \\cos(t) \\, dt = \\left. \\sin(t) \\right|_{${aFixed}}^{${bFixed}} = \\sin(${bFixed}) - \\sin(${aFixed}) \\approx ${(Math.sin(b) - Math.sin(a)).toFixed(3)} \\text{ C}`
+                    };
+                    
+                case 'e^x':
+                    return {
+                        title: "指数增长的总量",
+                        description: `假设某量的增长率为 $r(t) = e^t$ 单位/时间，则总量 $A(t) = e^t$ 单位。从 $t=${aFixed}$ 到 $t=${bFixed}$，该量的总增量为：`,
+                        formula: `\\int_{${aFixed}}^{${bFixed}} e^t \\, dt = \\left. e^t \\right|_{${aFixed}}^{${bFixed}} = e^{${bFixed}} - e^{${aFixed}} \\approx ${(Math.exp(b) - Math.exp(a)).toFixed(3)} \\text{ 单位}`
+                    };
+                    
+                default:
+                    return {
+                        title: "物理意义示例",
+                        description: "牛顿-莱布尼茨公式在物理学中有广泛应用，它表示一个量的变化率的积分等于该量的净变化量。",
+                        formula: ""
+                    };
+            }
         }
         
         // 设置事件监听器
@@ -1383,6 +1960,15 @@
                 alert(explanation);
             });
             
+            // 添加切换有理数显示的按钮
+            document.getElementById('toggleRationalBtn').addEventListener('click', function() {
+                showRationalOnly = !showRationalOnly;
+                this.innerHTML = showRationalOnly ? 
+                    '<i class="fas fa-eye"></i> 显示所有点' : 
+                    '<i class="fas fa-eye"></i> 只显示有理点';
+                initNonIntegrableCanvas();
+            });
+            
             // 面积控件
             document.getElementById('functionSelect').addEventListener('change', function() {
                 initAreaCanvas();
@@ -1419,61 +2005,101 @@
             
             // FTC控件
             document.getElementById('ftcFunctionSelect').addEventListener('change', function() {
+                updateFTCFormula();
                 initFTCanvas();
             });
             
             document.getElementById('ftcASlider').addEventListener('input', function() {
                 const value = parseFloat(this.value);
                 document.getElementById('ftcA').textContent = value.toFixed(1);
+                updateFTCFormula();
                 initFTCanvas();
             });
             
             document.getElementById('ftcBSlider').addEventListener('input', function() {
                 const value = parseFloat(this.value);
                 document.getElementById('ftcB').textContent = value.toFixed(1);
+                updateFTCFormula();
                 initFTCanvas();
             });
             
             document.getElementById('showFTCBtn').addEventListener('click', function() {
                 const fType = document.getElementById('ftcFunctionSelect').value;
-                let antiderivative = '';
+                const antiderivative = getAntiderivative(fType);
                 
-                switch(fType) {
-                    case 'x^2':
-                        antiderivative = 'F(x) = x³/3 + C';
-                        break;
-                    case '2x+1':
-                        antiderivative = 'F(x) = x² + x + C';
-                        break;
-                    case 'sin(x)':
-                        antiderivative = 'F(x) = -cos(x) + C';
-                        break;
-                    case 'cos(x)':
-                        antiderivative = 'F(x) = sin(x) + C';
-                        break;
-                }
-                
-                alert(`微积分基本定理表明：∫ₐᵇ f(x)dx = F(b) - F(a)\n\n对于 f(x) = ${fType}，原函数是：\n${antiderivative}`);
+                alert(`微积分基本定理表明：∫ₐᵇ f(x)dx = F(b) - F(a)\n\n对于 f(x) = ${getIntegrandTex(fType)}，原函数是：\n$$ ${antiderivative.tex} $$`);
             });
             
             document.getElementById('calculateFTCBtn').addEventListener('click', function() {
-                const f = getFTCFunction();
+                const funcType = document.getElementById('ftcFunctionSelect').value;
                 const a = parseFloat(document.getElementById('ftcASlider').value);
                 const b = parseFloat(document.getElementById('ftcBSlider').value);
                 
-                // 计算积分近似值
-                const integral = approximateIntegral(f, a, b, 10000);
+                // 获取原函数
+                const antiderivative = getAntiderivative(funcType);
+                const integrandTex = getIntegrandTex(funcType);
+                const finalResult = getFinalResult(funcType, a, b);
                 
                 // 显示结果
                 const resultDiv = document.getElementById('ftcResult');
                 const resultText = document.getElementById('ftcResultText');
                 
-                resultText.innerHTML = `
-                    ∫<sub>${a.toFixed(1)}</sub><sup>${b.toFixed(1)}</sup> f(x) dx ≈ ${integral.toFixed(4)}<br>
-                    这表示函数 f(x) 在区间 [${a.toFixed(1)}, ${b.toFixed(1)}] 上的定积分近似值。
+                // 构建完整的计算过程
+                const calculationHtml = `
+                    <div class="calculation-steps">
+                        <p><strong>已知函数：</strong> $$ f(x) = ${integrandTex} $$</p>
+                        <p><strong>原函数：</strong> $$ ${antiderivative.tex} $$</p>
+                        <p><strong>应用牛顿-莱布尼茨公式：</strong></p>
+                        <div class="calculation-step">
+                            $$ ${getCalculationText(funcType, a, b)} $$
+                        </div>
+                        <p><strong>计算结果：</strong></p>
+                        <div class="formula">
+                            $$ \\int_{${a.toFixed(1)}}^{${b.toFixed(1)}} ${integrandTex} \\, dx = ${finalResult.symbolic} $$
+                        </div>
+                        <p><strong>数值近似：</strong> $$ \\approx ${finalResult.numeric} $$</p>
+                    </div>
                 `;
                 
+                resultText.innerHTML = calculationHtml;
                 resultDiv.style.display = 'block';
+                
+                // 重新渲染MathJax公式
+                if (window.MathJax) {
+                    MathJax.typesetPromise();
+                }
+            });
+            
+            // 物理示例按钮
+            document.getElementById('showPhysicalExampleBtn').addEventListener('click', function() {
+                const funcType = document.getElementById('ftcFunctionSelect').value;
+                const a = parseFloat(document.getElementById('ftcASlider').value);
+                const b = parseFloat(document.getElementById('ftcBSlider').value);
+                
+                const example = getPhysicalExample(funcType, a, b);
+                
+                // 显示物理示例
+                const resultDiv = document.getElementById('ftcResult');
+                const resultText = document.getElementById('ftcResultText');
+                
+                const exampleHtml = `
+                    <div class="calculation-steps">
+                        <h5><i class="fas fa-atom"></i> ${example.title}</h5>
+                        <p>${example.description}</p>
+                        <div class="formula">
+                            $$ ${example.formula} $$
+                        </div>
+                        <p><strong>物理意义：</strong>牛顿-莱布尼茨公式告诉我们，一个物理量的变化率在时间上的累积等于该物理量的净变化量。这是连接局部（变化率）与整体（总变化）的桥梁。</p>
+                    </div>
+                `;
+                
+                resultText.innerHTML = exampleHtml;
+                resultDiv.style.display = 'block';
+                
+                // 重新渲染MathJax公式
+                if (window.MathJax) {
+                    MathJax.typesetPromise();
+                }
             });
             
             // 窗口大小调整时重新初始化画布
