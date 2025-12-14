@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定积分元素法动态演示</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #e0f7fa;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(64, 224, 208, 0.1), transparent);
+            animation: header-shine 8s infinite;
+        }
+        
+        @keyframes header-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #40e0d0, #20b2aa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(64, 224, 208, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b0e0e6;
+            margin-bottom: 20px;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .demo-container {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 20, 40, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(64, 224, 208, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-container::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #40e0d0, #20b2aa, #008b8b, #40e0d0);
+            border-radius: 16px;
+            z-index: -1;
+            animation: border-glow 4s linear infinite;
+            background-size: 400%;
+        }
+        
+        @keyframes border-glow {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+        
+        .explanation {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(64, 224, 208, 0.2);
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 10, 20, 0.9);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #40e0d0;
+            font-weight: 600;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, #008b8b, #40e0d0);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #e0f7fa;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px #40e0d0;
+        }
+        
+        .value-display {
+            min-width: 60px;
+            padding: 5px 10px;
+            background: rgba(0, 30, 60, 0.8);
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            background: linear-gradient(to right, #008b8b, #20b2aa);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(32, 178, 170, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-reset {
+            background: linear-gradient(to right, #2c5364, #203a43);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #40e0d0;
+            border-bottom: 2px solid rgba(64, 224, 208, 0.3);
+            padding-bottom: 8px;
+        }
+        
+        .step {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(0, 20, 40, 0.5);
+            border-radius: 10px;
+            border-left: 4px solid #40e0d0;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            background: rgba(0, 30, 60, 0.7);
+            transform: translateX(5px);
+        }
+        
+        .step-title {
+            font-size: 1.3rem;
+            color: #20b2aa;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-content {
+            line-height: 1.6;
+            color: #b0e0e6;
+        }
+        
+        .highlight {
+            color: #40e0d0;
+            font-weight: 600;
+        }
+        
+        .formula {
+            font-family: 'Cambria', 'Times New Roman', serif;
+            font-size: 1.3rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 10, 20, 0.7);
+            border-radius: 8px;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(64, 224, 208, 0.2);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .function-color {
+            background-color: #ff6b6b;
+        }
+        
+        .interval-color {
+            background-color: #4ecdc4;
+        }
+        
+        .element-color {
+            background-color: #ffe66d;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #87ceeb;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(64, 224, 208, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .micro-element {
+            position: absolute;
+            border: 2px solid #ffe66d;
+            background-color: rgba(255, 230, 109, 0.2);
+            z-index: 10;
+            pointer-events: none;
+            transition: all 1s ease;
+        }
+        
+        .info-box {
+            position: absolute;
+            background: rgba(0, 20, 40, 0.95);
+            border: 1px solid #40e0d0;
+            border-radius: 8px;
+            padding: 15px;
+            width: 250px;
+            z-index: 100;
+            color: #e0f7fa;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .info-box.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-infinity"></i> 定积分元素法动态演示</h1>
+            <div class="subtitle">从分割求和到代表性微元 - 直观理解微积分基本思想</div>
+        </header>
+        
+        <div class="content">
+            <div class="demo-container">
+                <h2><i class="fas fa-play-circle"></i> 动态演示</h2>
+                <div class="canvas-container">
+                    <canvas id="demoCanvas"></canvas>
+                    <div class="info-box" id="infoBox"></div>
+                    <div class="micro-element" id="microElement"></div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label class="control-label">分割数量 (n):</label>
+                        <div class="slider-container">
+                            <input type="range" id="partitionSlider" min="2" max="50" value="10">
+                            <div class="value-display" id="partitionValue">10</div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">动画速度:</label>
+                        <div class="slider-container">
+                            <input type="range" id="speedSlider" min="1" max="10" value="5">
+                            <div class="value-display" id="speedValue">5</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn" id="startBtn">
+                        <i class="fas fa-play"></i> 开始演示
+                    </button>
+                    <button class="btn" id="switchBtn">
+                        <i class="fas fa-exchange-alt"></i> 切换模式
+                    </button>
+                    <button class="btn btn-reset" id="resetBtn">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <h2><i class="fas fa-lightbulb"></i> 元素法原理</h2>
+                
+                <div class="step">
+                    <div class="step-title"><i class="fas fa-divide"></i> 步骤1: 分割区间</div>
+                    <div class="step-content">将积分区间 [a, b] 分割成 n 个等宽的小区间，每个小区间宽度 Δx = (b - a)/n。</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-title"><i class="fas fa-square"></i> 步骤2: 取代表性微元</div>
+                    <div class="step-content">在每个小区间 [xᵢ₋₁, xᵢ] 上任取一点 ξᵢ，以 f(ξᵢ) 为高，Δx 为宽作矩形，其面积 f(ξᵢ)Δx 作为该小区间上曲边梯形面积的近似值。</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-title"><i class="fas fa-calculator"></i> 步骤3: 求和取极限</div>
+                    <div class="step-content">将所有小区间上的矩形面积相加，得到曲边梯形面积的近似值。当 n→∞ 时，这个和式的极限就是定积分的值：<span class="highlight">∫<sub>a</sub><sup>b</sup> f(x) dx</span>。</div>
+                </div>
+                
+                <div class="formula">
+                    ∫<sub>a</sub><sup>b</sup> f(x) dx = lim<sub>n→∞</sub> Σ<sub>i=1</sub><sup>n</sup> f(ξᵢ) Δx
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-box function-color"></div>
+                        <span>函数曲线 f(x) = sin(x) + x²/10</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box interval-color"></div>
+                        <span>分割的小区间</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box element-color"></div>
+                        <span>代表性微元 (dx, f(x)dx)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>微积分元素法动态演示 | 使用HTML5 Canvas实现 | 通过调整分割数量观察近似精度的变化</p>
+            <p>拖动滑块改变参数，点击按钮切换演示模式</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('demoCanvas');
+        const ctx = canvas.getContext('2d');
+        const infoBox = document.getElementById('infoBox');
+        const microElement = document.getElementById('microElement');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 定义函数 f(x) = sin(x) + x²/10
+        function f(x) {
+            return Math.sin(x) + x*x/10;
+        }
+        
+        // 演示参数
+        let params = {
+            a: 1,           // 积分下限
+            b: 6,           // 积分上限
+            n: 10,          // 分割数量
+            speed: 5,       // 动画速度
+            isAnimating: false,
+            animationStep: 0,
+            mode: 'partition', // 'partition' 或 'element'
+            showElement: false,
+            elementIndex: 5
+        };
+        
+        // 获取控制元素
+        const partitionSlider = document.getElementById('partitionSlider');
+        const partitionValue = document.getElementById('partitionValue');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const startBtn = document.getElementById('startBtn');
+        const switchBtn = document.getElementById('switchBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        // 更新显示值
+        partitionSlider.addEventListener('input', function() {
+            params.n = parseInt(this.value);
+            partitionValue.textContent = params.n;
+            draw();
+        });
+        
+        speedSlider.addEventListener('input', function() {
+            params.speed = parseInt(this.value);
+            speedValue.textContent = params.speed;
+        });
+        
+        // 开始/暂停演示
+        startBtn.addEventListener('click', function() {
+            if (params.isAnimating) {
+                params.isAnimating = false;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> 开始演示';
+            } else {
+                params.isAnimating = true;
+                params.animationStep = 0;
+                startBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停演示';
+                animate();
+            }
+        });
+        
+        // 切换模式
+        switchBtn.addEventListener('click', function() {
+            params.mode = params.mode === 'partition' ? 'element' : 'partition';
+            params.animationStep = 0;
+            params.showElement = false;
+            draw();
+            
+            if (params.mode === 'partition') {
+                switchBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切换到微元模式';
+            } else {
+                switchBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切换到分割模式';
+            }
+        });
+        
+        // 重置
+        resetBtn.addEventListener('click', function() {
+            params.n = 10;
+            params.speed = 5;
+            params.isAnimating = false;
+            params.animationStep = 0;
+            params.mode = 'partition';
+            params.showElement = false;
+            
+            partitionSlider.value = params.n;
+            partitionValue.textContent = params.n;
+            speedSlider.value = params.speed;
+            speedValue.textContent = params.speed;
+            
+            startBtn.innerHTML = '<i class="fas fa-play"></i> 开始演示';
+            switchBtn.innerHTML = '<i class="fas fa-exchange-alt"></i> 切换到微元模式';
+            
+            draw();
+        });
+        
+        // 坐标转换：将数学坐标转换为Canvas坐标
+        function toCanvasX(x) {
+            const padding = 60;
+            const range = params.b - params.a;
+            return padding + (x - params.a) / range * (canvas.width - 2 * padding);
+        }
+        
+        function toCanvasY(y) {
+            const padding = 60;
+            // 计算函数在区间内的最小值和最大值
+            let minVal = Infinity, maxVal = -Infinity;
+            for (let x = params.a; x <= params.b; x += 0.1) {
+                const val = f(x);
+                if (val < minVal) minVal = val;
+                if (val > maxVal) maxVal = val;
+            }
+            
+            // 留一些边距
+            minVal -= 0.5;
+            maxVal += 0.5;
+            const range = maxVal - minVal;
+            
+            return padding + (maxVal - y) / range * (canvas.height - 2 * padding);
+        }
+        
+        // 绘制坐标轴
+        function drawAxes() {
+            ctx.save();
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            ctx.fillStyle = '#e0f7fa';
+            ctx.font = '14px Arial';
+            
+            // 绘制x轴
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(params.a) - 20, toCanvasY(0));
+            ctx.lineTo(toCanvasX(params.b) + 20, toCanvasY(0));
+            ctx.stroke();
+            
+            // 绘制y轴
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(0), toCanvasY(10));
+            ctx.lineTo(toCanvasX(0), toCanvasY(-2));
+            ctx.stroke();
+            
+            // 绘制x轴刻度
+            for (let x = Math.ceil(params.a); x <= Math.floor(params.b); x++) {
+                const canvasX = toCanvasX(x);
+                ctx.beginPath();
+                ctx.moveTo(canvasX, toCanvasY(0) - 5);
+                ctx.lineTo(canvasX, toCanvasY(0) + 5);
+                ctx.stroke();
+                
+                ctx.fillText(x.toString(), canvasX - 5, toCanvasY(0) + 20);
+            }
+            
+            // 绘制y轴刻度
+            for (let y = -2; y <= 6; y += 2) {
+                const canvasY = toCanvasY(y);
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(0) - 5, canvasY);
+                ctx.lineTo(toCanvasX(0) + 5, canvasY);
+                ctx.stroke();
+                
+                ctx.fillText(y.toString(), toCanvasX(0) - 25, canvasY + 5);
+            }
+            
+            // 绘制坐标轴标签
+            ctx.font = '16px Arial';
+            ctx.fillText('x', toCanvasX(params.b) + 30, toCanvasY(0) + 5);
+            ctx.fillText('y', toCanvasX(0) - 10, toCanvasY(6) - 10);
+            
+            ctx.restore();
+        }
+        
+        // 绘制函数曲线
+        function drawFunction() {
+            ctx.save();
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = (params.b - params.a) / 200;
+            for (let x = params.a; x <= params.b; x += step) {
+                const canvasX = toCanvasX(x);
+                const canvasY = toCanvasY(f(x));
+                
+                if (x === params.a) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            
+            ctx.stroke();
+            ctx.restore();
+        }
+        
+        // 绘制分割区间
+        function drawPartition() {
+            const deltaX = (params.b - params.a) / params.n;
+            
+            ctx.save();
+            ctx.fillStyle = 'rgba(78, 205, 196, 0.3)';
+            ctx.strokeStyle = '#4ecdc4';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < params.n; i++) {
+                const x1 = params.a + i * deltaX;
+                const x2 = x1 + deltaX;
+                const canvasX1 = toCanvasX(x1);
+                const canvasX2 = toCanvasX(x2);
+                const canvasY = toCanvasY(0);
+                
+                // 绘制矩形区域
+                ctx.beginPath();
+                ctx.rect(canvasX1, canvasY, canvasX2 - canvasX1, toCanvasY(f(x1)) - canvasY);
+                ctx.fill();
+                ctx.stroke();
+                
+                // 绘制垂直线
+                ctx.beginPath();
+                ctx.moveTo(canvasX1, canvasY);
+                ctx.lineTo(canvasX1, toCanvasY(f(x1)));
+                ctx.stroke();
+                
+                // 如果是最后一个区间，绘制右边界
+                if (i === params.n - 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(canvasX2, canvasY);
+                    ctx.lineTo(canvasX2, toCanvasY(f(x2)));
+                    ctx.stroke();
+                }
+            }
+            
+            ctx.restore();
+        }
+        
+        // 绘制代表性微元
+        function drawElement(index) {
+            const deltaX = (params.b - params.a) / params.n;
+            const x = params.a + index * deltaX + deltaX/2;
+            const elemWidth = deltaX;
+            const elemHeight = f(x);
+            
+            const canvasX = toCanvasX(x - deltaX/2);
+            const canvasY = toCanvasY(elemHeight);
+            const canvasWidth = toCanvasX(x + deltaX/2) - canvasX;
+            const canvasHeight = toCanvasY(0) - canvasY;
+            
+            ctx.save();
+            
+            // 绘制微元矩形
+            ctx.fillStyle = 'rgba(255, 230, 109, 0.4)';
+            ctx.strokeStyle = '#ffe66d';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.rect(canvasX, canvasY, canvasWidth, canvasHeight);
+            ctx.fill();
+            ctx.stroke();
+            
+            // 在微元上绘制dx和f(x)标签
+            ctx.fillStyle = '#ffe66d';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            
+            // 绘制dx标签
+            ctx.fillText('dx', canvasX + canvasWidth/2, toCanvasY(0) + 20);
+            
+            // 绘制f(x)标签
+            ctx.save();
+            ctx.translate(canvasX - 15, canvasY + canvasHeight/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('f(x)', 0, 0);
+            ctx.restore();
+            
+            // 绘制微元上的点
+            ctx.beginPath();
+            ctx.arc(toCanvasX(x), canvasY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffe66d';
+            ctx.fill();
+            ctx.strokeStyle = '#ffcc00';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // 更新微元高亮框
+            updateMicroElementHighlight(canvasX, canvasY, canvasWidth, canvasHeight);
+            
+            // 显示微元信息
+            showElementInfo(x, elemWidth, elemHeight, canvasX, canvasY);
+        }
+        
+        // 更新微元高亮框
+        function updateMicroElementHighlight(x, y, width, height) {
+            microElement.style.left = `${x}px`;
+            microElement.style.top = `${y}px`;
+            microElement.style.width = `${width}px`;
+            microElement.style.height = `${height}px`;
+            microElement.style.display = 'block';
+        }
+        
+        // 显示微元信息
+        function showElementInfo(x, dx, fVal, canvasX, canvasY) {
+            const info = `
+                <div style="margin-bottom: 8px; color: #ffe66d; font-weight: bold;">
+                    <i class="fas fa-square"></i> 代表性微元
+                </div>
+                <div>位置: x = ${x.toFixed(2)}</div>
+                <div>宽度: dx = ${dx.toFixed(2)}</div>
+                <div>高度: f(x) = ${fVal.toFixed(2)}</div>
+                <div style="margin-top: 8px; color: #40e0d0;">
+                    面积: dA = f(x)dx = ${(fVal * dx).toFixed(3)}
+                </div>
+            `;
+            
+            infoBox.innerHTML = info;
+            infoBox.classList.add('show');
+            
+            // 定位信息框
+            const boxWidth = 250;
+            const boxHeight = 150;
+            
+            let left = canvasX + 10;
+            let top = canvasY - boxHeight/2;
+            
+            // 确保信息框在Canvas内
+            if (left + boxWidth > canvas.width) {
+                left = canvasX - boxWidth - 10;
+            }
+            
+            if (top < 0) {
+                top = 10;
+            } else if (top + boxHeight > canvas.height) {
+                top = canvas.height - boxHeight - 10;
+            }
+            
+            infoBox.style.left = `${left}px`;
+            infoBox.style.top = `${top}px`;
+        }
+        
+        // 绘制当前状态
+        function draw() {
+            // 清除Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格背景
+            drawGrid();
+            
+            // 绘制坐标轴
+            drawAxes();
+            
+            // 绘制函数曲线
+            drawFunction();
+            
+            // 根据模式绘制
+            if (params.mode === 'partition') {
+                // 绘制分割区间
+                drawPartition();
+                
+                // 如果是动画模式，逐步绘制
+                if (params.isAnimating && params.animationStep < params.n) {
+                    const deltaX = (params.b - params.a) / params.n;
+                    
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(78, 205, 196, 0.5)';
+                    ctx.strokeStyle = '#4ecdc4';
+                    ctx.lineWidth = 2;
+                    
+                    for (let i = 0; i <= params.animationStep; i++) {
+                        const x1 = params.a + i * deltaX;
+                        const x2 = x1 + deltaX;
+                        const canvasX1 = toCanvasX(x1);
+                        const canvasX2 = toCanvasX(x2);
+                        const canvasY = toCanvasY(0);
+                        const height = toCanvasY(f(x1)) - canvasY;
+                        
+                        // 绘制矩形
+                        ctx.beginPath();
+                        ctx.rect(canvasX1, canvasY, canvasX2 - canvasX1, height);
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                    
+                    ctx.restore();
+                }
+            } else {
+                // 微元模式
+                if (params.showElement) {
+                    // 绘制单个代表性微元
+                    drawElement(params.elementIndex);
+                } else if (params.isAnimating) {
+                    // 在动画中，逐步显示所有微元，然后聚焦到一个代表性微元
+                    if (params.animationStep < params.n) {
+                        // 绘制所有微元
+                        const deltaX = (params.b - params.a) / params.n;
+                        
+                        for (let i = 0; i <= params.animationStep; i++) {
+                            const x = params.a + i * deltaX + deltaX/2;
+                            const canvasX = toCanvasX(x - deltaX/2);
+                            const canvasY = toCanvasY(f(x));
+                            const canvasWidth = toCanvasX(x + deltaX/2) - canvasX;
+                            const canvasHeight = toCanvasY(0) - canvasY;
+                            
+                            ctx.save();
+                            ctx.fillStyle = 'rgba(255, 230, 109, 0.2)';
+                            ctx.strokeStyle = 'rgba(255, 230, 109, 0.5)';
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.rect(canvasX, canvasY, canvasWidth, canvasHeight);
+                            ctx.fill();
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                    } else {
+                        // 动画完成后，聚焦到一个代表性微元
+                        params.showElement = true;
+                        params.elementIndex = Math.floor(params.n / 2);
+                    }
+                }
+            }
+            
+            // 绘制积分区域标签
+            drawLabels();
+        }
+        
+        // 绘制网格背景
+        function drawGrid() {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(64, 224, 208, 0.1)';
+            ctx.lineWidth = 1;
+            
+            // 垂直网格线
+            for (let x = params.a; x <= params.b; x += 0.5) {
+                if (Math.abs(x) < 0.01) continue; // 跳过y轴
+                const canvasX = toCanvasX(x);
+                ctx.beginPath();
+                ctx.moveTo(canvasX, 0);
+                ctx.lineTo(canvasX, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 水平网格线
+            for (let y = -2; y <= 6; y += 0.5) {
+                if (Math.abs(y) < 0.01) continue; // 跳过x轴
+                const canvasY = toCanvasY(y);
+                ctx.beginPath();
+                ctx.moveTo(0, canvasY);
+                ctx.lineTo(canvas.width, canvasY);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
+        
+        // 绘制标签
+        function drawLabels() {
+            ctx.save();
+            ctx.fillStyle = '#e0f7fa';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            
+            // 函数标签
+            ctx.fillText('f(x) = sin(x) + x²/10', canvas.width / 2, 30);
+            
+            // 积分表达式
+            ctx.font = '20px Cambria';
+            const integralText = `∫_{${params.a}}^{${params.b}} f(x) dx`;
+            ctx.fillText(integralText, canvas.width / 2, canvas.height - 20);
+            
+            // 当前模式标签
+            ctx.font = 'bold 16px Arial';
+            if (params.mode === 'partition') {
+                ctx.fillStyle = '#4ecdc4';
+                ctx.fillText(`分割模式: n = ${params.n} 个小区间`, canvas.width / 2, 55);
+            } else {
+                ctx.fillStyle = '#ffe66d';
+                if (params.showElement) {
+                    ctx.fillText('微元模式: 聚焦代表性微元 dA = f(x)dx', canvas.width / 2, 55);
+                } else {
+                    ctx.fillText('微元模式: 从分割过渡到代表性微元', canvas.width / 2, 55);
+                }
+            }
+            
+            ctx.restore();
+        }
+        
+        // 动画函数
+        function animate() {
+            if (!params.isAnimating) return;
+            
+            params.animationStep += 0.1 * params.speed;
+            
+            if (params.mode === 'partition') {
+                if (params.animationStep >= params.n) {
+                    params.animationStep = params.n;
+                }
+            } else {
+                if (params.animationStep >= params.n + 10) {
+                    params.animationStep = params.n + 10;
+                }
+            }
+            
+            draw();
+            
+            if (params.animationStep < (params.mode === 'partition' ? params.n : params.n + 10)) {
+                requestAnimationFrame(animate);
+            } else {
+                params.isAnimating = false;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> 重新开始';
+            }
+        }
+        
+        // 初始绘制
+        draw();
+        
+        // 添加一些互动效果
+        canvas.addEventListener('mousemove', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 将Canvas坐标转换为数学坐标
+            const padding = 60;
+            const rangeX = params.b - params.a;
+            let minVal = Infinity, maxVal = -Infinity;
+            
+            for (let xVal = params.a; xVal <= params.b; xVal += 0.1) {
+                const val = f(xVal);
+                if (val < minVal) minVal = val;
+                if (val > maxVal) maxVal = val;
+            }
+            
+            minVal -= 0.5;
+            maxVal += 0.5;
+            const rangeY = maxVal - minVal;
+            
+            const mathX = params.a + (x - padding) / (canvas.width - 2 * padding) * rangeX;
+            const mathY = maxVal - (y - padding) / (canvas.height - 2 * padding) * rangeY;
+            
+            // 显示鼠标位置信息
+            if (mathX >= params.a && mathX <= params.b && mathY >= minVal && mathY <= maxVal) {
+                canvas.style.cursor = 'crosshair';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        });
+        
+        // 初始调整微元高亮框
+        microElement.style.display = 'none';
+        infoBox.classList.remove('show');
+    </script>
+</body>
+</html>
