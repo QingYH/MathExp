@@ -1,0 +1,4144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微元法全面应用 | 动态交互演示</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0e1d 0%, #1a1b2e 100%);
+            color: #e0e0ff;
+            line-height: 1.6;
+            padding-bottom: 50px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: rgba(10, 12, 28, 0.8);
+            border-bottom: 1px solid rgba(64, 224, 208, 0.3);
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #40e0d0, #20b2aa, #00ced1, #ff8c00, #ff69b4, #9370db);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #a0a0ff;
+            max-width: 800px;
+            margin: 0 auto 25px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+        }
+        
+        .nav-tab {
+            padding: 12px 24px;
+            background: rgba(30, 35, 70, 0.8);
+            border: 1px solid rgba(64, 224, 208, 0.3);
+            color: #a0a0ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-tab:hover {
+            background: rgba(64, 224, 208, 0.2);
+            color: #e0e0ff;
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(135deg, #40e0d0, #20b2aa);
+            color: #0c0e1d;
+            font-weight: bold;
+            border-color: #40e0d0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(64, 224, 208, 0.3);
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .intro-box {
+            background: rgba(20, 25, 60, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border-left: 5px solid #40e0d0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            margin: 40px 0 20px;
+            color: #40e0d0;
+            border-bottom: 2px solid rgba(64, 224, 208, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            font-size: 1.7rem;
+            margin: 30px 0 15px;
+            color: #7fffd4;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .demo-container {
+            background: rgba(15, 20, 45, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .canvas-wrapper {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+            background: rgba(5, 10, 30, 0.9);
+            border: 1px solid rgba(64, 224, 208, 0.2);
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(20, 25, 60, 0.7);
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        label {
+            color: #a0a0ff;
+            font-weight: 500;
+            min-width: 100px;
+        }
+        
+        input[type="range"] {
+            width: 180px;
+            accent-color: #40e0d0;
+        }
+        
+        .value-display {
+            display: inline-block;
+            min-width: 60px;
+            padding: 5px 10px;
+            background: rgba(64, 224, 208, 0.2);
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .formula {
+            background: rgba(64, 224, 208, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Cambria Math', serif;
+            text-align: center;
+            border-left: 4px solid #40e0d0;
+            overflow-x: auto;
+        }
+        
+        .math {
+            font-size: 1.3rem;
+            color: #7fffd4;
+        }
+        
+        .demo-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .demo-btn {
+            padding: 10px 20px;
+            background: rgba(30, 35, 70, 0.8);
+            border: 1px solid rgba(64, 224, 208, 0.3);
+            color: #a0a0ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .demo-btn.active {
+            background: linear-gradient(135deg, #ff8c00, #ffa500);
+            color: #0c0e1d;
+            font-weight: bold;
+            border-color: #ff8c00;
+        }
+        
+        .demo-btn:hover:not(.active) {
+            background: rgba(255, 140, 0, 0.2);
+            color: #e0e0ff;
+        }
+        
+        .color-key {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(30, 35, 70, 0.5);
+            border-radius: 8px;
+        }
+        
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .micro-element {
+            color: #ff8c00;
+            font-weight: bold;
+        }
+        
+        .method-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .step {
+            background: rgba(30, 35, 70, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 3px solid #40e0d0;
+        }
+        
+        .step:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #40e0d0, #20b2aa);
+            color: #0c0e1d;
+            border-radius: 50%;
+            line-height: 50px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: #a0a0ff;
+            border-top: 1px solid rgba(64, 224, 208, 0.2);
+        }
+        
+        .highlight {
+            color: #40e0d0;
+            font-weight: bold;
+        }
+        
+        .result-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(30, 35, 70, 0.5);
+            border-radius: 8px;
+        }
+        
+        .result-item {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px;
+            background: rgba(20, 25, 60, 0.8);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 1.5rem;
+            color: #ff8c00;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        /* 新增：微元法详细介绍样式 */
+        .method-intro {
+            background: rgba(30, 35, 70, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            border-left: 5px solid #ff8c00;
+        }
+        
+        .method-intro h3 {
+            color: #ff8c00;
+            border-bottom: 1px solid rgba(255, 140, 0, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .method-intro ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .method-intro li {
+            margin-bottom: 10px;
+        }
+        
+        .symbol-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(20, 25, 60, 0.7);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .symbol-table th {
+            background: rgba(64, 224, 208, 0.3);
+            padding: 15px;
+            text-align: left;
+            color: #40e0d0;
+        }
+        
+        .symbol-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(64, 224, 208, 0.1);
+        }
+        
+        .symbol-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .symbol-table .symbol {
+            font-family: 'Cambria Math', serif;
+            font-size: 1.2rem;
+            color: #7fffd4;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            .canvas-wrapper {
+                height: 400px;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .method-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        /* 数学公式样式 */
+        mjx-container {
+            display: inline-block !important;
+            margin: 0 5px !important;
+        }
+        
+        .math-formula {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>微元法全面应用</h1>
+            <p class="subtitle">元素法思想与定积分在几何和物理问题中的动态演示</p>
+            <div class="intro-box">
+                <p>微元法（元素法）是微积分中的核心思想，它将整体问题分解为无限多个微小部分，通过对微小部分的研究来解决整体问题。这种方法将复杂的积分问题转化为可计算的极限过程，是连接微分与积分的桥梁。</p>
+                <p>本页面通过交互式动态演示，展示微元法在几何和物理各个方面的应用，每个案例都突出显示具体的微元元素（条、带、环、扇形、壳等），并通过色彩区分使其清晰可见。</p>
+            </div>
+            
+            <div class="nav-tabs">
+                <div class="nav-tab active" data-section="method">微元法思想</div>
+                <div class="nav-tab" data-section="area-rect">直角坐标面积</div>
+                <div class="nav-tab" data-section="area-param">参数方程面积</div>
+                <div class="nav-tab" data-section="area-polar">极坐标面积</div>
+                <div class="nav-tab" data-section="curve-length">曲线长度</div>
+                <div class="nav-tab" data-section="volume-rotate">旋转体体积</div>
+                <div class="nav-tab" data-section="volume-slice">已知截面体积</div>
+                <div class="nav-tab" data-section="surface-area">表面积</div>
+                <div class="nav-tab" data-section="work">变力做功</div>
+                <div class="nav-tab" data-section="pressure">液体压力</div>
+                <div class="nav-tab" data-section="centroid">质心</div>
+            </div>
+        </header>
+        
+        <!-- 微元法思想 -->
+        <section id="method" class="section active">
+            <h2><i class="fas fa-cogs"></i> 微元法的基本思想与步骤</h2>
+            <p>微元法，也称为元素法，其核心是<strong>"化整为零，积零为整"</strong>的思想。通过以下三个步骤将复杂问题转化为定积分计算：</p>
+            
+            <div class="method-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>分割</h3>
+                    <p>将所求整体量（如面积、体积、功等）对应的区间分割成许多微小部分，每个部分长度记为 \(\Delta x\)。</p>
+                    <div class="canvas-wrapper" style="height: 200px; margin-top: 15px;">
+                        <canvas id="step1-canvas"></canvas>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>近似</h3>
+                    <p>在每个微小部分上，用常量近似代替变量，求出该部分对应量的近似值（微元）\(\Delta A \approx f(x)\Delta x\)。</p>
+                    <div class="canvas-wrapper" style="height: 200px; margin-top: 15px;">
+                        <canvas id="step2-canvas"></canvas>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>求和与取极限</h3>
+                    <p>将所有微小部分的近似值求和，并令分割无限细密（\(\Delta x \to 0\)），得到精确值的积分表达式：\(A = \int f(x)dx\)。</p>
+                    <div class="canvas-wrapper" style="height: 200px; margin-top: 15px;">
+                        <canvas id="step3-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula">
+                <div class="math">
+                    \[ \text{整体量} = \lim_{\|\Delta x\|\to 0} \sum f(x_i)\Delta x_i = \int_a^b f(x)\,dx \]
+                </div>
+            </div>
+            
+            <!-- 新增：微元法详细介绍 -->
+            <div class="method-intro">
+                <h3><i class="fas fa-lightbulb"></i> 微元法的核心思想</h3>
+                <p>微元法是将连续变化的整体问题分解为无限多个微小部分进行研究的方法。其数学本质是：</p>
+                <ul>
+                    <li><strong>微分思想：</strong>在微小局部，复杂变化可以近似为线性变化</li>
+                    <li><strong>积分思想：</strong>通过对无穷多个微元求和得到整体结果</li>
+                    <li><strong>极限思想：</strong>当分割无限细密时，近似值趋于精确值</li>
+                </ul>
+                
+                <h3><i class="fas fa-calculator"></i> 微元法的数学表达</h3>
+                <p>设要求解的整体量为 \(Q\)，对应的区间为 \([a, b]\)，则微元法的一般步骤可表示为：</p>
+                <ol>
+                    <li>选取积分变量 \(x\)，确定积分区间 \([a, b]\)</li>
+                    <li>在任意小区间 \([x, x+dx]\) 上，找出量 \(Q\) 的微元 \(dQ = f(x)dx\)</li>
+                    <li>将微元在区间 \([a, b]\) 上积分：\(Q = \int_a^b dQ = \int_a^b f(x)dx\)</li>
+                </ol>
+                
+                <h3><i class="fas fa-symbols"></i> 常用数学符号说明</h3>
+                <table class="symbol-table">
+                    <thead>
+                        <tr>
+                            <th>符号</th>
+                            <th>含义</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="symbol">\(dx\)</td>
+                            <td>自变量的微分</td>
+                            <td>表示自变量的无穷小变化量</td>
+                        </tr>
+                        <tr>
+                            <td class="symbol">\(dy\) 或 \(df(x)\)</td>
+                            <td>函数的微分</td>
+                            <td>表示函数的无穷小变化量，\(dy = f'(x)dx\)</td>
+                        </tr>
+                        <tr>
+                            <td class="symbol">\(dA\)</td>
+                            <td>面积微元</td>
+                            <td>表示无穷小的面积元素</td>
+                        </tr>
+                        <tr>
+                            <td class="symbol">\(dV\)</td>
+                            <td>体积微元</td>
+                            <td>表示无穷小的体积元素</td>
+                        </tr>
+                        <tr>
+                            <td class="symbol">\(ds\)</td>
+                            <td>弧长微元</td>
+                            <td>表示无穷小的弧长元素</td>
+                        </tr>
+                        <tr>
+                            <td class="symbol">\(\int_a^b f(x)dx\)</td>
+                            <td>定积分</td>
+                            <td>表示函数 \(f(x)\) 在区间 \([a, b]\) 上的积分</td>
+                        </tr>
+                        <tr>
+                            <td class="symbol">\(\sum_{i=1}^n f(x_i)\Delta x_i\)</td>
+                            <td>黎曼和</td>
+                            <td>积分的近似，当 \(n \to \infty\) 时趋于积分值</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3><i class="fas fa-shapes"></i> 微元法的几何意义</h3>
+                <p>从几何角度看，微元法中的积分 \(\int_a^b f(x)dx\) 表示：</p>
+                <ul>
+                    <li>当 \(f(x) \geq 0\) 时，表示曲线 \(y = f(x)\) 与 x 轴围成的面积</li>
+                    <li>当 \(f(x)\) 表示线密度时，积分表示线段的总质量</li>
+                    <li>当 \(f(x)\) 表示速度时，积分表示位移</li>
+                    <li>当 \(f(x)\) 表示力时，积分表示做功</li>
+                </ul>
+            </div>
+            
+            <div class="demo-container">
+                <h3>动态演示：微元法过程</h3>
+                <p>函数 \(f(x) = \sin(x) + 1\) 在区间 \([0, 2\pi]\) 上围成的面积计算过程：</p>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="method-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="method-n-slider" min="2" max="100" value="20">
+                        <span class="value-display" id="method-n-value">20</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="method-type">演示类型:</label>
+                        <select id="method-type" class="demo-btn">
+                            <option value="step1">分割过程</option>
+                            <option value="step2">近似过程</option>
+                            <option value="step3">求和取极限</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>函数曲线</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">面积微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 105, 180, 0.6);"></div>
+                        <span>近似误差</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="method-demo-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似面积</div>
+                        <div class="result-value" id="method-approx-area">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确面积</div>
+                        <div class="result-value">\(2\pi \approx 6.283\)</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="method-error">0%</div>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math">
+                        \[ \text{面积微元：} dA = [\sin(x) + 1]dx \quad \text{总面积：} A = \int_0^{2\pi} [\sin(x) + 1]dx = 2\pi \]
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 直角坐标面积 -->
+        <section id="area-rect" class="section">
+            <h2><i class="fas fa-chart-area"></i> 平面图形面积：直角坐标系</h2>
+            <p>使用微元法计算曲线 \(y = f(x)\) 与 x 轴在区间 \([a, b]\) 上围成的面积。将区间分割为 \(n\) 个小区间，每个小区间上的面积微元为竖条：\(dA = f(x)dx\)，总面积 \(A = \int_a^b f(x)dx\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：直角坐标面积计算</h3>
+                <p>选择不同的函数和微元类型进行计算：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="rect-sin">\(y = \sin(x) + 1\)</button>
+                    <button class="demo-btn" data-demo="rect-poly">\(y = x(4-x)\)</button>
+                    <button class="demo-btn" data-demo="rect-between">两曲线之间</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="rect-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="rect-n-slider" min="2" max="100" value="20">
+                        <span class="value-display" id="rect-n-value">20</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="rect-a-slider">区间起点 \(a\):</label>
+                        <input type="range" id="rect-a-slider" min="0" max="3" step="0.1" value="0">
+                        <span class="value-display" id="rect-a-value">0</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="rect-b-slider">区间终点 \(b\):</label>
+                        <input type="range" id="rect-b-slider" min="3" max="6.3" step="0.1" value="6.3">
+                        <span class="value-display" id="rect-b-value">6.3</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="rect-formula">
+                        \[ \text{面积微元：} dA = [\sin(x) + 1] dx \]
+                        \[ \text{总面积：} A = \int_{0}^{2\pi} [\sin(x) + 1] dx = 2\pi \approx 6.283 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>函数曲线</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">竖条微元</span>
+                    </div>
+                    <div class="color-item" id="rect-curve2-color" style="display:none;">
+                        <div class="color-box" style="background-color: rgba(255, 105, 180, 0.8);"></div>
+                        <span>第二条曲线</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="rect-area-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似面积</div>
+                        <div class="result-value" id="rect-approx-area">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确面积</div>
+                        <div class="result-value" id="rect-exact-area">6.283</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="rect-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 参数方程面积 -->
+        <section id="area-param" class="section">
+            <h2><i class="fas fa-infinity"></i> 平面图形面积：参数方程</h2>
+            <p>对于参数方程 \(x = x(t), y = y(t)\) (\( \alpha \leq t \leq \beta \)) 所围成的面积，微元法思想：\(dA = y(t) dx = y(t) x'(t) dt\)，总面积 \(A = \int_{\alpha}^{\beta} y(t) x'(t) dt\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：参数方程面积计算</h3>
+                <p>选择不同的参数方程进行计算：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="param-astroid">星形线</button>
+                    <button class="demo-btn" data-demo="param-cycloid">摆线</button>
+                    <button class="demo-btn" data-demo="param-ellipse">椭圆</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="param-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="param-n-slider" min="10" max="200" value="50">
+                        <span class="value-display" id="param-n-value">50</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="param-a-slider">参数 \(a\):</label>
+                        <input type="range" id="param-a-slider" min="2" max="8" step="0.5" value="5">
+                        <span class="value-display" id="param-a-value">5</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="param-t-slider">参数 \(t\) 范围:</label>
+                        <input type="range" id="param-t-slider" min="0" max="628" step="1" value="628">
+                        <span class="value-display" id="param-t-value">\(2\pi\)</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="param-formula">
+                        \[ \text{面积微元：} dA = y(t) x'(t) dt = -3a^2 \sin^4 t \cos^2 t dt \]
+                        \[ \text{总面积：} A = \frac{3}{8}\pi a^2 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>参数曲线</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">扇形微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(147, 112, 219, 0.6);"></div>
+                        <span>参数变化</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="param-area-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似面积</div>
+                        <div class="result-value" id="param-approx-area">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确面积</div>
+                        <div class="result-value" id="param-exact-area">29.452</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="param-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 极坐标面积 -->
+        <section id="area-polar" class="section">
+            <h2><i class="fas fa-circle"></i> 平面图形面积：极坐标系</h2>
+            <p>极坐标曲线 \(r = r(\theta)\) 在角度区间 \([ \alpha, \beta ]\) 内围成的面积。微元法思想：将角度区间分割，每个小扇形面积为 \(dA = \frac{1}{2} r^2(\theta) d\theta\)，总面积 \(A = \frac{1}{2} \int_{\alpha}^{\beta} r^2(\theta) d\theta\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：极坐标面积计算</h3>
+                <p>选择不同的极坐标曲线进行计算：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="polar-rose">玫瑰线</button>
+                    <button class="demo-btn" data-demo="polar-cardioid">心形线</button>
+                    <button class="demo-btn" data-demo="polar-spiral">阿基米德螺线</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="polar-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="polar-n-slider" min="10" max="200" value="60">
+                        <span class="value-display" id="polar-n-value">60</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="polar-a-slider">参数 \(a\):</label>
+                        <input type="range" id="polar-a-slider" min="3" max="10" step="0.5" value="6">
+                        <span class="value-display" id="polar-a-value">6</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="polar-k-slider">参数 \(k\):</label>
+                        <input type="range" id="polar-k-slider" min="2" max="8" step="1" value="3">
+                        <span class="value-display" id="polar-k-value">3</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="polar-formula">
+                        \[ \text{面积微元：} dA = \frac{1}{2} [a \cos(3\theta)]^2 d\theta \]
+                        \[ \text{一片叶子面积：} A_1 = \frac{\pi a^2}{12} \]
+                        \[ \text{总面积：} A = 3 \times \frac{\pi a^2}{12} = \frac{\pi a^2}{4} \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>极坐标曲线</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">扇形微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(147, 112, 219, 0.6);"></div>
+                        <span>角度变化</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="polar-area-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似面积</div>
+                        <div class="result-value" id="polar-approx-area">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确面积</div>
+                        <div class="result-value" id="polar-exact-area">28.274</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="polar-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 曲线长度 -->
+        <section id="curve-length" class="section">
+            <h2><i class="fas fa-ruler"></i> 曲线长度</h2>
+            <p>平面曲线 \(y = f(x)\) 在区间 \([a, b]\) 上的弧长。微元法思想：将曲线分割为小段，每段近似为直线段，长度微元 \(ds = \sqrt{1 + [f'(x)]^2} dx\)，总弧长 \(L = \int_a^b \sqrt{1 + [f'(x)]^2} dx\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：曲线长度计算</h3>
+                <p>选择不同的曲线计算其弧长：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="length-sin">正弦曲线</button>
+                    <button class="demo-btn" data-demo="length-parabola">抛物线</button>
+                    <button class="demo-btn" data-demo="length-parametric">参数曲线</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="length-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="length-n-slider" min="10" max="200" value="50">
+                        <span class="value-display" id="length-n-value">50</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="length-a-slider">区间起点 \(a\):</label>
+                        <input type="range" id="length-a-slider" min="0" max="3" step="0.1" value="0">
+                        <span class="value-display" id="length-a-value">0</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="length-b-slider">区间终点 \(b\):</label>
+                        <input type="range" id="length-b-slider" min="3" max="6.3" step="0.1" value="6.3">
+                        <span class="value-display" id="length-b-value">6.3</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="length-formula">
+                        \[ \text{弧长微元：} ds = \sqrt{1 + [\cos(x)]^2} dx \]
+                        \[ \text{总弧长：} L = \int_{0}^{2\pi} \sqrt{1 + \cos^2(x)} dx \approx 7.640 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>曲线</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">弧长微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 105, 180, 0.6);"></div>
+                        <span>切线</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="length-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似弧长</div>
+                        <div class="result-value" id="length-approx">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确弧长</div>
+                        <div class="result-value" id="length-exact">7.640</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="length-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 旋转体体积 -->
+        <section id="volume-rotate" class="section">
+            <h2><i class="fas fa-sync-alt"></i> 旋转体体积</h2>
+            <p>曲线 \(y = f(x)\) 绕 x 轴旋转一周形成旋转体。微元法思想（圆盘法）：将区间 \([a, b]\) 分割为小段，每段对应一个小圆柱盘，体积微元为 \(dV = \pi [f(x)]^2 dx\)，总体积 \(V = \pi \int_a^b [f(x)]^2 dx\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：旋转体体积计算</h3>
+                <p>选择不同的方法和曲线进行计算：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="volume-disk">圆盘法</button>
+                    <button class="demo-btn" data-demo="volume-shell">圆柱壳法</button>
+                    <button class="demo-btn" data-demo="volume-washer">垫圈法</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="volume-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="volume-n-slider" min="5" max="80" value="20">
+                        <span class="value-display" id="volume-n-value">20</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="volume-a-slider">区间起点 \(a\):</label>
+                        <input type="range" id="volume-a-slider" min="0" max="2" step="0.1" value="0">
+                        <span class="value-display" id="volume-a-value">0</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="volume-b-slider">区间终点 \(b\):</label>
+                        <input type="range" id="volume-b-slider" min="2" max="5" step="0.1" value="4">
+                        <span class="value-display" id="volume-b-value">4</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="volume-formula">
+                        \[ \text{体积微元（圆盘法）：} dV = \pi (\sqrt{x})^2 dx = \pi x dx \]
+                        \[ \text{总体积：} V = \pi \int_{0}^{4} x dx = 8\pi \approx 25.133 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>曲线</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">体积微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(147, 112, 219, 0.6);"></div>
+                        <span>旋转轴</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="volume-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似体积</div>
+                        <div class="result-value" id="volume-approx">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确体积</div>
+                        <div class="result-value" id="volume-exact">25.133</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="volume-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 已知截面体积 -->
+        <section id="volume-slice" class="section">
+            <h2><i class="fas fa-cut"></i> 已知平行截面面积的立体体积</h2>
+            <p>已知立体在点 \(x\) 处垂直于 x 轴的截面面积为 \(A(x)\)，则立体在区间 \([a, b]\) 上的体积微元为 \(dV = A(x) dx\)，总体积 \(V = \int_a^b A(x) dx\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：已知截面面积的立体体积</h3>
+                <p>选择不同的截面形状进行计算：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="slice-ellipse">椭圆截面</button>
+                    <button class="demo-btn" data-demo="slice-square">正方形截面</button>
+                    <button class="demo-btn" data-demo="slice-triangle">三角形截面</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="slice-n-slider">切片数 \(n\):</label>
+                        <input type="range" id="slice-n-slider" min="5" max="100" value="30">
+                        <span class="value-display" id="slice-n-value">30</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="slice-a-slider">x 范围 \(a\):</label>
+                        <input type="range" id="slice-a-slider" min="-2" max="0" step="0.1" value="-2">
+                        <span class="value-display" id="slice-a-value">-2</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="slice-b-slider">x 范围 \(b\):</label>
+                        <input type="range" id="slice-b-slider" min="0" max="2" step="0.1" value="2">
+                        <span class="value-display" id="slice-b-value">2</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="slice-formula">
+                        \[ \text{体积微元：} dV = \pi \sqrt{4-x^2} \cdot \sqrt{1-\frac{x^2}{4}} dx \]
+                        \[ \text{总体积：} V = \int_{-2}^{2} \pi \sqrt{4-x^2} \cdot \sqrt{1-\frac{x^2}{4}} dx \approx 10.472 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>截面轮廓</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">切片微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(147, 112, 219, 0.6);"></div>
+                        <span>立体轮廓</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="slice-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似体积</div>
+                        <div class="result-value" id="slice-approx">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确体积</div>
+                        <div class="result-value" id="slice-exact">10.472</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="slice-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 表面积 -->
+        <section id="surface-area" class="section">
+            <h2><i class="fas fa-globe"></i> 旋转曲面表面积</h2>
+            <p>曲线 \(y = f(x)\) 绕 x 轴旋转一周形成旋转曲面。微元法思想：将曲线分割为小段，每段旋转形成小圆台，表面积微元 \(dS = 2\pi f(x) \sqrt{1 + [f'(x)]^2} dx\)，总表面积 \(S = 2\pi \int_a^b f(x) \sqrt{1 + [f'(x)]^2} dx\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：旋转曲面表面积计算</h3>
+                <p>选择不同的曲线计算其旋转曲面面积：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="surface-line">直线段</button>
+                    <button class="demo-btn" data-demo="surface-sin">正弦曲线</button>
+                    <button class="demo-btn" data-demo="surface-parabola">抛物线</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="surface-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="surface-n-slider" min="10" max="100" value="30">
+                        <span class="value-display" id="surface-n-value">30</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="surface-a-slider">区间起点 \(a\):</label>
+                        <input type="range" id="surface-a-slider" min="0" max="2" step="0.1" value="0">
+                        <span class="value-display" id="surface-a-value">0</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="surface-b-slider">区间终点 \(b\):</label>
+                        <input type="range" id="surface-b-slider" min="2" max="6" step="0.1" value="4">
+                        <span class="value-display" id="surface-b-value">4</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="surface-formula">
+                        \[ \text{表面积微元：} dS = 2\pi x \sqrt{1 + 1^2} dx = 2\pi x \sqrt{2} dx \]
+                        \[ \text{总表面积：} S = 2\pi \sqrt{2} \int_{0}^{4} x dx = 16\pi \sqrt{2} \approx 71.086 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>曲线</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">表面积微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(147, 112, 219, 0.6);"></div>
+                        <span>旋转曲面</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="surface-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似表面积</div>
+                        <div class="result-value" id="surface-approx">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确表面积</div>
+                        <div class="result-value" id="surface-exact">71.086</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="surface-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 变力做功 -->
+        <section id="work" class="section">
+            <h2><i class="fas fa-weight-hanging"></i> 变力做功</h2>
+            <p>物体在变力 \(F(x)\) 作用下沿 x 轴从 a 移动到 b，微元法思想：将路径分割为小段，每段上力近似不变，做功微元 \(dW = F(x)dx\)，总功 \(W = \int_a^b F(x)dx\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：变力做功计算</h3>
+                <p>选择不同的变力情况进行计算：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="work-spring">弹簧做功</button>
+                    <button class="demo-btn" data-demo="work-variable">变力直线运动</button>
+                    <button class="demo-btn" data-demo="work-gravity">重力做功</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="work-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="work-n-slider" min="5" max="50" value="15">
+                        <span class="value-display" id="work-n-value">15</span>
+                    </div>
+                    
+                    <!-- 弹簧做功参数 -->
+                    <div class="control-group" id="work-k-group">
+                        <label for="work-k-slider">弹性系数 \(k\):</label>
+                        <input type="range" id="work-k-slider" min="1" max="10" step="0.5" value="5">
+                        <span class="value-display" id="work-k-value">5</span>
+                    </div>
+                    
+                    <div class="control-group" id="work-L-group">
+                        <label for="work-L-slider">伸长量 \(L\):</label>
+                        <input type="range" id="work-L-slider" min="1" max="10" step="0.5" value="8">
+                        <span class="value-display" id="work-L-value">8</span>
+                    </div>
+                    
+                    <!-- 变力直线运动参数 -->
+                    <div class="control-group" id="work-coeff1-group" style="display: none;">
+                        <label for="work-coeff1-slider">系数 \(a\):</label>
+                        <input type="range" id="work-coeff1-slider" min="0.5" max="3" step="0.1" value="1">
+                        <span class="value-display" id="work-coeff1-value">1</span>
+                    </div>
+                    
+                    <div class="control-group" id="work-coeff2-group" style="display: none;">
+                        <label for="work-coeff2-slider">系数 \(b\):</label>
+                        <input type="range" id="work-coeff2-slider" min="0.5" max="3" step="0.1" value="2">
+                        <span class="value-display" id="work-coeff2-value">2</span>
+                    </div>
+                    
+                    <!-- 重力做功参数 -->
+                    <div class="control-group" id="work-mass-group" style="display: none;">
+                        <label for="work-mass-slider">质量 \(m\) (kg):</label>
+                        <input type="range" id="work-mass-slider" min="1" max="20" step="0.5" value="10">
+                        <span class="value-display" id="work-mass-value">10</span>
+                    </div>
+                    
+                    <div class="control-group" id="work-height-group" style="display: none;">
+                        <label for="work-height-slider">高度 \(h\) (m):</label>
+                        <input type="range" id="work-height-slider" min="1" max="20" step="0.5" value="5">
+                        <span class="value-display" id="work-height-value">5</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="work-formula">
+                        \[ \text{功微元：} dW = kx\,dx \]
+                        \[ \text{总功：} W = \int_{0}^{L} kx dx = \frac{1}{2}kL^2 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>力函数</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">功微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 105, 180, 0.6);"></div>
+                        <span>物体位置</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="work-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似功</div>
+                        <div class="result-value" id="work-approx">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确功</div>
+                        <div class="result-value" id="work-exact">160</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="work-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 液体压力 -->
+        <section id="pressure" class="section">
+            <h2><i class="fas fa-tint"></i> 液体压力</h2>
+            <p>浸没在液体中的平板受到的压力与深度成正比。微元法思想：将平板分割为水平细条，深度为 \(h\) 处的压力微元 \(dP = \rho g h \cdot L(h) dh\)，总压力 \(P = \rho g \int_a^b h L(h) dh\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：液体压力计算</h3>
+                <p>选择不同的平板形状进行计算：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="pressure-rect">矩形平板</button>
+                    <button class="demo-btn" data-demo="pressure-triangle">三角形平板</button>
+                    <button class="demo-btn" data-demo="pressure-circle">圆形平板</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="pressure-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="pressure-n-slider" min="5" max="30" value="10">
+                        <span class="value-display" id="pressure-n-value">10</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="pressure-H-slider">深度 \(H\):</label>
+                        <input type="range" id="pressure-H-slider" min="5" max="20" step="1" value="10">
+                        <span class="value-display" id="pressure-H-value">10</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="pressure-W-slider">宽度 \(W\):</label>
+                        <input type="range" id="pressure-W-slider" min="2" max="10" step="0.5" value="6">
+                        <span class="value-display" id="pressure-W-value">6</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="pressure-formula">
+                        \[ \text{压力微元：} dP = \rho g h \cdot W dh \]
+                        \[ \text{总压力：} P = \rho g W \int_{0}^{H} h dh = \frac{1}{2} \rho g W H^2 \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>液体</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">压力微元</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(147, 112, 219, 0.6);"></div>
+                        <span>平板</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="pressure-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>近似压力</div>
+                        <div class="result-value" id="pressure-approx">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>精确压力</div>
+                        <div class="result-value" id="pressure-exact">2940</div>
+                    </div>
+                    <div class="result-item">
+                        <div>相对误差</div>
+                        <div class="result-value" id="pressure-error">0%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 质心 -->
+        <section id="centroid" class="section">
+            <h2><i class="fas fa-balance-scale"></i> 平面图形质心</h2>
+            <p>平面图形的质心坐标 \((\bar{x}, \bar{y})\) 可以通过微元法计算。微元法思想：将图形分割为小条，每个小条的质心近似在其中心，总质心坐标 \(\bar{x} = \frac{1}{A} \int x dA\)，\(\bar{y} = \frac{1}{A} \int y dA\)。</p>
+            
+            <div class="demo-container">
+                <h3>动态演示：平面图形质心计算</h3>
+                <p>选择不同的图形计算其质心：</p>
+                
+                <div class="demo-selector">
+                    <button class="demo-btn active" data-demo="centroid-rect">矩形</button>
+                    <button class="demo-btn" data-demo="centroid-triangle">三角形</button>
+                    <button class="demo-btn" data-demo="centroid-semicircle">半圆形</button>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="centroid-n-slider">分割数 \(n\):</label>
+                        <input type="range" id="centroid-n-slider" min="10" max="100" value="30">
+                        <span class="value-display" id="centroid-n-value">30</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="centroid-a-slider">参数 \(a\):</label>
+                        <input type="range" id="centroid-a-slider" min="2" max="10" step="0.5" value="6">
+                        <span class="value-display" id="centroid-a-value">6</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="centroid-b-slider">参数 \(b\):</label>
+                        <input type="range" id="centroid-b-slider" min="2" max="10" step="0.5" value="4">
+                        <span class="value-display" id="centroid-b-value">4</span>
+                    </div>
+                </div>
+                
+                <div class="formula">
+                    <div class="math" id="centroid-formula">
+                        \[ \text{质心坐标：} \bar{x} = \frac{1}{A} \int_{0}^{b} x \cdot a dx = \frac{b}{2} \]
+                        \[ \bar{y} = \frac{1}{A} \int_{0}^{b} \frac{a}{2} \cdot a dx = \frac{a}{2} \]
+                    </div>
+                </div>
+                
+                <div class="color-key">
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(64, 224, 208, 0.8);"></div>
+                        <span>图形</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 140, 0, 0.6);"></div>
+                        <span class="micro-element">微元质心</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box" style="background-color: rgba(255, 105, 180, 0.8);"></div>
+                        <span>总质心</span>
+                    </div>
+                </div>
+                
+                <div class="canvas-wrapper">
+                    <canvas id="centroid-canvas"></canvas>
+                </div>
+                
+                <div class="result-display">
+                    <div class="result-item">
+                        <div>质心 \(\bar{x}\)</div>
+                        <div class="result-value" id="centroid-x">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>质心 \(\bar{y}\)</div>
+                        <div class="result-value" id="centroid-y">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div>面积</div>
+                        <div class="result-value" id="centroid-area">0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>© 2025 微元法全面应用交互演示</p>
+            <p>微元法体现了"化整为零，积零为整"的数学思想，是微积分解决实际问题的核心工具。</p>
+            <p style="margin-top: 15px; color: #40e0d0;">
+                <i class="fas fa-lightbulb"></i> 提示：点击上方标签切换不同应用，调整滑块观察微元数量和分割方式对计算结果的影响。
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // 等待页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化标签切换
+            initTabNavigation();
+            
+            // 初始化所有Canvas
+            initAllCanvases();
+            
+            // 设置所有滑块事件监听器
+            setupAllSliders();
+            
+            // 设置演示选择按钮
+            setupDemoSelectors();
+            
+            // 初始化微元法步骤演示
+            initMethodCanvases();
+            
+            // 初始更新活动Canvas
+            updateActiveCanvas('method');
+        });
+        
+        // 初始化标签导航
+        function initTabNavigation() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const sections = document.querySelectorAll('.section');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const sectionId = this.dataset.section;
+                    
+                    // 更新标签状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 更新章节显示
+                    sections.forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    document.getElementById(sectionId).classList.add('active');
+                    
+                    // 更新当前活动的Canvas
+                    updateActiveCanvas(sectionId);
+                });
+            });
+        }
+        
+        // 初始化所有Canvas
+        function initAllCanvases() {
+            const canvases = [
+                'step1-canvas', 'step2-canvas', 'step3-canvas',
+                'method-demo-canvas', 'rect-area-canvas', 'param-area-canvas',
+                'polar-area-canvas', 'length-canvas', 'volume-canvas',
+                'slice-canvas', 'surface-canvas', 'work-canvas',
+                'pressure-canvas', 'centroid-canvas'
+            ];
+            
+            canvases.forEach(canvasId => {
+                const canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    const container = canvas.parentElement;
+                    canvas.width = container.clientWidth;
+                    canvas.height = container.clientHeight;
+                }
+            });
+            
+            // 为每个Canvas添加resize事件监听
+            window.addEventListener('resize', function() {
+                canvases.forEach(canvasId => {
+                    const canvas = document.getElementById(canvasId);
+                    if (canvas && canvas.parentElement) {
+                        const container = canvas.parentElement;
+                        canvas.width = container.clientWidth;
+                        canvas.height = container.clientHeight;
+                        updateActiveCanvas(getActiveSection());
+                    }
+                });
+            });
+        }
+        
+        // 获取当前活动章节
+        function getActiveSection() {
+            const activeTab = document.querySelector('.nav-tab.active');
+            return activeTab ? activeTab.dataset.section : 'method';
+        }
+        
+        // 更新活动Canvas
+        function updateActiveCanvas(sectionId) {
+            switch(sectionId) {
+                case 'method':
+                    updateMethodDemo();
+                    break;
+                case 'area-rect':
+                    updateRectAreaDemo();
+                    break;
+                case 'area-param':
+                    updateParametricAreaDemo();
+                    break;
+                case 'area-polar':
+                    updatePolarAreaDemo();
+                    break;
+                case 'curve-length':
+                    updateCurveLengthDemo();
+                    break;
+                case 'volume-rotate':
+                    updateVolumeDemo();
+                    break;
+                case 'volume-slice':
+                    updateSliceVolumeDemo();
+                    break;
+                case 'surface-area':
+                    updateSurfaceAreaDemo();
+                    break;
+                case 'work':
+                    updateWorkDemo();
+                    break;
+                case 'pressure':
+                    updatePressureDemo();
+                    break;
+                case 'centroid':
+                    updateCentroidDemo();
+                    break;
+            }
+        }
+        
+        // 设置所有滑块事件监听器
+        function setupAllSliders() {
+            // 微元法演示滑块
+            setupSlider('method-n-slider', 'method-n-value', updateMethodDemo);
+            document.getElementById('method-type').addEventListener('change', updateMethodDemo);
+            
+            // 直角坐标面积滑块
+            setupSlider('rect-n-slider', 'rect-n-value', updateRectAreaDemo);
+            setupSlider('rect-a-slider', 'rect-a-value', updateRectAreaDemo, 0.1);
+            setupSlider('rect-b-slider', 'rect-b-value', updateRectAreaDemo, 0.1);
+            
+            // 参数方程面积滑块
+            setupSlider('param-n-slider', 'param-n-value', updateParametricAreaDemo);
+            setupSlider('param-a-slider', 'param-a-value', updateParametricAreaDemo, 0.5);
+            setupSlider('param-t-slider', 'param-t-value', updateParametricAreaDemo, 1, (val) => (val/100).toFixed(2) + 'π');
+            
+            // 极坐标面积滑块
+            setupSlider('polar-n-slider', 'polar-n-value', updatePolarAreaDemo);
+            setupSlider('polar-a-slider', 'polar-a-value', updatePolarAreaDemo, 0.5);
+            setupSlider('polar-k-slider', 'polar-k-value', updatePolarAreaDemo);
+            
+            // 曲线长度滑块
+            setupSlider('length-n-slider', 'length-n-value', updateCurveLengthDemo);
+            setupSlider('length-a-slider', 'length-a-value', updateCurveLengthDemo, 0.1);
+            setupSlider('length-b-slider', 'length-b-value', updateCurveLengthDemo, 0.1);
+            
+            // 旋转体体积滑块
+            setupSlider('volume-n-slider', 'volume-n-value', updateVolumeDemo);
+            setupSlider('volume-a-slider', 'volume-a-value', updateVolumeDemo, 0.1);
+            setupSlider('volume-b-slider', 'volume-b-value', updateVolumeDemo, 0.1);
+            
+            // 切片体积滑块
+            setupSlider('slice-n-slider', 'slice-n-value', updateSliceVolumeDemo);
+            setupSlider('slice-a-slider', 'slice-a-value', updateSliceVolumeDemo, 0.1);
+            setupSlider('slice-b-slider', 'slice-b-value', updateSliceVolumeDemo, 0.1);
+            
+            // 表面积滑块
+            setupSlider('surface-n-slider', 'surface-n-value', updateSurfaceAreaDemo);
+            setupSlider('surface-a-slider', 'surface-a-value', updateSurfaceAreaDemo, 0.1);
+            setupSlider('surface-b-slider', 'surface-b-value', updateSurfaceAreaDemo, 0.1);
+            
+            // 做功滑块 - 修正：为不同模式设置不同参数
+            setupSlider('work-n-slider', 'work-n-value', updateWorkDemo);
+            setupSlider('work-k-slider', 'work-k-value', updateWorkDemo, 0.5);
+            setupSlider('work-L-slider', 'work-L-value', updateWorkDemo, 0.5);
+            setupSlider('work-coeff1-slider', 'work-coeff1-value', updateWorkDemo, 0.1);
+            setupSlider('work-coeff2-slider', 'work-coeff2-value', updateWorkDemo, 0.1);
+            setupSlider('work-mass-slider', 'work-mass-value', updateWorkDemo, 0.5);
+            setupSlider('work-height-slider', 'work-height-value', updateWorkDemo, 0.5);
+            
+            // 压力滑块
+            setupSlider('pressure-n-slider', 'pressure-n-value', updatePressureDemo);
+            setupSlider('pressure-H-slider', 'pressure-H-value', updatePressureDemo, 1);
+            setupSlider('pressure-W-slider', 'pressure-W-value', updatePressureDemo, 0.5);
+            
+            // 质心滑块
+            setupSlider('centroid-n-slider', 'centroid-n-value', updateCentroidDemo);
+            setupSlider('centroid-a-slider', 'centroid-a-value', updateCentroidDemo, 0.5);
+            setupSlider('centroid-b-slider', 'centroid-b-value', updateCentroidDemo, 0.5);
+        }
+        
+        function setupSlider(sliderId, valueId, updateFunction, step = 1, format = null) {
+            const slider = document.getElementById(sliderId);
+            const valueDisplay = document.getElementById(valueId);
+            
+            if (slider && valueDisplay) {
+                slider.addEventListener('input', function() {
+                    if (format) {
+                        valueDisplay.textContent = format(this.value);
+                    } else {
+                        valueDisplay.textContent = this.value;
+                    }
+                    updateFunction();
+                });
+            }
+        }
+        
+        // 设置演示选择按钮
+        function setupDemoSelectors() {
+            // 为所有演示选择器添加事件监听
+            const selectors = document.querySelectorAll('.demo-selector');
+            
+            selectors.forEach(selector => {
+                const buttons = selector.querySelectorAll('.demo-btn');
+                
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // 移除所有按钮的active类
+                        buttons.forEach(b => b.classList.remove('active'));
+                        
+                        // 为当前按钮添加active类
+                        this.classList.add('active');
+                        
+                        // 更新相应的演示
+                        const sectionId = this.closest('.section').id;
+                        updateActiveCanvas(sectionId);
+                        
+                        // 更新公式显示
+                        updateFormulas(sectionId, this.dataset.demo);
+                        
+                        // 特殊处理：变力做功案例的参数显示
+                        if (sectionId === 'work') {
+                            updateWorkParameters(this.dataset.demo);
+                        }
+                    });
+                });
+            });
+        }
+        
+        // 更新变力做功案例的参数显示
+        function updateWorkParameters(demoType) {
+            // 获取所有参数组
+            const kGroup = document.getElementById('work-k-group');
+            const LGroup = document.getElementById('work-L-group');
+            const coeff1Group = document.getElementById('work-coeff1-group');
+            const coeff2Group = document.getElementById('work-coeff2-group');
+            const massGroup = document.getElementById('work-mass-group');
+            const heightGroup = document.getElementById('work-height-group');
+            
+            // 隐藏所有参数组
+            [kGroup, LGroup, coeff1Group, coeff2Group, massGroup, heightGroup].forEach(group => {
+                if (group) group.style.display = 'none';
+            });
+            
+            // 根据演示类型显示相应的参数组
+            if (demoType === 'work-spring') {
+                if (kGroup) {
+                    kGroup.style.display = 'flex';
+                    kGroup.querySelector('label').textContent = '弹性系数 k:';
+                }
+                if (LGroup) {
+                    LGroup.style.display = 'flex';
+                    LGroup.querySelector('label').textContent = '伸长量 L:';
+                }
+            } else if (demoType === 'work-variable') {
+                if (coeff1Group) {
+                    coeff1Group.style.display = 'flex';
+                    coeff1Group.querySelector('label').textContent = '系数 a:';
+                }
+                if (coeff2Group) {
+                    coeff2Group.style.display = 'flex';
+                    coeff2Group.querySelector('label').textContent = '系数 b:';
+                }
+                // 将L组重新用于表示距离
+                if (LGroup) {
+                    LGroup.style.display = 'flex';
+                    LGroup.querySelector('label').textContent = '距离 s:';
+                }
+            } else if (demoType === 'work-gravity') {
+                if (massGroup) massGroup.style.display = 'flex';
+                if (heightGroup) heightGroup.style.display = 'flex';
+                // 将L组重新用于表示高度
+                if (LGroup) {
+                    LGroup.style.display = 'flex';
+                    LGroup.querySelector('label').textContent = '高度 h:';
+                }
+            }
+        }
+        
+        // 更新公式显示
+        function updateFormulas(sectionId, demoType) {
+            let formulaElement, formulaText;
+            
+            switch(sectionId) {
+                case 'area-rect':
+                    formulaElement = document.getElementById('rect-formula');
+                    if (demoType === 'rect-sin') {
+                        formulaText = '\\[ \\text{面积微元：} dA = [\\sin(x) + 1] dx \\]\n\\[ \\text{总面积：} A = \\int_{0}^{2\\pi} [\\sin(x) + 1] dx = 2\\pi \\approx 6.283 \\]';
+                    } else if (demoType === 'rect-poly') {
+                        formulaText = '\\[ \\text{面积微元：} dA = x(4-x) dx \\]\n\\[ \\text{总面积：} A = \\int_{0}^{4} x(4-x) dx = \\frac{32}{3} \\approx 10.667 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{面积微元：} dA = [f(x) - g(x)] dx \\]\n\\[ \\text{总面积：} A = \\int_{0}^{2\\pi} [\\sin(x)+1 - \\sin(x)] dx = 2\\pi \\approx 6.283 \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'area-param':
+                    formulaElement = document.getElementById('param-formula');
+                    if (demoType === 'param-astroid') {
+                        formulaText = '\\[ \\text{面积微元：} dA = y(t) x\'(t) dt = -3a^2 \\sin^4 t \\cos^2 t dt \\]\n\\[ \\text{总面积：} A = \\frac{3}{8}\\pi a^2 \\]';
+                    } else if (demoType === 'param-cycloid') {
+                        formulaText = '\\[ \\text{面积微元：} dA = a(1-\\cos t) \\cdot a(1-\\cos t) dt = a^2(1-\\cos t)^2 dt \\]\n\\[ \\text{总面积：} A = 3\\pi a^2 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{面积微元：} dA = b\\sin t \\cdot (-a\\sin t) dt = -ab\\sin^2 t dt \\]\n\\[ \\text{总面积：} A = \\pi ab \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'area-polar':
+                    formulaElement = document.getElementById('polar-formula');
+                    if (demoType === 'polar-rose') {
+                        formulaText = '\\[ \\text{面积微元：} dA = \\frac{1}{2} [a \\cos(3\\theta)]^2 d\\theta \\]\n\\[ \\text{一片叶子面积：} A_1 = \\frac{\\pi a^2}{12} \\]\n\\[ \\text{总面积：} A = 3 \\times \\frac{\\pi a^2}{12} = \\frac{\\pi a^2}{4} \\]';
+                    } else if (demoType === 'polar-cardioid') {
+                        formulaText = '\\[ \\text{面积微元：} dA = \\frac{1}{2} [a(1+\\cos\\theta)]^2 d\\theta \\]\n\\[ \\text{总面积：} A = \\frac{3}{2}\\pi a^2 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{面积微元：} dA = \\frac{1}{2} (a\\theta)^2 d\\theta \\]\n\\[ \\text{总面积：} A = \\frac{4\\pi^3 a^2}{3} \\text{（第一圈）} \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'curve-length':
+                    formulaElement = document.getElementById('length-formula');
+                    if (demoType === 'length-sin') {
+                        formulaText = '\\[ \\text{弧长微元：} ds = \\sqrt{1 + [\\cos(x)]^2} dx \\]\n\\[ \\text{总弧长：} L = \\int_{0}^{2\\pi} \\sqrt{1 + \\cos^2(x)} dx \\approx 7.640 \\]';
+                    } else if (demoType === 'length-parabola') {
+                        formulaText = '\\[ \\text{弧长微元：} ds = \\sqrt{1 + (2x)^2} dx \\]\n\\[ \\text{总弧长：} L = \\int_{0}^{1} \\sqrt{1 + 4x^2} dx \\approx 1.479 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{弧长微元：} ds = \\sqrt{[x\'(t)]^2 + [y\'(t)]^2} dt \\]\n\\[ \\text{总弧长：} L = \\int_{0}^{2\\pi} \\sqrt{a^2(1-\\cos t)^2 + a^2\\sin^2 t} dt = 8a \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'volume-rotate':
+                    formulaElement = document.getElementById('volume-formula');
+                    if (demoType === 'volume-disk') {
+                        formulaText = '\\[ \\text{体积微元（圆盘法）：} dV = \\pi (\\sqrt{x})^2 dx = \\pi x dx \\]\n\\[ \\text{总体积：} V = \\pi \\int_{0}^{4} x dx = 8\\pi \\approx 25.133 \\]';
+                    } else if (demoType === 'volume-shell') {
+                        formulaText = '\\[ \\text{体积微元（圆柱壳法）：} dV = 2\\pi x \\cdot \\sqrt{x} dx = 2\\pi x^{3/2} dx \\]\n\\[ \\text{总体积：} V = 2\\pi \\int_{0}^{4} x^{3/2} dx = \\frac{256\\pi}{5} \\approx 160.850 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{体积微元（垫圈法）：} dV = \\pi [R^2(x) - r^2(x)] dx \\]\n\\[ \\text{总体积：} V = \\pi \\int_{0}^{2} [(x+2)^2 - x^2] dx = \\frac{40\\pi}{3} \\approx 41.888 \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'volume-slice':
+                    formulaElement = document.getElementById('slice-formula');
+                    if (demoType === 'slice-ellipse') {
+                        formulaText = '\\[ \\text{体积微元：} dV = \\pi \\sqrt{4-x^2} \\cdot \\sqrt{1-\\frac{x^2}{4}} dx \\]\n\\[ \\text{总体积：} V = \\int_{-2}^{2} \\pi \\sqrt{4-x^2} \\cdot \\sqrt{1-\\frac{x^2}{4}} dx \\approx 10.472 \\]';
+                    } else if (demoType === 'slice-square') {
+                        formulaText = '\\[ \\text{体积微元：} dV = [2\\sqrt{4-x^2}]^2 dx \\]\n\\[ \\text{总体积：} V = \\int_{-2}^{2} 4(4-x^2) dx = \\frac{128}{3} \\approx 42.667 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{体积微元：} dV = \\frac{\\sqrt{3}}{4} [2\\sqrt{4-x^2}]^2 dx \\]\n\\[ \\text{总体积：} V = \\int_{-2}^{2} \\sqrt{3}(4-x^2) dx \\approx 36.950 \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'surface-area':
+                    formulaElement = document.getElementById('surface-formula');
+                    if (demoType === 'surface-line') {
+                        formulaText = '\\[ \\text{表面积微元：} dS = 2\\pi x \\sqrt{1 + 1^2} dx = 2\\pi x \\sqrt{2} dx \\]\n\\[ \\text{总表面积：} S = 2\\pi \\sqrt{2} \\int_{0}^{4} x dx = 16\\pi \\sqrt{2} \\approx 71.086 \\]';
+                    } else if (demoType === 'surface-sin') {
+                        formulaText = '\\[ \\text{表面积微元：} dS = 2\\pi \\sin(x) \\sqrt{1 + \\cos^2(x)} dx \\]\n\\[ \\text{总表面积：} S = 2\\pi \\int_{0}^{\\pi} \\sin(x) \\sqrt{1 + \\cos^2(x)} dx \\approx 14.424 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{表面积微元：} dS = 2\\pi x^2 \\sqrt{1 + 4x^2} dx \\]\n\\[ \\text{总表面积：} S = 2\\pi \\int_{0}^{1} x^2 \\sqrt{1 + 4x^2} dx \\approx 3.810 \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'work':
+                    formulaElement = document.getElementById('work-formula');
+                    if (demoType === 'work-spring') {
+                        const k = document.getElementById('work-k-slider').value;
+                        const L = document.getElementById('work-L-slider').value;
+                        formulaText = `\\[ \\text{功微元：} dW = kx\\,dx \\]\n\\[ \\text{总功：} W = \\int_{0}^{L} kx dx = \\frac{1}{2}kL^2 \\]`;
+                    } else if (demoType === 'work-variable') {
+                        const a = document.getElementById('work-coeff1-slider').value;
+                        const b = document.getElementById('work-coeff2-slider').value;
+                        const L = document.getElementById('work-L-slider').value;
+                        formulaText = `\\[ \\text{功微元：} dW = (${a}x^2 + ${b}x)\\,dx \\]\n\\[ \\text{总功：} W = \\int_{0}^{${L}} (${a}x^2 + ${b}x) dx \\]`;
+                    } else {
+                        const m = document.getElementById('work-mass-slider').value;
+                        const h = document.getElementById('work-height-slider').value;
+                        formulaText = `\\[ \\text{功微元：} dW = mg\\,dh \\]\n\\[ \\text{总功：} W = \\int_{0}^{${h}} ${m} \\times 9.8\\,dh = ${(m * 9.8 * h).toFixed(2)} \\]`;
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'pressure':
+                    formulaElement = document.getElementById('pressure-formula');
+                    if (demoType === 'pressure-rect') {
+                        formulaText = '\\[ \\text{压力微元：} dP = \\rho g h \\cdot W dh \\]\n\\[ \\text{总压力：} P = \\rho g W \\int_{0}^{H} h dh = \\frac{1}{2} \\rho g W H^2 \\]';
+                    } else if (demoType === 'pressure-triangle') {
+                        formulaText = '\\[ \\text{压力微元：} dP = \\rho g h \\cdot \\frac{W(H-h)}{H} dh \\]\n\\[ \\text{总压力：} P = \\rho g \\frac{W}{H} \\int_{0}^{H} h(H-h) dh = \\frac{1}{6} \\rho g W H^2 \\]';
+                    } else {
+                        formulaText = '\\[ \\text{压力微元：} dP = \\rho g h \\cdot 2\\sqrt{R^2 - (h-H+R)^2} dh \\]\n\\[ \\text{总压力：} P = 2\\rho g \\int_{H-R}^{H} h \\sqrt{R^2 - (h-H+R)^2} dh \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+                    
+                case 'centroid':
+                    formulaElement = document.getElementById('centroid-formula');
+                    if (demoType === 'centroid-rect') {
+                        formulaText = '\\[ \\text{质心坐标：} \\bar{x} = \\frac{1}{A} \\int_{0}^{b} x \\cdot a dx = \\frac{b}{2} \\]\n\\[ \\bar{y} = \\frac{1}{A} \\int_{0}^{b} \\frac{a}{2} \\cdot a dx = \\frac{a}{2} \\]';
+                    } else if (demoType === 'centroid-triangle') {
+                        formulaText = '\\[ \\text{质心坐标：} \\bar{x} = \\frac{1}{A} \\int_{0}^{b} x \\cdot \\frac{a}{b}x dx = \\frac{2}{3}b \\]\n\\[ \\bar{y} = \\frac{1}{A} \\int_{0}^{b} \\frac{1}{2} \\cdot \\frac{a}{b}x \\cdot \\frac{a}{b}x dx = \\frac{1}{3}a \\]';
+                    } else {
+                        formulaText = '\\[ \\text{质心坐标：} \\bar{x} = \\frac{1}{A} \\int_{-R}^{R} x \\cdot \\sqrt{R^2 - x^2} dx = 0 \\]\n\\[ \\bar{y} = \\frac{1}{A} \\int_{-R}^{R} \\frac{1}{2} \\sqrt{R^2 - x^2} \\cdot \\sqrt{R^2 - x^2} dx = \\frac{4R}{3\\pi} \\]';
+                    }
+                    formulaElement.innerHTML = formulaText;
+                    break;
+            }
+            
+            // 重新渲染MathJax
+            if (window.MathJax && formulaElement) {
+                MathJax.typesetPromise([formulaElement]).catch(function(err) {
+                    console.log('MathJax渲染错误:', err);
+                });
+            }
+        }
+        
+        // 初始化微元法步骤演示
+        function initMethodCanvases() {
+            // 绘制三个步骤的示意图
+            const stepCanvases = ['step1-canvas', 'step2-canvas', 'step3-canvas'];
+            
+            stepCanvases.forEach((canvasId, index) => {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+                
+                drawMethodStep(ctx, canvas.width, canvas.height, index + 1);
+            });
+        }
+        
+        // 绘制微元法步骤
+        function drawMethodStep(ctx, width, height, step) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 10;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 1;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 绘制函数 y = x(4-x)/4
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let x = 0; x <= 4; x += 0.1) {
+                const y = x * (4 - x) / 4;
+                const canvasX = padding + x * graphWidth / 4;
+                const canvasY = padding + graphHeight - y * graphHeight / 4;
+                
+                if (x === 0) {
+                    ctx.moveTo(canvasX, canvasY);
+                } else {
+                    ctx.lineTo(canvasX, canvasY);
+                }
+            }
+            ctx.stroke();
+            
+            // 根据步骤绘制不同的内容
+            const n = 4;
+            const dx = 4 / n;
+            
+            if (step === 1) {
+                // 步骤1：分割
+                ctx.strokeStyle = '#ff8c00';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 3]);
+                
+                for (let i = 0; i <= n; i++) {
+                    const x = i * dx;
+                    const canvasX = padding + x * graphWidth / 4;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(canvasX, padding + graphHeight);
+                    ctx.lineTo(canvasX, padding);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+                
+                // 添加标签
+                ctx.fillStyle = '#ff8c00';
+                ctx.font = '12px Arial';
+                ctx.fillText('分割', width/2, height/2);
+                
+            } else if (step === 2) {
+                // 步骤2：近似
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+                
+                for (let i = 0; i < n; i++) {
+                    const x = i * dx;
+                    const xMid = x + dx/2;
+                    const y = xMid * (4 - xMid) / 4;
+                    
+                    const canvasX = padding + x * graphWidth / 4;
+                    const canvasY = padding + graphHeight - y * graphHeight / 4;
+                    const rectWidth = dx * graphWidth / 4;
+                    const rectHeight = y * graphHeight / 4;
+                    
+                    ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                }
+                
+                // 添加标签
+                ctx.fillStyle = '#ff8c00';
+                ctx.font = '12px Arial';
+                ctx.fillText('近似', width/2, height/2);
+                
+            } else if (step === 3) {
+                // 步骤3：求和取极限
+                const nFine = 20;
+                const dxFine = 4 / nFine;
+                
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+                
+                for (let i = 0; i < nFine; i++) {
+                    const x = i * dxFine;
+                    const xMid = x + dxFine/2;
+                    const y = xMid * (4 - xMid) / 4;
+                    
+                    const canvasX = padding + x * graphWidth / 4;
+                    const canvasY = padding + graphHeight - y * graphHeight / 4;
+                    const rectWidth = dxFine * graphWidth / 4;
+                    const rectHeight = y * graphHeight / 4;
+                    
+                    ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                }
+                
+                // 添加标签
+                ctx.fillStyle = '#ff8c00';
+                ctx.font = '12px Arial';
+                ctx.fillText('求和取极限', width/2, height/2);
+            }
+        }
+        
+        // 微元法动态演示
+        function updateMethodDemo() {
+            const canvas = document.getElementById('method-demo-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('method-n-slider').value);
+            const demoType = document.getElementById('method-type').value;
+            
+            drawMethodDemo(ctx, canvas.width, canvas.height, n, demoType);
+        }
+        
+        function drawMethodDemo(ctx, width, height, n, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 坐标变换函数
+            function toCanvasX(x) {
+                return padding + x * graphWidth / (2 * Math.PI);
+            }
+            
+            function toCanvasY(y) {
+                return padding + graphHeight - y * graphHeight / 3;
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 函数 f(x) = sin(x) + 1
+            function f(x) { return Math.sin(x) + 1; }
+            
+            const exactArea = 2 * Math.PI; // ∫(sin(x)+1)dx from 0 to 2π
+            
+            // 绘制函数曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = 2 * Math.PI / 200;
+            for (let x = 0; x <= 2 * Math.PI; x += step) {
+                const y = f(x);
+                if (x === 0) {
+                    ctx.moveTo(toCanvasX(x), toCanvasY(y));
+                } else {
+                    ctx.lineTo(toCanvasX(x), toCanvasY(y));
+                }
+            }
+            ctx.stroke();
+            
+            // 根据演示类型绘制不同的内容
+            let approxArea = 0;
+            const dx = 2 * Math.PI / n;
+            
+            if (demoType === 'step1') {
+                // 步骤1：分割
+                ctx.strokeStyle = '#ff69b4';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 3]);
+                
+                for (let i = 0; i <= n; i++) {
+                    const x = i * dx;
+                    const canvasX = toCanvasX(x);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(canvasX, toCanvasY(0));
+                    ctx.lineTo(canvasX, toCanvasY(3));
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+                
+                // 添加分割点标签
+                ctx.fillStyle = '#ff69b4';
+                ctx.font = '12px Arial';
+                for (let i = 0; i <= n; i++) {
+                    const x = i * dx;
+                    if (i % 2 === 0) {
+                        ctx.fillText(`x${i}`, toCanvasX(x) - 5, toCanvasY(0) + 15);
+                    }
+                }
+                
+            } else if (demoType === 'step2') {
+                // 步骤2：近似
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+                ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+                ctx.lineWidth = 1;
+                
+                for (let i = 0; i < n; i++) {
+                    const x = i * dx;
+                    const xMid = x + dx/2;
+                    const y = f(xMid);
+                    
+                    approxArea += y * dx;
+                    
+                    const canvasX = toCanvasX(x);
+                    const canvasY = toCanvasY(y);
+                    const rectWidth = toCanvasX(x + dx) - canvasX;
+                    const rectHeight = toCanvasY(0) - canvasY;
+                    
+                    ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                    ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+                    
+                    // 绘制近似误差
+                    ctx.fillStyle = 'rgba(255, 105, 180, 0.3)';
+                    ctx.beginPath();
+                    for (let xx = x; xx <= x + dx; xx += 0.01) {
+                        const yy = f(xx);
+                        const rectY = toCanvasY(Math.min(y, yy));
+                        const errorHeight = Math.abs(y - yy) * graphHeight / 3;
+                        
+                        ctx.fillRect(toCanvasX(xx), rectY, 1, errorHeight);
+                    }
+                    ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+                }
+                
+            } else if (demoType === 'step3') {
+                // 步骤3：求和取极限
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+                ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+                ctx.lineWidth = 1;
+                
+                for (let i = 0; i < n; i++) {
+                    const x = i * dx;
+                    const xMid = x + dx/2;
+                    const y = f(xMid);
+                    
+                    approxArea += y * dx;
+                    
+                    const canvasX = toCanvasX(x);
+                    const canvasY = toCanvasY(y);
+                    const rectWidth = toCanvasX(x + dx) - canvasX;
+                    const rectHeight = toCanvasY(0) - canvasY;
+                    
+                    ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                    ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+                }
+                
+                // 显示总和
+                ctx.fillStyle = '#e0e0ff';
+                ctx.font = '16px Arial';
+                ctx.fillText(`Σ f(xᵢ)Δxᵢ ≈ ${approxArea.toFixed(3)}`, width/2, padding + 30);
+                ctx.fillText(`lim Σ f(xᵢ)Δxᵢ = ${exactArea.toFixed(3)}`, width/2, padding + 60);
+            }
+            
+            // 更新结果
+            document.getElementById('method-approx-area').textContent = approxArea.toFixed(3);
+            const error = Math.abs(exactArea - approxArea);
+            const relativeError = (error / exactArea * 100).toFixed(2);
+            document.getElementById('method-error').textContent = relativeError + '%';
+            
+            // 添加标题
+            ctx.fillStyle = '#e0e0ff';
+            ctx.font = '20px Arial';
+            ctx.fillText('微元法演示: ' + (demoType === 'step1' ? '分割' : demoType === 'step2' ? '近似' : '求和取极限'), width/2 - 100, 30);
+        }
+        
+        // 直角坐标面积演示
+        function updateRectAreaDemo() {
+            const canvas = document.getElementById('rect-area-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('rect-n-slider').value);
+            const a = parseFloat(document.getElementById('rect-a-slider').value);
+            const b = parseFloat(document.getElementById('rect-b-slider').value);
+            const demoType = document.querySelector('#area-rect .demo-btn.active').dataset.demo;
+            
+            drawRectAreaDemo(ctx, canvas.width, canvas.height, n, a, b, demoType);
+        }
+        
+        function drawRectAreaDemo(ctx, width, height, n, a, b, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 坐标变换函数
+            function toCanvasX(x) {
+                return padding + (x - a) * graphWidth / (b - a);
+            }
+            
+            function toCanvasY(y) {
+                return padding + graphHeight - y * graphHeight / 3;
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 根据演示类型选择函数
+            let f, g, exactArea;
+            
+            if (demoType === 'rect-sin') {
+                f = function(x) { return Math.sin(x) + 1; };
+                exactArea = 2 * Math.PI;
+            } else if (demoType === 'rect-poly') {
+                f = function(x) { return x * (4 - x); };
+                exactArea = 32/3;
+            } else {
+                f = function(x) { return Math.sin(x) + 1; };
+                g = function(x) { return Math.sin(x); };
+                exactArea = 2 * Math.PI;
+            }
+            
+            // 绘制函数曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = (b - a) / 200;
+            for (let x = a; x <= b; x += step) {
+                const y = f(x);
+                if (x === a) {
+                    ctx.moveTo(toCanvasX(x), toCanvasY(y));
+                } else {
+                    ctx.lineTo(toCanvasX(x), toCanvasY(y));
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制第二条曲线（如果是两曲线之间）
+            if (demoType === 'rect-between') {
+                ctx.strokeStyle = '#ff69b4';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                for (let x = a; x <= b; x += step) {
+                    const y = g(x);
+                    if (x === a) {
+                        ctx.moveTo(toCanvasX(x), toCanvasY(y));
+                    } else {
+                        ctx.lineTo(toCanvasX(x), toCanvasY(y));
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // 绘制微元并计算近似面积
+            let approxArea = 0;
+            const dx = (b - a) / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < n; i++) {
+                const x = a + i * dx;
+                const xMid = x + dx/2;
+                
+                if (demoType === 'rect-between') {
+                    // 两曲线之间的面积
+                    const y1 = f(xMid);
+                    const y2 = g(xMid);
+                    const height = Math.abs(y1 - y2);
+                    
+                    approxArea += height * dx;
+                    
+                    // 绘制微元
+                    const canvasX = toCanvasX(x);
+                    const canvasY = toCanvasY(Math.max(y1, y2));
+                    const rectWidth = toCanvasX(x + dx) - canvasX;
+                    const rectHeight = toCanvasY(Math.min(y1, y2)) - canvasY;
+                    
+                    ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                    ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+                } else {
+                    // 单个函数与x轴之间的面积
+                    const y = f(xMid);
+                    
+                    if (y >= 0) {
+                        approxArea += y * dx;
+                        
+                        // 绘制微元
+                        const canvasX = toCanvasX(x);
+                        const canvasY = toCanvasY(y);
+                        const rectWidth = toCanvasX(x + dx) - canvasX;
+                        const rectHeight = toCanvasY(0) - canvasY;
+                        
+                        ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                        ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+                    }
+                }
+            }
+            
+            // 更新结果
+            document.getElementById('rect-approx-area').textContent = approxArea.toFixed(3);
+            document.getElementById('rect-exact-area').textContent = exactArea.toFixed(3);
+            const error = Math.abs(exactArea - approxArea);
+            const relativeError = (error / exactArea * 100).toFixed(2);
+            document.getElementById('rect-error').textContent = relativeError + '%';
+            
+            // 显示/隐藏第二条曲线的颜色图例
+            const curve2Color = document.getElementById('rect-curve2-color');
+            if (demoType === 'rect-between') {
+                curve2Color.style.display = 'flex';
+            } else {
+                curve2Color.style.display = 'none';
+            }
+        }
+        
+        // 参数方程面积演示
+        function updateParametricAreaDemo() {
+            const canvas = document.getElementById('param-area-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('param-n-slider').value);
+            const a = parseFloat(document.getElementById('param-a-slider').value);
+            const tMax = parseFloat(document.getElementById('param-t-slider').value) / 100;
+            const demoType = document.querySelector('#area-param .demo-btn.active').dataset.demo;
+            
+            drawParametricAreaDemo(ctx, canvas.width, canvas.height, n, a, tMax, demoType);
+        }
+        
+        function drawParametricAreaDemo(ctx, width, height, n, a, tMax, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const scale = Math.min(width, height) / (2 * a + 2);
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX - a * scale, centerY);
+            ctx.lineTo(centerX + a * scale, centerY);
+            ctx.moveTo(centerX, centerY - a * scale);
+            ctx.lineTo(centerX, centerY + a * scale);
+            ctx.stroke();
+            
+            // 定义参数方程
+            let xFunc, yFunc, dxdtFunc, exactArea;
+            
+            if (demoType === 'param-astroid') {
+                // 星形线
+                xFunc = function(t) { return a * Math.pow(Math.cos(t), 3); };
+                yFunc = function(t) { return a * Math.pow(Math.sin(t), 3); };
+                dxdtFunc = function(t) { return -3 * a * Math.pow(Math.cos(t), 2) * Math.sin(t); };
+                exactArea = 3 * Math.PI * a * a / 8;
+            } else if (demoType === 'param-cycloid') {
+                // 摆线
+                xFunc = function(t) { return a * (t - Math.sin(t)); };
+                yFunc = function(t) { return a * (1 - Math.cos(t)); };
+                dxdtFunc = function(t) { return a * (1 - Math.cos(t)); };
+                exactArea = 3 * Math.PI * a * a;
+            } else {
+                // 椭圆
+                const b = a * 0.6;
+                xFunc = function(t) { return a * Math.cos(t); };
+                yFunc = function(t) { return b * Math.sin(t); };
+                dxdtFunc = function(t) { return -a * Math.sin(t); };
+                exactArea = Math.PI * a * b;
+            }
+            
+            // 绘制参数曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const dt = 2 * Math.PI * tMax / 200;
+            for (let t = 0; t <= 2 * Math.PI * tMax; t += dt) {
+                const x = centerX + xFunc(t) * scale;
+                const y = centerY - yFunc(t) * scale; // 注意：Canvas y轴向下
+                
+                if (t === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制微元并计算近似面积
+            let approxArea = 0;
+            const dTheta = 2 * Math.PI * tMax / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            // 绘制参数变化指示
+            ctx.strokeStyle = 'rgba(147, 112, 219, 0.6)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 3]);
+            
+            for (let i = 0; i < n; i++) {
+                const t1 = i * dTheta;
+                const t2 = t1 + dTheta;
+                const tMid = (t1 + t2) / 2;
+                
+                // 参数方程的面积微元：dA = y(t) * x'(t) dt
+                const dA = yFunc(tMid) * dxdtFunc(tMid) * dTheta;
+                approxArea += Math.abs(dA);
+                
+                // 绘制参数点
+                const xMid = centerX + xFunc(tMid) * scale;
+                const yMid = centerY - yFunc(tMid) * scale;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(xMid, yMid);
+                ctx.stroke();
+                
+                // 绘制扇形微元
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                
+                const x1 = centerX + xFunc(t1) * scale;
+                const y1 = centerY - yFunc(t1) * scale;
+                const x2 = centerX + xFunc(t2) * scale;
+                const y2 = centerY - yFunc(t2) * scale;
+                
+                ctx.lineTo(x1, y1);
+                
+                // 绘制曲线段
+                const segmentSteps = 10;
+                const segmentDt = dTheta / segmentSteps;
+                for (let j = 0; j <= segmentSteps; j++) {
+                    const tSegment = t1 + j * segmentDt;
+                    const xSegment = centerX + xFunc(tSegment) * scale;
+                    const ySegment = centerY - yFunc(tSegment) * scale;
+                    ctx.lineTo(xSegment, ySegment);
+                }
+                
+                ctx.lineTo(x2, y2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            }
+            
+            ctx.setLineDash([]);
+            
+            // 更新结果
+            document.getElementById('param-approx-area').textContent = approxArea.toFixed(3);
+            document.getElementById('param-exact-area').textContent = exactArea.toFixed(3);
+            const error = Math.abs(exactArea - approxArea);
+            const relativeError = (error / exactArea * 100).toFixed(2);
+            document.getElementById('param-error').textContent = relativeError + '%';
+        }
+        
+        // 极坐标面积演示
+        function updatePolarAreaDemo() {
+            const canvas = document.getElementById('polar-area-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('polar-n-slider').value);
+            const a = parseFloat(document.getElementById('polar-a-slider').value);
+            const k = parseInt(document.getElementById('polar-k-slider').value);
+            const demoType = document.querySelector('#area-polar .demo-btn.active').dataset.demo;
+            
+            drawPolarAreaDemo(ctx, canvas.width, canvas.height, n, a, k, demoType);
+        }
+        
+        function drawPolarAreaDemo(ctx, width, height, n, a, k, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const scale = Math.min(width, height) / (2 * a + 2);
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX - a * scale, centerY);
+            ctx.lineTo(centerX + a * scale, centerY);
+            ctx.moveTo(centerX, centerY - a * scale);
+            ctx.lineTo(centerX, centerY + a * scale);
+            ctx.stroke();
+            
+            // 定义极坐标方程
+            let rFunc, exactArea, thetaMax;
+            
+            if (demoType === 'polar-rose') {
+                // 玫瑰线 r = a * cos(kθ)
+                rFunc = function(theta) { return a * Math.cos(k * theta); };
+                exactArea = (k % 2 === 0) ? Math.PI * a * a / 2 : Math.PI * a * a / 4;
+                thetaMax = 2 * Math.PI;
+            } else if (demoType === 'polar-cardioid') {
+                // 心形线 r = a(1 + cosθ)
+                rFunc = function(theta) { return a * (1 + Math.cos(theta)); };
+                exactArea = 3 * Math.PI * a * a / 2;
+                thetaMax = 2 * Math.PI;
+            } else {
+                // 阿基米德螺线 r = aθ
+                rFunc = function(theta) { return a * theta; };
+                exactArea = 4 * Math.pow(Math.PI, 3) * a * a / 3; // 第一圈面积
+                thetaMax = 2 * Math.PI;
+            }
+            
+            // 绘制极坐标曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const dTheta = thetaMax / 200;
+            for (let theta = 0; theta <= thetaMax; theta += dTheta) {
+                const radius = rFunc(theta);
+                const x = centerX + radius * Math.cos(theta) * scale;
+                const y = centerY - radius * Math.sin(theta) * scale; // 注意：Canvas y轴向下
+                
+                if (theta === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制微元并计算近似面积
+            let approxArea = 0;
+            const thetaStep = thetaMax / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            // 绘制角度变化指示
+            ctx.strokeStyle = 'rgba(147, 112, 219, 0.6)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < n; i++) {
+                const theta1 = i * thetaStep;
+                const theta2 = theta1 + thetaStep;
+                const thetaMid = (theta1 + theta2) / 2;
+                
+                const radius = Math.abs(rFunc(thetaMid));
+                
+                // 极坐标面积微元：dA = ½ r² dθ
+                const dA = 0.5 * radius * radius * thetaStep;
+                approxArea += dA;
+                
+                // 绘制角度射线
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + radius * Math.cos(thetaMid) * scale,
+                    centerY - radius * Math.sin(thetaMid) * scale
+                );
+                ctx.stroke();
+                
+                // 绘制扇形微元
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                
+                // 绘制扇形弧
+                const arcSteps = 10;
+                const arcStep = (theta2 - theta1) / arcSteps;
+                for (let j = 0; j <= arcSteps; j++) {
+                    const thetaArc = theta1 + j * arcStep;
+                    const radiusArc = Math.abs(rFunc(thetaArc));
+                    const xArc = centerX + radiusArc * Math.cos(thetaArc) * scale;
+                    const yArc = centerY - radiusArc * Math.sin(thetaArc) * scale;
+                    
+                    if (j === 0) {
+                        ctx.lineTo(xArc, yArc);
+                    } else {
+                        ctx.lineTo(xArc, yArc);
+                    }
+                }
+                
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            }
+            
+            // 更新结果
+            document.getElementById('polar-approx-area').textContent = approxArea.toFixed(3);
+            document.getElementById('polar-exact-area').textContent = exactArea.toFixed(3);
+            const error = Math.abs(exactArea - approxArea);
+            const relativeError = (error / exactArea * 100).toFixed(2);
+            document.getElementById('polar-error').textContent = relativeError + '%';
+        }
+        
+        // 曲线长度演示
+        function updateCurveLengthDemo() {
+            const canvas = document.getElementById('length-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('length-n-slider').value);
+            const a = parseFloat(document.getElementById('length-a-slider').value);
+            const b = parseFloat(document.getElementById('length-b-slider').value);
+            const demoType = document.querySelector('#curve-length .demo-btn.active').dataset.demo;
+            
+            drawCurveLengthDemo(ctx, canvas.width, canvas.height, n, a, b, demoType);
+        }
+        
+        function drawCurveLengthDemo(ctx, width, height, n, a, b, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 坐标变换函数
+            function toCanvasX(x) {
+                return padding + (x - a) * graphWidth / (b - a);
+            }
+            
+            function toCanvasY(y) {
+                return padding + graphHeight - y * graphHeight / 3;
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 定义函数及其导数
+            let f, df, exactLength;
+            
+            if (demoType === 'length-sin') {
+                f = function(x) { return Math.sin(x); };
+                df = function(x) { return Math.cos(x); };
+                exactLength = 7.640; // ∫√(1+cos²x)dx from 0 to 2π 的近似值
+            } else if (demoType === 'length-parabola') {
+                f = function(x) { return x * x; };
+                df = function(x) { return 2 * x; };
+                exactLength = 1.479; // ∫√(1+4x²)dx from 0 to 1 的近似值
+            } else {
+                // 参数曲线：摆线
+                f = function(x) { return 1 - Math.cos(x); }; // 只用于绘图，实际计算用参数方程
+                df = function(x) { return Math.sin(x); };
+                exactLength = 8; // 摆线一拱长度
+            }
+            
+            // 绘制曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = (b - a) / 200;
+            for (let x = a; x <= b; x += step) {
+                const y = f(x);
+                if (x === a) {
+                    ctx.moveTo(toCanvasX(x), toCanvasY(y));
+                } else {
+                    ctx.lineTo(toCanvasX(x), toCanvasY(y));
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制微元并计算近似长度
+            let approxLength = 0;
+            const dx = (b - a) / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 2;
+            
+            // 绘制切线
+            ctx.strokeStyle = 'rgba(255, 105, 180, 0.6)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            
+            for (let i = 0; i < n; i++) {
+                const x = a + i * dx;
+                const xMid = x + dx/2;
+                
+                if (demoType === 'length-parametric') {
+                    // 参数曲线弧长计算（摆线）
+                    const t1 = x;
+                    const t2 = x + dx;
+                    const tMid = (t1 + t2) / 2;
+                    
+                    // 摆线参数方程导数
+                    const dxdt = 1 - Math.cos(tMid);
+                    const dydt = Math.sin(tMid);
+                    
+                    // 弧长微元：ds = √[(dx/dt)² + (dy/dt)²] dt
+                    const ds = Math.sqrt(dxdt*dxdt + dydt*dydt) * dx;
+                    approxLength += ds;
+                    
+                    // 绘制切线
+                    const xPoint = toCanvasX(tMid);
+                    const yPoint = toCanvasY(1 - Math.cos(tMid));
+                    const slope = dydt / dxdt;
+                    const tangentLength = 30;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(xPoint - tangentLength, yPoint - slope * tangentLength);
+                    ctx.lineTo(xPoint + tangentLength, yPoint + slope * tangentLength);
+                    ctx.stroke();
+                    
+                } else {
+                    // 直角坐标弧长计算
+                    const yMid = f(xMid);
+                    const slope = df(xMid);
+                    
+                    // 弧长微元：ds = √[1 + f'(x)²] dx
+                    const ds = Math.sqrt(1 + slope*slope) * dx;
+                    approxLength += ds;
+                    
+                    // 绘制切线
+                    const xPoint = toCanvasX(xMid);
+                    const yPoint = toCanvasY(yMid);
+                    const tangentLength = 30;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(xPoint - tangentLength, yPoint - slope * tangentLength * graphHeight / graphWidth);
+                    ctx.lineTo(xPoint + tangentLength, yPoint + slope * tangentLength * graphHeight / graphWidth);
+                    ctx.stroke();
+                }
+                
+                // 绘制弧长微元
+                ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([]);
+                
+                if (demoType === 'length-parametric') {
+                    // 参数曲线的弧段
+                    const t1 = x;
+                    const t2 = x + dx;
+                    
+                    ctx.beginPath();
+                    for (let t = t1; t <= t2; t += 0.01) {
+                        const xParam = toCanvasX(t);
+                        const yParam = toCanvasY(1 - Math.cos(t));
+                        
+                        if (t === t1) {
+                            ctx.moveTo(xParam, yParam);
+                        } else {
+                            ctx.lineTo(xParam, yParam);
+                        }
+                    }
+                    ctx.stroke();
+                } else {
+                    // 直角坐标的弧段
+                    const x1 = x;
+                    const x2 = x + dx;
+                    
+                    ctx.beginPath();
+                    for (let xx = x1; xx <= x2; xx += 0.01) {
+                        const y = f(xx);
+                        if (xx === x1) {
+                            ctx.moveTo(toCanvasX(xx), toCanvasY(y));
+                        } else {
+                            ctx.lineTo(toCanvasX(xx), toCanvasY(y));
+                        }
+                    }
+                    ctx.stroke();
+                }
+                
+                ctx.strokeStyle = 'rgba(255, 105, 180, 0.6)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+            }
+            
+            ctx.setLineDash([]);
+            
+            // 更新结果
+            document.getElementById('length-approx').textContent = approxLength.toFixed(3);
+            document.getElementById('length-exact').textContent = exactLength.toFixed(3);
+            const error = Math.abs(exactLength - approxLength);
+            const relativeError = (error / exactLength * 100).toFixed(2);
+            document.getElementById('length-error').textContent = relativeError + '%';
+        }
+        
+        // 旋转体体积演示
+        function updateVolumeDemo() {
+            const canvas = document.getElementById('volume-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('volume-n-slider').value);
+            const a = parseFloat(document.getElementById('volume-a-slider').value);
+            const b = parseFloat(document.getElementById('volume-b-slider').value);
+            const demoType = document.querySelector('#volume-rotate .demo-btn.active').dataset.demo;
+            
+            drawVolumeDemo(ctx, canvas.width, canvas.height, n, a, b, demoType);
+        }
+        
+        function drawVolumeDemo(ctx, width, height, n, a, b, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            // 将画布分为两部分：左侧为2D视图，右侧为3D视图
+            const leftWidth = width * 0.6;
+            const rightWidth = width * 0.4;
+            const padding = 20;
+            
+            // 左侧2D视图
+            const leftCenterX = padding + leftWidth / 2;
+            const leftCenterY = height / 2;
+            
+            // 坐标变换函数（左侧）
+            function toLeftX(x) {
+                return padding + (x - a) * (leftWidth - 2*padding) / (b - a);
+            }
+            
+            function toLeftY(y) {
+                return leftCenterY - y * (leftCenterY - padding) / 3;
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, leftCenterY);
+            ctx.lineTo(padding + leftWidth - 2*padding, leftCenterY);
+            ctx.moveTo(padding, leftCenterY);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 定义函数
+            let f, exactVolume;
+            
+            if (demoType === 'volume-disk') {
+                f = function(x) { return Math.sqrt(x); };
+                exactVolume = 8 * Math.PI; // π∫x dx from 0 to 4 = 8π
+            } else if (demoType === 'volume-shell') {
+                f = function(x) { return Math.sqrt(x); };
+                exactVolume = 256 * Math.PI / 5; // 2π∫x√x dx from 0 to 4 = 256π/5
+            } else {
+                f = function(x) { return x; };
+                const g = function(x) { return x/2; };
+                exactVolume = 40 * Math.PI / 3; // π∫[(x+2)² - x²]dx from 0 to 2 = 40π/3
+            }
+            
+            // 绘制函数曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = (b - a) / 100;
+            for (let x = a; x <= b; x += step) {
+                const y = f(x);
+                if (x === a) {
+                    ctx.moveTo(toLeftX(x), toLeftY(y));
+                } else {
+                    ctx.lineTo(toLeftX(x), toLeftY(y));
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制第二条曲线（垫圈法）
+            if (demoType === 'volume-washer') {
+                const g = function(x) { return x/2; };
+                ctx.strokeStyle = '#ff69b4';
+                ctx.beginPath();
+                for (let x = a; x <= b; x += step) {
+                    const y = g(x);
+                    if (x === a) {
+                        ctx.moveTo(toLeftX(x), toLeftY(y));
+                    } else {
+                        ctx.lineTo(toLeftX(x), toLeftY(y));
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // 绘制微元并计算近似体积
+            let approxVolume = 0;
+            const dx = (b - a) / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < n; i++) {
+                const x = a + i * dx;
+                const xMid = x + dx/2;
+                const y = f(xMid);
+                
+                if (demoType === 'volume-disk') {
+                    // 圆盘法：dV = π[f(x)]² dx
+                    const dV = Math.PI * y * y * dx;
+                    approxVolume += dV;
+                    
+                    // 绘制圆盘微元
+                    const radius = y * (leftWidth - 2*padding) / (2*(b-a));
+                    const diskX = toLeftX(xMid);
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(diskX, leftCenterY, radius, radius/3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                } else if (demoType === 'volume-shell') {
+                    // 圆柱壳法：dV = 2πx f(x) dx
+                    const dV = 2 * Math.PI * xMid * y * dx;
+                    approxVolume += dV;
+                    
+                    // 绘制圆柱壳微元
+                    const radius = xMid * (leftWidth - 2*padding) / (2*(b-a));
+                    const height = y * (leftCenterY - padding) / 3;
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(toLeftX(xMid), leftCenterY - height/2, radius, radius/3, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(toLeftX(xMid), leftCenterY + height/2, radius, radius/3, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    // 绘制圆柱壳侧面
+                    ctx.beginPath();
+                    ctx.moveTo(toLeftX(xMid) - radius, leftCenterY - height/2);
+                    ctx.lineTo(toLeftX(xMid) - radius, leftCenterY + height/2);
+                    ctx.moveTo(toLeftX(xMid) + radius, leftCenterY - height/2);
+                    ctx.lineTo(toLeftX(xMid) + radius, leftCenterY + height/2);
+                    ctx.stroke();
+                    
+                } else {
+                    // 垫圈法：dV = π[R²(x) - r²(x)] dx
+                    const R = xMid + 2; // 外半径
+                    const r = xMid; // 内半径
+                    const dV = Math.PI * (R*R - r*r) * dx;
+                    approxVolume += dV;
+                    
+                    // 绘制垫圈微元
+                    const outerRadius = R * (leftWidth - 2*padding) / (2*(b+2));
+                    const innerRadius = r * (leftWidth - 2*padding) / (2*(b+2));
+                    const washerX = toLeftX(xMid);
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(washerX, leftCenterY, outerRadius, outerRadius/3, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(washerX, leftCenterY, innerRadius, innerRadius/3, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+            
+            // 右侧3D视图
+            const rightCenterX = leftWidth + rightWidth / 2;
+            const rightCenterY = height / 2;
+            
+            ctx.save();
+            ctx.translate(rightCenterX, rightCenterY);
+            
+            // 绘制旋转轴
+            ctx.strokeStyle = 'rgba(147, 112, 219, 0.6)';
+            ctx.lineWidth = 3;
+            
+            ctx.beginPath();
+            ctx.moveTo(-rightWidth/2 + padding, 0);
+            ctx.lineTo(rightWidth/2 - padding, 0);
+            ctx.stroke();
+            
+            // 绘制旋转体轮廓
+            const displayN = Math.min(n, 15);
+            const displayDx = (b - a) / displayN;
+            
+            for (let i = 0; i < displayN; i++) {
+                const x = a + i * displayDx + displayDx/2;
+                const y = f(x);
+                
+                if (demoType === 'volume-disk') {
+                    // 圆盘法3D视图
+                    const radius = y * (rightWidth - 2*padding) / (2*(b-a));
+                    
+                    ctx.fillStyle = `rgba(255, 140, 0, ${0.1 + 0.4 * i / displayN})`;
+                    ctx.strokeStyle = `rgba(255, 140, 0, ${0.5 + 0.5 * i / displayN})`;
+                    
+                    // 绘制圆盘
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, radius, radius/2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                } else if (demoType === 'volume-shell') {
+                    // 圆柱壳法3D视图
+                    const radius = x * (rightWidth - 2*padding) / (2*(b-a));
+                    const height = y * (rightCenterY - padding) / 3;
+                    
+                    ctx.fillStyle = `rgba(255, 140, 0, ${0.1 + 0.4 * i / displayN})`;
+                    ctx.strokeStyle = `rgba(255, 140, 0, ${0.5 + 0.5 * i / displayN})`;
+                    
+                    // 绘制圆柱壳
+                    ctx.beginPath();
+                    ctx.ellipse(0, -height/2, radius, radius/2, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(0, height/2, radius, radius/2, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    // 绘制圆柱壳侧面
+                    ctx.beginPath();
+                    ctx.moveTo(-radius, -height/2);
+                    ctx.lineTo(-radius, height/2);
+                    ctx.moveTo(radius, -height/2);
+                    ctx.lineTo(radius, height/2);
+                    ctx.stroke();
+                    
+                } else {
+                    // 垫圈法3D视图
+                    const R = x + 2;
+                    const r = x;
+                    const outerRadius = R * (rightWidth - 2*padding) / (2*(b+2));
+                    const innerRadius = r * (rightWidth - 2*padding) / (2*(b+2));
+                    
+                    ctx.fillStyle = `rgba(255, 140, 0, ${0.1 + 0.4 * i / displayN})`;
+                    ctx.strokeStyle = `rgba(255, 140, 0, ${0.5 + 0.5 * i / displayN})`;
+                    
+                    // 绘制垫圈
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, outerRadius, outerRadius/2, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, innerRadius, innerRadius/2, 0, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+            
+            ctx.restore();
+            
+            // 更新结果
+            document.getElementById('volume-approx').textContent = approxVolume.toFixed(3);
+            document.getElementById('volume-exact').textContent = exactVolume.toFixed(3);
+            const error = Math.abs(exactVolume - approxVolume);
+            const relativeError = (error / exactVolume * 100).toFixed(2);
+            document.getElementById('volume-error').textContent = relativeError + '%';
+        }
+        
+        // 已知截面体积演示
+        function updateSliceVolumeDemo() {
+            const canvas = document.getElementById('slice-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('slice-n-slider').value);
+            const a = parseFloat(document.getElementById('slice-a-slider').value);
+            const b = parseFloat(document.getElementById('slice-b-slider').value);
+            const demoType = document.querySelector('#volume-slice .demo-btn.active').dataset.demo;
+            
+            drawSliceVolumeDemo(ctx, canvas.width, canvas.height, n, a, b, demoType);
+        }
+        
+        function drawSliceVolumeDemo(ctx, width, height, n, a, b, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 坐标变换函数
+            function toCanvasX(x) {
+                return padding + (x - a) * graphWidth / (b - a);
+            }
+            
+            function toCanvasY(y) {
+                return padding + graphHeight - y * graphHeight / 10; // y范围较大
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 定义截面面积函数
+            let A, exactVolume;
+            
+            if (demoType === 'slice-ellipse') {
+                // 椭圆截面：a(x) = √(4-x²), b(x) = √(1-x²/4)
+                A = function(x) { 
+                    const aVal = Math.sqrt(4 - x*x);
+                    const bVal = Math.sqrt(1 - x*x/4);
+                    return Math.PI * aVal * bVal;
+                };
+                exactVolume = 32 * Math.PI / 3; // 近似值
+            } else if (demoType === 'slice-square') {
+                // 正方形截面：边长 = 2√(4-x²)
+                A = function(x) { 
+                    const side = 2 * Math.sqrt(4 - x*x);
+                    return side * side;
+                };
+                exactVolume = 128/3;
+            } else {
+                // 三角形截面：等边三角形，边长 = 2√(4-x²)
+                A = function(x) { 
+                    const side = 2 * Math.sqrt(4 - x*x);
+                    return Math.sqrt(3) * side * side / 4;
+                };
+                exactVolume = 64 * Math.sqrt(3) / 3;
+            }
+            
+            // 绘制截面面积函数
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = (b - a) / 200;
+            for (let x = a; x <= b; x += step) {
+                const area = A(x);
+                if (x === a) {
+                    ctx.moveTo(toCanvasX(x), toCanvasY(area));
+                } else {
+                    ctx.lineTo(toCanvasX(x), toCanvasY(area));
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制微元并计算近似体积
+            let approxVolume = 0;
+            const dx = (b - a) / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < n; i++) {
+                const x = a + i * dx;
+                const xMid = x + dx/2;
+                const area = A(xMid);
+                
+                approxVolume += area * dx;
+                
+                // 绘制切片微元
+                const canvasX = toCanvasX(x);
+                const canvasY = toCanvasY(area);
+                const rectWidth = toCanvasX(x + dx) - canvasX;
+                const rectHeight = toCanvasY(0) - canvasY;
+                
+                ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+            }
+            
+            // 在右侧绘制立体示意图
+            const sketchX = width * 0.75;
+            const sketchY = height / 2;
+            const sketchSize = 120;
+            
+            // 绘制立体轮廓
+            ctx.strokeStyle = 'rgba(147, 112, 219, 0.6)';
+            ctx.lineWidth = 2;
+            
+            // 绘制几个代表性的截面
+            const sliceCount = Math.min(n, 8);
+            for (let i = 0; i < sliceCount; i++) {
+                const x = a + i * (b - a) / sliceCount + (b - a) / (2 * sliceCount);
+                const area = A(x);
+                const sliceHeight = (area / 20) * sketchSize / 10; // 缩放截面高度
+                const yPos = sketchY + (x / (b - a)) * sketchSize - sketchSize/2;
+                
+                ctx.fillStyle = `rgba(255, 140, 0, ${0.2 + 0.4 * i / sliceCount})`;
+                ctx.strokeStyle = `rgba(255, 140, 0, ${0.5 + 0.5 * i / sliceCount})`;
+                
+                if (demoType === 'slice-ellipse') {
+                    // 绘制椭圆截面
+                    const radius = Math.sqrt(area / Math.PI) * sketchSize / 20;
+                    ctx.beginPath();
+                    ctx.ellipse(sketchX, yPos, radius, radius/2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (demoType === 'slice-square') {
+                    // 绘制正方形截面
+                    const side = Math.sqrt(area) * sketchSize / 20;
+                    ctx.beginPath();
+                    ctx.rect(sketchX - side/2, yPos - side/2, side, side);
+                    ctx.fill();
+                    ctx.stroke();
+                } else {
+                    // 绘制三角形截面
+                    const side = Math.sqrt(4 * area / Math.sqrt(3)) * sketchSize / 20;
+                    ctx.beginPath();
+                    ctx.moveTo(sketchX, yPos - side/2);
+                    ctx.lineTo(sketchX + side * Math.sqrt(3)/4, yPos + side/4);
+                    ctx.lineTo(sketchX - side * Math.sqrt(3)/4, yPos + side/4);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                }
+            }
+            
+            // 更新结果
+            document.getElementById('slice-approx').textContent = approxVolume.toFixed(3);
+            document.getElementById('slice-exact').textContent = exactVolume.toFixed(3);
+            const error = Math.abs(exactVolume - approxVolume);
+            const relativeError = (error / exactVolume * 100).toFixed(2);
+            document.getElementById('slice-error').textContent = relativeError + '%';
+        }
+        
+        // 表面积演示
+        function updateSurfaceAreaDemo() {
+            const canvas = document.getElementById('surface-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('surface-n-slider').value);
+            const a = parseFloat(document.getElementById('surface-a-slider').value);
+            const b = parseFloat(document.getElementById('surface-b-slider').value);
+            const demoType = document.querySelector('#surface-area .demo-btn.active').dataset.demo;
+            
+            drawSurfaceAreaDemo(ctx, canvas.width, canvas.height, n, a, b, demoType);
+        }
+        
+        function drawSurfaceAreaDemo(ctx, width, height, n, a, b, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            // 将画布分为两部分：左侧为2D视图，右侧为3D视图
+            const leftWidth = width * 0.6;
+            const rightWidth = width * 0.4;
+            const padding = 20;
+            
+            // 左侧2D视图
+            const leftCenterX = padding + leftWidth / 2;
+            const leftCenterY = height / 2;
+            
+            // 坐标变换函数（左侧）
+            function toLeftX(x) {
+                return padding + (x - a) * (leftWidth - 2*padding) / (b - a);
+            }
+            
+            function toLeftY(y) {
+                return leftCenterY - y * (leftCenterY - padding) / 3;
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, leftCenterY);
+            ctx.lineTo(padding + leftWidth - 2*padding, leftCenterY);
+            ctx.moveTo(padding, leftCenterY);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 定义函数及其导数
+            let f, df, exactSurface;
+            
+            if (demoType === 'surface-line') {
+                f = function(x) { return x; };
+                df = function(x) { return 1; };
+                exactSurface = 16 * Math.PI * Math.sqrt(2); // 2π√2∫x dx from 0 to 4 = 16π√2
+            } else if (demoType === 'surface-sin') {
+                f = function(x) { return Math.sin(x); };
+                df = function(x) { return Math.cos(x); };
+                exactSurface = 14.424; // 2π∫sin(x)√(1+cos²x)dx from 0 to π 的近似值
+            } else {
+                f = function(x) { return x * x; };
+                df = function(x) { return 2 * x; };
+                exactSurface = 3.810; // 2π∫x²√(1+4x²)dx from 0 to 1 的近似值
+            }
+            
+            // 绘制函数曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = (b - a) / 100;
+            for (let x = a; x <= b; x += step) {
+                const y = f(x);
+                if (x === a) {
+                    ctx.moveTo(toLeftX(x), toLeftY(y));
+                } else {
+                    ctx.lineTo(toLeftX(x), toLeftY(y));
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制微元并计算近似表面积
+            let approxSurface = 0;
+            const dx = (b - a) / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < n; i++) {
+                const x = a + i * dx;
+                const xMid = x + dx/2;
+                const y = f(xMid);
+                const slope = df(xMid);
+                
+                // 表面积微元：dS = 2πf(x)√[1 + f'(x)²] dx
+                const dS = 2 * Math.PI * y * Math.sqrt(1 + slope*slope) * dx;
+                approxSurface += dS;
+                
+                // 绘制圆台微元（左侧视图）
+                const radius = y * (leftWidth - 2*padding) / (2*(b-a));
+                const nextY = f(xMid + dx/2);
+                const nextRadius = nextY * (leftWidth - 2*padding) / (2*(b-a));
+                
+                // 绘制圆台
+                ctx.beginPath();
+                ctx.moveTo(toLeftX(xMid) - radius, toLeftY(y));
+                ctx.lineTo(toLeftX(xMid + dx) - nextRadius, toLeftY(nextY));
+                ctx.lineTo(toLeftX(xMid + dx) + nextRadius, toLeftY(nextY));
+                ctx.lineTo(toLeftX(xMid) + radius, toLeftY(y));
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+            
+            // 右侧3D视图
+            const rightCenterX = leftWidth + rightWidth / 2;
+            const rightCenterY = height / 2;
+            
+            ctx.save();
+            ctx.translate(rightCenterX, rightCenterY);
+            
+            // 绘制旋转曲面
+            const displayN = Math.min(n, 12);
+            const displayDx = (b - a) / displayN;
+            
+            for (let i = 0; i < displayN; i++) {
+                const x = a + i * displayDx + displayDx/2;
+                const y = f(x);
+                const radius = y * (rightWidth - 2*padding) / (2*(b-a));
+                
+                ctx.fillStyle = `rgba(255, 140, 0, ${0.1 + 0.4 * i / displayN})`;
+                ctx.strokeStyle = `rgba(255, 140, 0, ${0.5 + 0.5 * i / displayN})`;
+                
+                // 绘制旋转曲面的一部分
+                ctx.beginPath();
+                ctx.ellipse(0, 0, radius, radius/2, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 绘制旋转曲面的侧面线
+                if (i < displayN - 1) {
+                    const nextX = x + displayDx;
+                    const nextY = f(nextX);
+                    const nextRadius = nextY * (rightWidth - 2*padding) / (2*(b-a));
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(-radius, 0);
+                    ctx.lineTo(-nextRadius, 0);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(radius, 0);
+                    ctx.lineTo(nextRadius, 0);
+                    ctx.stroke();
+                }
+            }
+            
+            ctx.restore();
+            
+            // 更新结果
+            document.getElementById('surface-approx').textContent = approxSurface.toFixed(3);
+            document.getElementById('surface-exact').textContent = exactSurface.toFixed(3);
+            const error = Math.abs(exactSurface - approxSurface);
+            const relativeError = (error / exactSurface * 100).toFixed(2);
+            document.getElementById('surface-error').textContent = relativeError + '%';
+        }
+        
+        // 变力做功演示
+        function updateWorkDemo() {
+            const canvas = document.getElementById('work-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('work-n-slider').value);
+            const demoType = document.querySelector('#work .demo-btn.active').dataset.demo;
+            
+            let k, L, coeff1, coeff2, mass, height;
+            
+            // 根据演示类型获取相应的参数
+            if (demoType === 'work-spring') {
+                k = parseFloat(document.getElementById('work-k-slider').value);
+                L = parseFloat(document.getElementById('work-L-slider').value);
+            } else if (demoType === 'work-variable') {
+                coeff1 = parseFloat(document.getElementById('work-coeff1-slider').value);
+                coeff2 = parseFloat(document.getElementById('work-coeff2-slider').value);
+                L = parseFloat(document.getElementById('work-L-slider').value);
+            } else {
+                mass = parseFloat(document.getElementById('work-mass-slider').value);
+                height = parseFloat(document.getElementById('work-height-slider').value);
+                L = height; // 重力做功中，L就是高度
+            }
+            
+            drawWorkDemo(ctx, canvas.width, canvas.height, n, demoType, k, L, coeff1, coeff2, mass, height);
+        }
+        
+        function drawWorkDemo(ctx, width, height, n, demoType, k, L, coeff1, coeff2, mass, heightVal) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 坐标变换函数
+            function toCanvasX(x) {
+                return padding + x * graphWidth / L;
+            }
+            
+            function toCanvasY(y) {
+                // 根据演示类型调整y轴比例
+                let maxForce;
+                if (demoType === 'work-spring') {
+                    maxForce = k * L;
+                } else if (demoType === 'work-variable') {
+                    maxForce = coeff1 * L * L + coeff2 * L;
+                } else {
+                    maxForce = 9.8 * mass;
+                }
+                return padding + graphHeight - y * graphHeight / (maxForce * 1.2); // 1.2倍留出边距
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 定义力函数
+            let F, exactWork;
+            
+            if (demoType === 'work-spring') {
+                F = function(x) { return k * x; };
+                exactWork = 0.5 * k * L * L;
+            } else if (demoType === 'work-variable') {
+                F = function(x) { return coeff1 * x * x + coeff2 * x; };
+                exactWork = (coeff1 * L * L * L / 3) + (coeff2 * L * L / 2);
+            } else {
+                F = function(x) { return 9.8 * mass; }; // 重力，假设质量mass kg
+                exactWork = 9.8 * mass * L;
+            }
+            
+            // 绘制力函数曲线
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const step = L / 100;
+            for (let x = 0; x <= L; x += step) {
+                const force = F(x);
+                if (x === 0) {
+                    ctx.moveTo(toCanvasX(x), toCanvasY(force));
+                } else {
+                    ctx.lineTo(toCanvasX(x), toCanvasY(force));
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制微元并计算近似功
+            let approxWork = 0;
+            const dx = L / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < n; i++) {
+                const x = i * dx;
+                const xMid = x + dx/2;
+                const force = F(xMid);
+                
+                // 功微元：dW = F(x) dx
+                const dW = force * dx;
+                approxWork += dW;
+                
+                // 绘制功微元
+                const canvasX = toCanvasX(x);
+                const canvasY = toCanvasY(force);
+                const rectWidth = toCanvasX(x + dx) - canvasX;
+                const rectHeight = toCanvasY(0) - canvasY;
+                
+                ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+            }
+            
+            // 绘制物体位置指示
+            const objectX = toCanvasX(L);
+            
+            ctx.fillStyle = 'rgba(255, 105, 180, 0.6)';
+            ctx.beginPath();
+            ctx.arc(objectX, padding + graphHeight - 20, 15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 根据演示类型绘制相应的示意图
+            if (demoType === 'work-spring') {
+                // 绘制弹簧示意图
+                const springX = width * 0.75;
+                const springY = height / 2;
+                const springLength = 100 + (L / 10) * 50;
+                
+                ctx.strokeStyle = '#40e0d0';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(springX, springY);
+                
+                // 绘制弹簧线圈
+                const coils = 8;
+                const coilWidth = springLength / coils;
+                for (let i = 0; i < coils; i++) {
+                    const x1 = springX + i * coilWidth;
+                    const x2 = x1 + coilWidth / 2;
+                    const x3 = x1 + coilWidth;
+                    
+                    if (i === 0) {
+                        ctx.lineTo(x1, springY);
+                    }
+                    
+                    ctx.bezierCurveTo(
+                        x2, springY - 20,
+                        x2, springY - 20,
+                        x3, springY
+                    );
+                    
+                    if (i < coils - 1) {
+                        ctx.bezierCurveTo(
+                            x3 + coilWidth / 2, springY + 20,
+                            x3 + coilWidth / 2, springY + 20,
+                            x3 + coilWidth, springY
+                        );
+                    }
+                }
+                ctx.stroke();
+                
+                // 绘制墙壁
+                ctx.fillStyle = '#888';
+                ctx.fillRect(springX - 10, springY - 30, 10, 60);
+                
+                // 绘制质量块
+                ctx.fillStyle = '#ff69b4';
+                ctx.fillRect(springX + springLength, springY - 20, 30, 40);
+                
+                // 绘制伸长量标记
+                ctx.strokeStyle = '#ff69b4';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(springX, springY);
+                ctx.lineTo(springX + springLength + 30, springY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#ff69b4';
+                ctx.font = '14px Arial';
+                ctx.fillText(`伸长量: ${L.toFixed(1)}`, springX + springLength/2 - 30, springY - 30);
+                
+            } else if (demoType === 'work-variable') {
+                // 绘制变力直线运动示意图
+                const motionX = width * 0.75;
+                const motionY = height / 2;
+                
+                // 绘制轨道
+                ctx.strokeStyle = '#888';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(motionX - 50, motionY);
+                ctx.lineTo(motionX + 150, motionY);
+                ctx.stroke();
+                
+                // 绘制起点和终点
+                ctx.fillStyle = '#40e0d0';
+                ctx.beginPath();
+                ctx.arc(motionX, motionY, 10, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ff69b4';
+                ctx.beginPath();
+                ctx.arc(motionX + 100, motionY, 10, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制距离标记
+                ctx.strokeStyle = '#ff69b4';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(motionX, motionY);
+                ctx.lineTo(motionX + 100, motionY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#ff69b4';
+                ctx.font = '14px Arial';
+                ctx.fillText(`距离: ${L.toFixed(1)}`, motionX + 50, motionY - 30);
+                
+            } else {
+                // 绘制重力做功示意图
+                const gravityX = width * 0.75;
+                const gravityY = height / 2 - 50;
+                
+                // 绘制高度标记
+                ctx.strokeStyle = '#40e0d0';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(gravityX - 20, gravityY);
+                ctx.lineTo(gravityX - 20, gravityY + 100);
+                ctx.stroke();
+                
+                // 绘制起点和终点
+                ctx.fillStyle = '#40e0d0';
+                ctx.beginPath();
+                ctx.arc(gravityX, gravityY, 15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#ff69b4';
+                ctx.beginPath();
+                ctx.arc(gravityX, gravityY + 100, 15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制高度标记线
+                ctx.strokeStyle = '#ff69b4';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(gravityX, gravityY);
+                ctx.lineTo(gravityX, gravityY + 100);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 绘制重力方向箭头
+                ctx.strokeStyle = '#40e0d0';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(gravityX + 40, gravityY + 50);
+                ctx.lineTo(gravityX + 40, gravityY + 100);
+                ctx.stroke();
+                
+                // 绘制箭头头部
+                ctx.beginPath();
+                ctx.moveTo(gravityX + 40, gravityY + 100);
+                ctx.lineTo(gravityX + 35, gravityY + 90);
+                ctx.lineTo(gravityX + 45, gravityY + 90);
+                ctx.closePath();
+                ctx.fillStyle = '#40e0d0';
+                ctx.fill();
+                
+                ctx.fillStyle = '#ff69b4';
+                ctx.font = '14px Arial';
+                ctx.fillText(`高度: ${L.toFixed(1)}`, gravityX - 40, gravityY + 50);
+                ctx.fillText(`质量: ${mass.toFixed(1)} kg`, gravityX + 20, gravityY + 120);
+            }
+            
+            // 更新结果
+            document.getElementById('work-approx').textContent = approxWork.toFixed(3);
+            document.getElementById('work-exact').textContent = exactWork.toFixed(3);
+            const error = Math.abs(exactWork - approxWork);
+            const relativeError = (error / exactWork * 100).toFixed(2);
+            document.getElementById('work-error').textContent = relativeError + '%';
+        }
+        
+        // 液体压力演示
+        function updatePressureDemo() {
+            const canvas = document.getElementById('pressure-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('pressure-n-slider').value);
+            const H = parseFloat(document.getElementById('pressure-H-slider').value);
+            const W = parseFloat(document.getElementById('pressure-W-slider').value);
+            const demoType = document.querySelector('#pressure .demo-btn.active').dataset.demo;
+            
+            drawPressureDemo(ctx, canvas.width, canvas.height, n, H, W, demoType);
+        }
+        
+        function drawPressureDemo(ctx, width, height, n, H, W, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 绘制水坝/容器
+            const damX = padding + 50;
+            const damY = padding;
+            const damWidth = 200;
+            const damHeight = graphHeight - 50;
+            
+            // 绘制液体
+            ctx.fillStyle = 'rgba(64, 164, 255, 0.5)';
+            ctx.fillRect(damX, damY, damWidth, damHeight);
+            
+            // 绘制水面
+            ctx.fillStyle = 'rgba(64, 164, 255, 0.8)';
+            ctx.fillRect(damX, damY, damWidth, 5);
+            
+            // 绘制平板
+            let plateWidth, plateHeight, plateX, plateY;
+            
+            if (demoType === 'pressure-rect') {
+                // 矩形平板
+                plateWidth = W * 15;
+                plateHeight = H * 15;
+                plateX = damX + damWidth + 50;
+                plateY = damY + (damHeight - plateHeight) / 2;
+                
+                ctx.fillStyle = 'rgba(147, 112, 219, 0.6)';
+                ctx.fillRect(plateX, plateY, plateWidth, plateHeight);
+                
+            } else if (demoType === 'pressure-triangle') {
+                // 三角形平板
+                plateWidth = W * 15;
+                plateHeight = H * 15;
+                plateX = damX + damWidth + 50;
+                plateY = damY + (damHeight - plateHeight) / 2;
+                
+                ctx.fillStyle = 'rgba(147, 112, 219, 0.6)';
+                ctx.beginPath();
+                ctx.moveTo(plateX, plateY + plateHeight);
+                ctx.lineTo(plateX + plateWidth, plateY + plateHeight);
+                ctx.lineTo(plateX + plateWidth, plateY);
+                ctx.closePath();
+                ctx.fill();
+                
+            } else {
+                // 圆形平板
+                const radius = W * 7.5;
+                plateX = damX + damWidth + 50 + radius;
+                plateY = damY + damHeight / 2;
+                
+                ctx.fillStyle = 'rgba(147, 112, 219, 0.6)';
+                ctx.beginPath();
+                ctx.arc(plateX, plateY, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 计算精确压力
+            const ρ = 1000; // 水的密度 kg/m³
+            const g = 9.8;  // 重力加速度 m/s²
+            let exactPressure;
+            
+            if (demoType === 'pressure-rect') {
+                exactPressure = 0.5 * ρ * g * W * H * H;
+            } else if (demoType === 'pressure-triangle') {
+                exactPressure = ρ * g * W * H * H / 6;
+            } else {
+                const R = W / 2;
+                exactPressure = ρ * g * Math.PI * R * R * H;
+            }
+            
+            // 绘制微元并计算近似压力
+            let approxPressure = 0;
+            const dh = H / n;
+            
+            ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+            ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i < n; i++) {
+                const h = i * dh + dh/2;
+                const depth = h;
+                
+                // 计算微元宽度
+                let widthAtDepth;
+                if (demoType === 'pressure-rect') {
+                    widthAtDepth = W;
+                } else if (demoType === 'pressure-triangle') {
+                    widthAtDepth = W * (H - h) / H;
+                } else {
+                    const R = W / 2;
+                    widthAtDepth = 2 * Math.sqrt(R * R - (h - H/2) * (h - H/2));
+                }
+                
+                // 压力微元：dP = ρ g h * L(h) dh
+                const dP = ρ * g * depth * widthAtDepth * dh;
+                approxPressure += dP;
+                
+                // 绘制压力微元
+                const canvasY = plateY + (h / H) * plateHeight;
+                const canvasHeight = (dh / H) * plateHeight;
+                const canvasWidth = (widthAtDepth / W) * plateWidth;
+                
+                if (demoType === 'pressure-circle') {
+                    // 圆形平板的微元是水平条带
+                    const centerX = plateX;
+                    ctx.fillRect(centerX - canvasWidth/2, canvasY, canvasWidth, canvasHeight);
+                    ctx.strokeRect(centerX - canvasWidth/2, canvasY, canvasWidth, canvasHeight);
+                } else {
+                    ctx.fillRect(plateX, canvasY, canvasWidth, canvasHeight);
+                    ctx.strokeRect(plateX, canvasY, canvasWidth, canvasHeight);
+                }
+                
+                // 绘制压力箭头
+                const pressureStrength = depth / H; // 压力强度与深度成正比
+                const arrowLength = 30 + 70 * pressureStrength;
+                
+                ctx.strokeStyle = 'rgba(255, 50, 50, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(plateX + canvasWidth + 10, canvasY + canvasHeight/2);
+                ctx.lineTo(plateX + canvasWidth + 10 + arrowLength, canvasY + canvasHeight/2);
+                ctx.stroke();
+                
+                // 绘制箭头头部
+                ctx.beginPath();
+                ctx.moveTo(plateX + canvasWidth + 10 + arrowLength, canvasY + canvasHeight/2);
+                ctx.lineTo(plateX + canvasWidth + 10 + arrowLength - 8, canvasY + canvasHeight/2 - 5);
+                ctx.lineTo(plateX + canvasWidth + 10 + arrowLength - 8, canvasY + canvasHeight/2 + 5);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(255, 50, 50, 0.8)';
+                ctx.fill();
+                
+                ctx.fillStyle = 'rgba(255, 140, 0, 0.6)';
+                ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+                ctx.lineWidth = 1;
+            }
+            
+            // 添加深度标记
+            ctx.fillStyle = '#e0e0ff';
+            ctx.font = '14px Arial';
+            ctx.fillText(`深度: 0`, plateX - 40, plateY + 10);
+            ctx.fillText(`深度: ${H.toFixed(1)}`, plateX - 50, plateY + plateHeight - 5);
+            
+            // 添加深度刻度线
+            ctx.strokeStyle = '#e0e0ff';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(plateX - 10, plateY);
+           
+                ctx.lineTo(plateX - 5, plateY);
+                ctx.moveTo(plateX - 10, plateY + plateHeight);
+                ctx.lineTo(plateX - 5, plateY + plateHeight);
+                ctx.stroke();
+            
+            // 更新结果
+            document.getElementById('pressure-approx').textContent = approxPressure.toFixed(3);
+            document.getElementById('pressure-exact').textContent = exactPressure.toFixed(3);
+            const error = Math.abs(exactPressure - approxPressure);
+            const relativeError = (error / exactPressure * 100).toFixed(2);
+            document.getElementById('pressure-error').textContent = relativeError + '%';
+        }
+        
+        // 质心演示
+        function updateCentroidDemo() {
+            const canvas = document.getElementById('centroid-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            const n = parseInt(document.getElementById('centroid-n-slider').value);
+            const a = parseFloat(document.getElementById('centroid-a-slider').value);
+            const b = parseFloat(document.getElementById('centroid-b-slider').value);
+            const demoType = document.querySelector('#centroid .demo-btn.active').dataset.demo;
+            
+            drawCentroidDemo(ctx, canvas.width, canvas.height, n, a, b, demoType);
+        }
+        
+        function drawCentroidDemo(ctx, width, height, n, a, b, demoType) {
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // 坐标变换函数
+            function toCanvasX(x) {
+                return padding + x * graphWidth / (b * 1.2);
+            }
+            
+            function toCanvasY(y) {
+                return padding + graphHeight - y * graphHeight / (a * 1.2);
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding + graphWidth, padding + graphHeight);
+            ctx.moveTo(padding, padding + graphHeight);
+            ctx.lineTo(padding, padding);
+            ctx.stroke();
+            
+            // 定义图形边界函数
+            let f, areaFunc, exactCentroidX, exactCentroidY, exactArea;
+            
+            if (demoType === 'centroid-rect') {
+                // 矩形: 0 ≤ x ≤ b, 0 ≤ y ≤ a
+                f = function(x) { return a; };
+                areaFunc = function() { return a * b; };
+                exactArea = a * b;
+                exactCentroidX = b / 2;
+                exactCentroidY = a / 2;
+            } else if (demoType === 'centroid-triangle') {
+                // 直角三角形: 0 ≤ x ≤ b, 0 ≤ y ≤ (a/b)x
+                f = function(x) { return (a / b) * x; };
+                areaFunc = function() { return a * b / 2; };
+                exactArea = a * b / 2;
+                exactCentroidX = b / 3;
+                exactCentroidY = a / 3;
+            } else {
+                // 半圆形: -R ≤ x ≤ R, 0 ≤ y ≤ √(R² - x²)
+                const R = a;
+                f = function(x) { return Math.sqrt(R * R - x * x); };
+                areaFunc = function() { return Math.PI * R * R / 2; };
+                exactArea = Math.PI * R * R / 2;
+                exactCentroidX = 0;
+                exactCentroidY = 4 * R / (3 * Math.PI);
+                b = R; // 覆盖b为半径
+            }
+            
+            // 绘制图形
+            ctx.fillStyle = 'rgba(64, 224, 208, 0.3)';
+            ctx.strokeStyle = '#40e0d0';
+            ctx.lineWidth = 2;
+            
+            if (demoType === 'centroid-rect' || demoType === 'centroid-triangle') {
+                // 绘制矩形或三角形
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(0), toCanvasY(0));
+                ctx.lineTo(toCanvasX(b), toCanvasY(0));
+                
+                if (demoType === 'centroid-rect') {
+                    ctx.lineTo(toCanvasX(b), toCanvasY(a));
+                    ctx.lineTo(toCanvasX(0), toCanvasY(a));
+                } else {
+                    ctx.lineTo(toCanvasX(b), toCanvasY(a));
+                }
+                
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            } else {
+                // 绘制半圆形
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(-b), toCanvasY(0));
+                
+                // 绘制半圆弧
+                for (let angle = 0; angle <= Math.PI; angle += 0.05) {
+                    const x = b * Math.cos(angle);
+                    const y = b * Math.sin(angle);
+                    ctx.lineTo(toCanvasX(x), toCanvasY(y));
+                }
+                
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+            
+            // 计算近似质心
+            let approxArea = 0;
+            let approxMomentX = 0; // 对y轴的静矩
+            let approxMomentY = 0; // 对x轴的静矩
+            
+            const dx = b / n;
+            
+            // 绘制微元并计算
+            for (let i = 0; i < n; i++) {
+                const x = i * dx;
+                const xMid = x + dx/2;
+                
+                if (demoType === 'centroid-semicircle') {
+                    // 半圆形需要处理负x值
+                    const x1 = -b + i * (2*b)/n;
+                    const x2 = x1 + (2*b)/n;
+                    const xMid = (x1 + x2)/2;
+                    const y = f(xMid);
+                    const dA = y * (2*b)/n;
+                    
+                    approxArea += dA;
+                    approxMomentX += xMid * dA; // 对y轴的静矩
+                    approxMomentY += (y/2) * dA; // 对x轴的静矩，微元质心y坐标为y/2
+                    
+                    // 绘制微元
+                    ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+                    ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+                    ctx.lineWidth = 1;
+                    
+                    const canvasX = toCanvasX(x1);
+                    const canvasY = toCanvasY(y);
+                    const rectWidth = toCanvasX(x2) - canvasX;
+                    const rectHeight = toCanvasY(0) - canvasY;
+                    
+                    ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                    ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+                    
+                    // 绘制微元质心
+                    const microCentroidX = toCanvasX(xMid);
+                    const microCentroidY = toCanvasY(y/2);
+                    
+                    ctx.fillStyle = 'rgba(255, 140, 0, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(microCentroidX, microCentroidY, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                } else {
+                    const y = f(xMid);
+                    const dA = y * dx;
+                    
+                    approxArea += dA;
+                    approxMomentX += xMid * dA; // 对y轴的静矩
+                    approxMomentY += (y/2) * dA; // 对x轴的静矩，微元质心y坐标为y/2
+                    
+                    // 绘制微元
+                    ctx.fillStyle = 'rgba(255, 140, 0, 0.3)';
+                    ctx.strokeStyle = 'rgba(255, 140, 0, 0.9)';
+                    ctx.lineWidth = 1;
+                    
+                    const canvasX = toCanvasX(x);
+                    const canvasY = toCanvasY(y);
+                    const rectWidth = toCanvasX(x + dx) - canvasX;
+                    const rectHeight = toCanvasY(0) - canvasY;
+                    
+                    ctx.fillRect(canvasX, canvasY, rectWidth, rectHeight);
+                    ctx.strokeRect(canvasX, canvasY, rectWidth, rectHeight);
+                    
+                    // 绘制微元质心
+                    const microCentroidX = toCanvasX(xMid);
+                    const microCentroidY = toCanvasY(y/2);
+                    
+                    ctx.fillStyle = 'rgba(255, 140, 0, 0.8)';
+                    ctx.beginPath();
+                    ctx.arc(microCentroidX, microCentroidY, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // 计算质心坐标
+            const approxCentroidX = approxMomentX / approxArea;
+            const approxCentroidY = approxMomentY / approxArea;
+            
+            // 绘制总质心
+            const canvasCentroidX = toCanvasX(approxCentroidX);
+            const canvasCentroidY = toCanvasY(approxCentroidY);
+            
+            ctx.fillStyle = 'rgba(255, 105, 180, 0.8)';
+            ctx.beginPath();
+            ctx.arc(canvasCentroidX, canvasCentroidY, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = 'rgba(255, 105, 180, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(canvasCentroidX, canvasCentroidY, 12, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 绘制质心到坐标轴的连线
+            ctx.strokeStyle = 'rgba(255, 105, 180, 0.5)';
+            ctx.setLineDash([5, 3]);
+            ctx.lineWidth = 1;
+            
+            ctx.beginPath();
+            ctx.moveTo(canvasCentroidX, canvasCentroidY);
+            ctx.lineTo(canvasCentroidX, toCanvasY(0));
+            ctx.moveTo(canvasCentroidX, canvasCentroidY);
+            ctx.lineTo(toCanvasX(0), canvasCentroidY);
+            ctx.stroke();
+            
+            ctx.setLineDash([]);
+            
+            // 添加坐标标签
+            ctx.fillStyle = 'rgba(255, 105, 180, 0.9)';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`(${approxCentroidX.toFixed(2)}, ${approxCentroidY.toFixed(2)})`, 
+                        canvasCentroidX + 10, canvasCentroidY - 10);
+            
+            // 更新结果
+            document.getElementById('centroid-x').textContent = approxCentroidX.toFixed(3);
+            document.getElementById('centroid-y').textContent = approxCentroidY.toFixed(3);
+            document.getElementById('centroid-area').textContent = approxArea.toFixed(3);
+            
+            // 添加精确值对比
+            ctx.fillStyle = '#e0e0ff';
+            ctx.font = '14px Arial';
+            ctx.fillText(`精确质心: (${exactCentroidX.toFixed(2)}, ${exactCentroidY.toFixed(2)})`, 
+                        width / 2, 30);
+            ctx.fillText(`精确面积: ${exactArea.toFixed(3)}`, width / 2, 50);
+        }
+        
+        // 初始化页面时更新所有演示
+        window.addEventListener('load', function() {
+            // 触发初始渲染
+            updateActiveCanvas('method');
+            
+            // 初始化MathJax
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        });
+        
+        // 处理窗口大小变化
+        window.addEventListener('resize', function() {
+            // 更新所有Canvas尺寸
+            initAllCanvases();
+            
+            // 重新绘制当前活动演示
+            updateActiveCanvas(getActiveSection());
+        });
+    </script>
+</body>
+</html>
