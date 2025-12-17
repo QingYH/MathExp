@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>摆线绕Y轴旋转动态演示</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 100%);
+            color: #e0e0ff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(10, 10, 40, 0.8);
+            border-bottom: 1px solid rgba(64, 128, 255, 0.3);
+            z-index: 10;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a0a0ff;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        #canvas-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        .controls-panel {
+            width: 300px;
+            background: rgba(15, 15, 50, 0.85);
+            border-left: 1px solid rgba(64, 128, 255, 0.3);
+            padding: 20px;
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .control-group {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(64, 128, 255, 0.2);
+        }
+        
+        .control-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #4facfe;
+            display: flex;
+            align-items: center;
+        }
+        
+        .control-title i {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0ff;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(64, 128, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4facfe;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.8);
+        }
+        
+        .value-display {
+            display: inline-block;
+            margin-left: 10px;
+            color: #00f2fe;
+            font-weight: bold;
+        }
+        
+        button {
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            border: none;
+            color: #0c0c2e;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px 5px 5px 0;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.8);
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .info-box {
+            background: rgba(20, 20, 60, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #4facfe;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .info-box h3 {
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+        
+        .param-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .param-item {
+            background: rgba(30, 30, 70, 0.5);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .param-label {
+            color: #a0a0ff;
+            font-size: 0.85rem;
+        }
+        
+        .param-value {
+            color: #00f2fe;
+            font-weight: bold;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .controls-panel {
+                width: 100%;
+                height: 300px;
+                border-left: none;
+                border-top: 1px solid rgba(64, 128, 255, 0.3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>摆线绕Y轴旋转动态演示</h1>
+        <p class="subtitle">展示摆线（旋轮线）在绕Y轴旋转时形成的三维旋转体。摆线参数方程：x = a(θ - sinθ), y = a(1 - cosθ)</p>
+    </div>
+    
+    <div class="container">
+        <div id="canvas-container"></div>
+        
+        <div class="controls-panel">
+            <div class="control-group">
+                <div class="control-title">🎛️ 旋转控制</div>
+                <div class="slider-container">
+                    <label>旋转速度: <span id="speed-value" class="value-display">0.5</span></label>
+                    <input type="range" id="speed-control" min="0" max="1" step="0.01" value="0.5">
+                </div>
+                <div class="slider-container">
+                    <label>旋转角度: <span id="angle-value" class="value-display">0°</span></label>
+                    <input type="range" id="angle-control" min="0" max="360" step="1" value="0">
+                </div>
+                <div class="button-group">
+                    <button id="play-pause">暂停</button>
+                    <button id="reset">重置</button>
+                    <button id="complete-rotation">完整旋转</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-title">⚙️ 摆线参数</div>
+                <div class="slider-container">
+                    <label>滚圆半径 (a): <span id="radius-value" class="value-display">2.0</span></label>
+                    <input type="range" id="radius-control" min="0.5" max="5" step="0.1" value="2.0">
+                </div>
+                <div class="slider-container">
+                    <label>θ范围: <span id="theta-value" class="value-display">2π</span></label>
+                    <input type="range" id="theta-control" min="1" max="6.28" step="0.01" value="6.28">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-title">🎨 视觉效果</div>
+                <div class="slider-container">
+                    <label>线框透明度: <span id="opacity-value" class="value-display">0.3</span></label>
+                    <input type="range" id="opacity-control" min="0" max="1" step="0.05" value="0.3">
+                </div>
+                <div class="slider-container">
+                    <label>表面细节: <span id="detail-value" class="value-display">50</span></label>
+                    <input type="range" id="detail-control" min="10" max="100" step="5" value="50">
+                </div>
+                <div class="button-group">
+                    <button id="wireframe-toggle">显示实体</button>
+                    <button id="show-path">显示轨迹</button>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4facfe;"></div>
+                        <span>原始摆线</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff4f7b;"></div>
+                        <span>旋转体表面</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h3>📚 教学说明</h3>
+                <p>摆线是圆周上一点在直线滚动时形成的轨迹。绕Y轴旋转后，形成具有特殊几何性质的三维旋转体。</p>
+                <p>旋转体体积公式：V = π∫[x(y)]² dy，其中x(y)是摆线方程。</p>
+                <p>通过调整参数，可以观察不同半径和θ范围对旋转体形状的影响。</p>
+                
+                <div class="param-display">
+                    <div class="param-item">
+                        <div class="param-label">当前体积近似值：</div>
+                        <div class="param-value" id="volume-value">0.00</div>
+                    </div>
+                    <div class="param-item">
+                        <div class="param-label">表面积近似值：</div>
+                        <div class="param-value" id="surface-value">0.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let scene, camera, renderer, controls;
+        let curveObject = null;
+        let surfaceObject = null;
+        let pathObjects = [];
+        let animationId = null;
+        let isPlaying = true;
+        let rotationAngle = 0;
+        let rotationSpeed = 0.5;
+        let showWireframe = true;
+        let showPath = false;
+        let radius = 2.0;
+        let thetaMax = 2 * Math.PI;
+        let detail = 50;
+        
+        // 初始化
+        function init() {
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0c0c2e);
+            
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(8, 5, 10);
+            
+            // 创建渲染器
+            const canvasContainer = document.getElementById('canvas-container');
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            canvasContainer.appendChild(renderer.domElement);
+            
+            // 添加轨道控制
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // 添加灯光
+            const ambientLight = new THREE.AmbientLight(0x404080, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 20, 15);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+            
+            // 添加坐标轴
+            const axesHelper = new THREE.AxesHelper(5);
+            scene.add(axesHelper);
+            
+            // 创建网格地面
+            const gridHelper = new THREE.GridHelper(20, 20, 0x444477, 0x222244);
+            gridHelper.position.y = -radius * 2;
+            scene.add(gridHelper);
+            
+            // 初始化摆线和旋转体
+            createCycloidCurve();
+            createRotationSurface();
+            
+            // 添加事件监听器
+            setupEventListeners();
+            
+            // 开始动画循环
+            animate();
+            
+            // 窗口大小调整
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        // 创建摆线曲线
+        function createCycloidCurve() {
+            if (curveObject) scene.remove(curveObject);
+            
+            const points = [];
+            const step = thetaMax / detail;
+            
+            // 生成摆线点
+            for (let i = 0; i <= detail; i++) {
+                const theta = i * step;
+                const x = radius * (theta - Math.sin(theta));
+                const y = radius * (1 - Math.cos(theta));
+                points.push(new THREE.Vector3(x, y, 0));
+            }
+            
+            // 创建曲线
+            const curve = new THREE.CatmullRomCurve3(points);
+            const geometry = new THREE.TubeGeometry(curve, 200, 0.05, 8, false);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x4facfe,
+                emissive: 0x1a4f7e,
+                shininess: 100
+            });
+            
+            curveObject = new THREE.Mesh(geometry, material);
+            scene.add(curveObject);
+        }
+        
+        // 创建旋转体表面
+        function createRotationSurface() {
+            if (surfaceObject) scene.remove(surfaceObject);
+            
+            const vertices = [];
+            const indices = [];
+            
+            const thetaStep = thetaMax / detail;
+            const phiStep = (2 * Math.PI) / detail;
+            
+            // 生成表面顶点
+            for (let i = 0; i <= detail; i++) {
+                const theta = i * thetaStep;
+                const x = radius * (theta - Math.sin(theta));
+                const y = radius * (1 - Math.cos(theta));
+                
+                for (let j = 0; j <= detail; j++) {
+                    const phi = j * phiStep;
+                    
+                    // 绕Y轴旋转
+                    const rotatedX = x * Math.cos(phi);
+                    const rotatedZ = x * Math.sin(phi);
+                    
+                    vertices.push(rotatedX, y, rotatedZ);
+                }
+            }
+            
+            // 生成表面索引
+            for (let i = 0; i < detail; i++) {
+                for (let j = 0; j < detail; j++) {
+                    const a = i * (detail + 1) + j;
+                    const b = a + 1;
+                    const c = (i + 1) * (detail + 1) + j;
+                    const d = c + 1;
+                    
+                    indices.push(a, b, d);
+                    indices.push(a, d, c);
+                }
+            }
+            
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+            
+            const material = new THREE.MeshPhongMaterial({
+                color: 0xff4f7b,
+                transparent: true,
+                opacity: 0.3,
+                wireframe: true,
+                emissive: 0x4f1a2a,
+                side: THREE.DoubleSide
+            });
+            
+            surfaceObject = new THREE.Mesh(geometry, material);
+            scene.add(surfaceObject);
+            
+            // 更新体积和表面积显示
+            updateVolumeAndSurface();
+        }
+        
+        // 更新体积和表面积显示
+        function updateVolumeAndSurface() {
+            // 使用旋转体体积公式近似计算
+            // V = π ∫[x(y)]² dy
+            let volume = 0;
+            let surfaceArea = 0;
+            const step = thetaMax / 100;
+            
+            for (let i = 0; i < 100; i++) {
+                const theta = i * step;
+                const nextTheta = (i + 1) * step;
+                
+                const x = radius * (theta - Math.sin(theta));
+                const nextX = radius * (nextTheta - Math.sin(nextTheta));
+                
+                const y = radius * (1 - Math.cos(theta));
+                const nextY = radius * (1 - Math.cos(nextTheta));
+                
+                // 体积近似 (圆盘法)
+                const avgX = (x + nextX) / 2;
+                const dy = nextY - y;
+                volume += Math.PI * avgX * avgX * dy;
+                
+                // 表面积近似 (旋转曲面面积)
+                const dx = nextX - x;
+                const ds = Math.sqrt(dx * dx + dy * dy);
+                const avgRadius = (x + nextX) / 2;
+                surfaceArea += 2 * Math.PI * avgRadius * ds;
+            }
+            
+            // 更新显示
+            document.getElementById('volume-value').textContent = Math.abs(volume).toFixed(2);
+            document.getElementById('surface-value').textContent = Math.abs(surfaceArea).toFixed(2);
+        }
+        
+        // 添加旋转轨迹
+        function addPathPoint() {
+            if (!showPath) return;
+            
+            // 清除旧路径点
+            if (pathObjects.length > 30) {
+                scene.remove(pathObjects[0]);
+                pathObjects.shift();
+            }
+            
+            // 创建当前角度的摆线
+            const points = [];
+            const step = thetaMax / 20;
+            
+            for (let i = 0; i <= 20; i++) {
+                const theta = i * step;
+                const x = radius * (theta - Math.sin(theta));
+                const y = radius * (1 - Math.cos(theta));
+                
+                // 绕Y轴旋转当前角度
+                const rotatedX = x * Math.cos(rotationAngle);
+                const rotatedZ = x * Math.sin(rotationAngle);
+                
+                points.push(new THREE.Vector3(rotatedX, y, rotatedZ));
+            }
+            
+            const curve = new THREE.CatmullRomCurve3(points);
+            const geometry = new THREE.TubeGeometry(curve, 50, 0.02, 8, false);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xffff00,
+                transparent: true,
+                opacity: 0.6
+            });
+            
+            const path = new THREE.Mesh(geometry, material);
+            scene.add(path);
+            pathObjects.push(path);
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 旋转速度控制
+            document.getElementById('speed-control').addEventListener('input', function(e) {
+                rotationSpeed = parseFloat(e.target.value);
+                document.getElementById('speed-value').textContent = rotationSpeed.toFixed(2);
+            });
+            
+            // 旋转角度控制
+            document.getElementById('angle-control').addEventListener('input', function(e) {
+                rotationAngle = parseFloat(e.target.value) * Math.PI / 180;
+                document.getElementById('angle-value').textContent = e.target.value + '°';
+                updateSurfaceRotation();
+            });
+            
+            // 半径控制
+            document.getElementById('radius-control').addEventListener('input', function(e) {
+                radius = parseFloat(e.target.value);
+                document.getElementById('radius-value').textContent = radius.toFixed(1);
+                createCycloidCurve();
+                createRotationSurface();
+            });
+            
+            // θ范围控制
+            document.getElementById('theta-control').addEventListener('input', function(e) {
+                thetaMax = parseFloat(e.target.value);
+                document.getElementById('theta-value').textContent = thetaMax.toFixed(2);
+                createCycloidCurve();
+                createRotationSurface();
+            });
+            
+            // 透明度控制
+            document.getElementById('opacity-control').addEventListener('input', function(e) {
+                const opacity = parseFloat(e.target.value);
+                document.getElementById('opacity-value').textContent = opacity.toFixed(2);
+                if (surfaceObject) {
+                    surfaceObject.material.opacity = opacity;
+                }
+            });
+            
+            // 细节控制
+            document.getElementById('detail-control').addEventListener('input', function(e) {
+                detail = parseInt(e.target.value);
+                document.getElementById('detail-value').textContent = detail;
+                createCycloidCurve();
+                createRotationSurface();
+            });
+            
+            // 播放/暂停按钮
+            document.getElementById('play-pause').addEventListener('click', function() {
+                isPlaying = !isPlaying;
+                this.textContent = isPlaying ? '暂停' : '播放';
+            });
+            
+            // 重置按钮
+            document.getElementById('reset').addEventListener('click', function() {
+                rotationAngle = 0;
+                document.getElementById('angle-control').value = 0;
+                document.getElementById('angle-value').textContent = '0°';
+                updateSurfaceRotation();
+                
+                // 清除路径
+                pathObjects.forEach(obj => scene.remove(obj));
+                pathObjects = [];
+            });
+            
+            // 完整旋转按钮
+            document.getElementById('complete-rotation').addEventListener('click', function() {
+                rotationAngle = 2 * Math.PI;
+                document.getElementById('angle-control').value = 360;
+                document.getElementById('angle-value').textContent = '360°';
+                updateSurfaceRotation();
+            });
+            
+            // 线框切换按钮
+            document.getElementById('wireframe-toggle').addEventListener('click', function() {
+                showWireframe = !showWireframe;
+                if (surfaceObject) {
+                    surfaceObject.material.wireframe = showWireframe;
+                    this.textContent = showWireframe ? '显示实体' : '显示线框';
+                }
+            });
+            
+            // 显示轨迹按钮
+            document.getElementById('show-path').addEventListener('click', function() {
+                showPath = !showPath;
+                this.textContent = showPath ? '隐藏轨迹' : '显示轨迹';
+                
+                if (!showPath) {
+                    pathObjects.forEach(obj => scene.remove(obj));
+                    pathObjects = [];
+                }
+            });
+        }
+        
+        // 更新表面旋转
+        function updateSurfaceRotation() {
+            if (!surfaceObject) return;
+            
+            const vertices = surfaceObject.geometry.attributes.position.array;
+            const thetaStep = thetaMax / detail;
+            const phiStep = (2 * Math.PI) / detail;
+            
+            let vertexIndex = 0;
+            for (let i = 0; i <= detail; i++) {
+                const theta = i * thetaStep;
+                const x = radius * (theta - Math.sin(theta));
+                const y = radius * (1 - Math.cos(theta));
+                
+                for (let j = 0; j <= detail; j++) {
+                    const phi = j * phiStep + rotationAngle;
+                    
+                    // 绕Y轴旋转
+                    const rotatedX = x * Math.cos(phi);
+                    const rotatedZ = x * Math.sin(phi);
+                    
+                    vertices[vertexIndex] = rotatedX;
+                    vertices[vertexIndex + 1] = y;
+                    vertices[vertexIndex + 2] = rotatedZ;
+                    
+                    vertexIndex += 3;
+                }
+            }
+            
+            surfaceObject.geometry.attributes.position.needsUpdate = true;
+            surfaceObject.geometry.computeVertexNormals();
+            
+            // 添加路径点
+            addPathPoint();
+        }
+        
+        // 动画循环
+        function animate() {
+            animationId = requestAnimationFrame(animate);
+            
+            if (isPlaying) {
+                // 更新旋转角度
+                rotationAngle += 0.01 * rotationSpeed;
+                if (rotationAngle > 2 * Math.PI) rotationAngle -= 2 * Math.PI;
+                
+                // 更新UI
+                const angleDeg = (rotationAngle * 180 / Math.PI).toFixed(0);
+                document.getElementById('angle-control').value = angleDeg;
+                document.getElementById('angle-value').textContent = angleDeg + '°';
+                
+                // 更新表面
+                updateSurfaceRotation();
+            }
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        // 窗口大小调整
+        function onWindowResize() {
+            const canvasContainer = document.getElementById('canvas-container');
+            camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
