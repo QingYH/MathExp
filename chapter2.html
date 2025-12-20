@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导数与微分：从"导"火线到"微"积分</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --border-radius: 12px;
+            --shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "f'(x)";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 60px;
+            color: rgba(67, 97, 238, 0.1);
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 2.8rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 25%;
+            width: 50%;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            color: var(--accent);
+        }
+        
+        .definition, .theorem, .formula, .exercise {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        
+        .definition {
+            background-color: rgba(67, 97, 238, 0.08);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .theorem {
+            background-color: rgba(248, 150, 30, 0.08);
+            border-left: 5px solid var(--warning);
+        }
+        
+        .formula {
+            background-color: rgba(76, 201, 240, 0.08);
+            border-left: 5px solid var(--success);
+            font-family: 'Cambria Math', serif;
+            overflow-x: auto;
+        }
+        
+        .exercise {
+            background-color: rgba(248, 37, 133, 0.05);
+            border-left: 5px solid var(--accent);
+        }
+        
+        .definition h3, .theorem h3, .formula h3, .exercise h3 {
+            margin-bottom: 10px;
+            color: inherit;
+        }
+        
+        .definition h3 i, .theorem h3 i, .formula h3 i, .exercise h3 i {
+            margin-right: 8px;
+        }
+        
+        .self-review {
+            background: rgba(248, 37, 133, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            border: 1px dashed var(--accent);
+            position: relative;
+        }
+        
+        .self-review::before {
+            content: "💡 灵魂拷问：";
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .analogy {
+            background: rgba(76, 201, 240, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px dashed var(--success);
+            position: relative;
+        }
+        
+        .analogy::before {
+            content: "🔍 神比喻：";
+            font-weight: bold;
+            color: var(--success);
+        }
+        
+        .graph-container {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ddd;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .graph-controls {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .graph-controls button, .graph-controls select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .graph-controls button:hover {
+            background: #f5f5f5;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .answer {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(76, 201, 240, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .answer.show {
+            display: block;
+        }
+        
+        .show-answer {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .show-answer:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .error-tip {
+            background: rgba(248, 37, 133, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .error-tip h4 {
+            color: var(--accent);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chapter-nav {
+            list-style: none;
+            margin-top: 20px;
+        }
+        
+        .chapter-nav li {
+            margin-bottom: 12px;
+        }
+        
+        .chapter-nav a {
+            display: block;
+            padding: 12px 15px;
+            background: rgba(67, 97, 238, 0.1);
+            border-radius: 8px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .chapter-nav a:hover, .chapter-nav a.active {
+            background: rgba(67, 97, 238, 0.2);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .chapter-nav i {
+            margin-right: 10px;
+            color: var(--primary);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            margin: 30px 0 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--success));
+            width: 25%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .fun-fact {
+            background: rgba(248, 150, 30, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .fun-fact::before {
+            content: "🤔 冷知识：";
+            font-weight: bold;
+            color: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-chart-line"></i> 导数与微分：数学界的"速度与激情"</h1>
+        <p class="subtitle">同济高数第七/八版上册第二章 · 用段子讲数学，用比喻破难点 · 附带灵魂拷问和动态图形演示</p>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <p>学习进度: <span id="progress-text">25%</span> · 已掌握知识点: <span id="mastered-count">0</span>/12</p>
+    </header>
+    
+    <div class="container">
+        <main class="main-content">
+            <!-- 第一节：导数概念 -->
+            <section class="card" id="section1">
+                <h2><i class="fas fa-bullseye"></i> 第一节：导数概念 - "瞬时速度"的数学马甲</h2>
+                
+                <div class="definition">
+                    <h3><i class="fas fa-book"></i> 导数定义：极限的"私生子"</h3>
+                    <p>函数 \(y = f(x)\) 在点 \(x_0\) 处的导数定义为：</p>
+                    <div class="formula">
+                        <p>\[f'(x_0) = \lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x} = \lim_{x \to x_0} \frac{f(x) - f(x_0)}{x - x_0}\]</p>
+                    </div>
+                    <p>翻译成人话：当 \(x\) 变化一点点时，\(y\) 变化了多少倍？这个"倍数"就是导数。</p>
+                    
+                    <div class="analogy">
+                        <p><strong>比喻时刻：</strong> 把函数想象成一条山路，导数就是你在某个点的<strong>陡峭程度</strong>。导数越大，坡越陡；导数为负，就是下坡；导数为零，恭喜你找到平坦处（极值点可能就在这）！</p>
+                    </div>
+                    
+                    <div class="self-review">
+                        曾经我以为导数就是斜率，直到遇到了 \(|x|\) 在 \(x=0\) 处... 原来数学也有"尖酸刻薄"（尖点）的时候！左导数和右导数不相等，就像你左右脚穿不同尺码的鞋，走起路来肯定别扭。
+                    </div>
+                </div>
+                
+                <div class="graph-container">
+                    <div class="canvas-container">
+                        <canvas id="derivative-graph"></canvas>
+                    </div>
+                </div>
+                
+                <div class="graph-controls">
+                    <span>函数选择：</span>
+                    <select id="function-select">
+                        <option value="x^2">f(x) = x² (经典抛物线)</option>
+                        <option value="sin(x)">f(x) = sin(x) (波浪线)</option>
+                        <option value="abs(x)">f(x) = |x| (V字仇杀队)</option>
+                        <option value="x^3">f(x) = x³ (性感S曲线)</option>
+                    </select>
+                    <button onclick="updateDerivativeGraph()">更新图形</button>
+                    <div style="margin-left: auto;">
+                        <label>切点x坐标: <input type="range" id="tangent-slider" min="-2" max="2" step="0.1" value="1" style="width: 150px;"></label>
+                        <span id="tangent-value">1.0</span>
+                    </div>
+                </div>
+                
+                <div class="theorem">
+                    <h3><i class="fas fa-gavel"></i> 定理：可导与连续的"爱恨情仇"</h3>
+                    <p><strong>可导 ⇒ 连续：</strong> 如果函数在某点可导，那么它在该点一定连续。</p>
+                    <p><strong>连续 ⇏ 可导：</strong> 连续不一定可导！就像一个人连续上班30天，但可能每天迟到（不可导）。</p>
+                    
+                    <div class="fun-fact">
+                        历史八卦：牛顿和莱布尼茨为争夺微积分发明权吵得不可开交，但他们都承认：连续是可导的必要不充分条件。这大概是数学史上最早的"必要不充分"关系了！
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 1.1：导数定义的"直球对决"</h3>
+                    <p>用定义求函数 \(f(x) = x^2 + 2x\) 在 \(x = 1\) 处的导数。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer1-1')">显示答案</button>
+                    <div class="answer" id="answer1-1">
+                        <p><strong>解：</strong> 根据导数定义：</p>
+                        <p>\[
+                        \begin{aligned}
+                        f'(1) &= \lim_{\Delta x \to 0} \frac{f(1+\Delta x) - f(1)}{\Delta x} \\
+                        &= \lim_{\Delta x \to 0} \frac{[(1+\Delta x)^2 + 2(1+\Delta x)] - (1^2+2 \cdot 1)}{\Delta x} \\
+                        &= \lim_{\Delta x \to 0} \frac{[1 + 2\Delta x + (\Delta x)^2 + 2 + 2\Delta x] - 3}{\Delta x} \\
+                        &= \lim_{\Delta x \to 0} \frac{4\Delta x + (\Delta x)^2}{\Delta x} \\
+                        &= \lim_{\Delta x \to 0} (4 + \Delta x) = 4
+                        \end{aligned}
+                        \]</p>
+                        <p>所以 \(f'(1) = 4\)。</p>
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 1.2：判断可导性的"火眼金睛"</h3>
+                    <p>判断函数 \(f(x) = |x-1|\) 在 \(x=1\) 处是否可导，并说明理由。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer1-2')">显示答案</button>
+                    <div class="answer" id="answer1-2">
+                        <p><strong>解：</strong> 函数 \(f(x) = |x-1|\) 在 \(x=1\) 处连续但不可导。</p>
+                        <p><strong>理由：</strong></p>
+                        <p>1. 连续性：\(\lim_{x \to 1} |x-1| = 0 = f(1)\)，所以连续。</p>
+                        <p>2. 可导性：计算左导数和右导数</p>
+                        <p>左导数：\(f'_-(1) = \lim_{x \to 1^-} \frac{|x-1|-0}{x-1} = \lim_{x \to 1^-} \frac{-(x-1)}{x-1} = -1\)</p>
+                        <p>右导数：\(f'_+(1) = \lim_{x \to 1^+} \frac{|x-1|-0}{x-1} = \lim_{x \to 1^+} \frac{x-1}{x-1} = 1\)</p>
+                        <p>因为左导数 ≠ 右导数，所以不可导。</p>
+                        <p><strong>几何解释：</strong> 函数在 \(x=1\) 处有一个"尖点"，就像山的顶峰是尖的，从左边和右边爬上去的陡峭程度不同。</p>
+                    </div>
+                </div>
+                
+                <div class="error-tip">
+                    <h4><i class="fas fa-exclamation-triangle"></i> 易错点提醒：导数的"三大错觉"</h4>
+                    <p>1. <strong>错觉一：</strong> "连续一定可导" → 错！反例：\(|x|\) 在 \(x=0\) 处。</p>
+                    <p>2. <strong>错觉二：</strong> "导数就是切线斜率" → 对，但前提是导数存在！没有导数就没有切线。</p>
+                    <p>3. <strong>错觉三：</strong> "用定义求导太麻烦，直接套公式" → 考试就喜欢考定义，因为能看出你是否真懂！</p>
+                </div>
+                
+                <button class="btn" onclick="markAsMastered('section1')"><i class="fas fa-check-circle"></i> 标记本节为已掌握</button>
+            </section>
+            
+            <!-- 第二节：求导法则 -->
+            <section class="card" id="section2">
+                <h2><i class="fas fa-cogs"></i> 第二节：求导法则 - 数学界的"四则运算PLUS"</h2>
+                
+                <div class="theorem">
+                    <h3><i class="fas fa-gavel"></i> 四则运算求导法则：加减乘除的"成长烦恼"</h3>
+                    <p>设 \(u = u(x)\), \(v = v(x)\) 都可导，则：</p>
+                    <div class="formula">
+                        <p>1. \((u \pm v)' = u' \pm v'\) <span style="color:#666; font-style:italic;">（加减最简单，各自求导再加减）</span></p>
+                        <p>2. \((uv)' = u'v + uv'\) <span style="color:#666; font-style:italic;">（前导后不导 + 前不导后导）</span></p>
+                        <p>3. \(\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2} \quad (v \neq 0)\) <span style="color:#666; font-style:italic;">（上导下不导 - 上不导下导，分母平方不能少）</span></p>
+                    </div>
+                    
+                    <div class="analogy">
+                        <p><strong>比喻时刻：</strong> 把函数求导想象成父母照顾孩子：</p>
+                        <p>• 加减法则：多个孩子各自照顾，互不干扰</p>
+                        <p>• 乘法法则：夫妻轮流照顾孩子（一个导，另一个不导）</p>
+                        <p>• 除法法则：孩子成绩=分数，分子好（导）分母不好（不导）要减分，分母还要平方（强调重要性）</p>
+                    </div>
+                </div>
+                
+                <div class="theorem">
+                    <h3><i class="fas fa-gavel"></i> 链式法则：函数的"俄罗斯套娃"</h3>
+                    <p>如果 \(y = f(u)\), \(u = g(x)\) 都可导，则复合函数 \(y = f[g(x)]\) 的导数为：</p>
+                    <div class="formula">
+                        <p>\[\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx} \quad \text{或} \quad y'_x = f'(u) \cdot g'(x)\]</p>
+                    </div>
+                    <p>口诀：<strong>外导内不导，乘以内导</strong>（一层一层剥洋葱）</p>
+                    
+                    <div class="self-review">
+                        曾经我总忘记乘内函数的导数，结果求出来的导数少了一截，就像剥洋葱只剥了最外面一层，辣眼睛还不对味！现在我明白了：复合函数求导就像剥洋葱，不剥到最里面会流泪的。
+                    </div>
+                </div>
+                
+                <div class="graph-container">
+                    <div class="canvas-container">
+                        <canvas id="chain-rule-graph"></canvas>
+                    </div>
+                </div>
+                
+                <div class="graph-controls">
+                    <span>复合函数选择：</span>
+                    <select id="chain-function-select">
+                        <option value="sin(2x)">y = sin(2x)</option>
+                        <option value="e^(x^2)">y = e^(x²)</option>
+                        <option value="sqrt(1+x^2)">y = √(1+x²)</option>
+                        <option value="ln(cos(x))">y = ln(cos(x))</option>
+                    </select>
+                    <button onclick="updateChainRuleGraph()">更新演示</button>
+                    <div>
+                        <label>分解步骤：</label>
+                        <input type="range" id="chain-step-slider" min="0" max="3" step="1" value="0" style="width: 120px;">
+                        <span id="chain-step-text">原始函数</span>
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 2.1：乘积法则的"实战演练"</h3>
+                    <p>求函数 \(y = x^2 \cdot e^x\) 的导数。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer2-1')">显示答案</button>
+                    <div class="answer" id="answer2-1">
+                        <p><strong>解：</strong> 使用乘积法则：\((uv)' = u'v + uv'\)</p>
+                        <p>令 \(u = x^2\), \(v = e^x\)，则 \(u' = 2x\), \(v' = e^x\)</p>
+                        <p>\[
+                        \begin{aligned}
+                        y' &= u'v + uv' \\
+                        &= (2x)(e^x) + (x^2)(e^x) \\
+                        &= 2xe^x + x^2e^x \\
+                        &= e^x(2x + x^2)
+                        \end{aligned}
+                        \]</p>
+                        <p>所以 \(y' = e^x(x^2 + 2x)\)。</p>
+                        <p><strong>检验：</strong> 也可以先化简再求导：\(y = x^2e^x\)，求导得 \(y' = 2xe^x + x^2e^x\)，结果一致。</p>
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 2.2：链式法则的"剥洋葱大赛"</h3>
+                    <p>求函数 \(y = \ln(\sin(3x))\) 的导数。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer2-2')">显示答案</button>
+                    <div class="answer" id="answer2-2">
+                        <p><strong>解：</strong> 这是一个三层复合函数，需要剥三次洋葱：</p>
+                        <p>最外层：\(\ln(\cdot)\)，导数为 \(\frac{1}{\cdot}\)</p>
+                        <p>中间层：\(\sin(\cdot)\)，导数为 \(\cos(\cdot)\)</p>
+                        <p>最内层：\(3x\)，导数为 \(3\)</p>
+                        <p>应用链式法则：</p>
+                        <p>\[
+                        \begin{aligned}
+                        y' &= \frac{1}{\sin(3x)} \cdot \cos(3x) \cdot 3 \\
+                        &= \frac{3\cos(3x)}{\sin(3x)} \\
+                        &= 3\cot(3x)
+                        \end{aligned}
+                        \]</p>
+                        <p>所以 \(y' = 3\cot(3x)\)。</p>
+                        <p><strong>易错提醒：</strong> 很多人会忘记最内层的导数 \(3\)，导致结果少了一个因子。记住：每层都要导！</p>
+                    </div>
+                </div>
+                
+                <div class="error-tip">
+                    <h4><i class="fas fa-exclamation-triangle"></i> 易错点提醒：求导法则的"翻车现场"</h4>
+                    <p>1. <strong>乘积法则翻车：</strong> \((uv)' = u'v'\) ❌ 这是错的！应该是 \(u'v + uv'\) ✅</p>
+                    <p>2. <strong>除法法则翻车：</strong> 分子记反顺序，或者忘记分母平方</p>
+                    <p>3. <strong>链式法则翻车：</strong> "剥洋葱"剥到一半就停了，忘记乘内层导数</p>
+                    <p>4. <strong>混合运算翻车：</strong> 先乘除还是先复合？记住：先识别结构，再选择法则！</p>
+                </div>
+                
+                <button class="btn" onclick="markAsMastered('section2')"><i class="fas fa-check-circle"></i> 标记本节为已掌握</button>
+            </section>
+            
+            <!-- 第三节：高阶导数 -->
+            <section class="card" id="section3">
+                <h2><i class="fas fa-sort-amount-up"></i> 第三节：高阶导数 - "导了又导"的套娃游戏</h2>
+                
+                <div class="definition">
+                    <h3><i class="fas fa-book"></i> 高阶导数：导数的导数是什么？</h3>
+                    <p>函数 \(y = f(x)\) 的导数 \(y' = f'(x)\) 仍然是 \(x\) 的函数，如果它还可导，则称其导数为 \(f(x)\) 的<strong>二阶导数</strong>，记作：</p>
+                    <div class="formula">
+                        <p>\[y'' = f''(x) = \frac{d^2y}{dx^2} = \frac{d}{dx}\left(\frac{dy}{dx}\right)\]</p>
+                    </div>
+                    <p>类似地，可以定义三阶、四阶乃至 \(n\) 阶导数。三阶导数：\(y''' = f'''(x) = \frac{d^3y}{dx^3}\)</p>
+                    <p>\(n\) 阶导数：\(y^{(n)} = f^{(n)}(x) = \frac{d^ny}{dx^n}\)</p>
+                    
+                    <div class="analogy">
+                        <p><strong>比喻时刻：</strong> 把函数想象成一辆车：</p>
+                        <p>• 一阶导数：速度（位置的变化率）</p>
+                        <p>• 二阶导数：加速度（速度的变化率）</p>
+                        <p>• 三阶导数：加加速度（加速度的变化率，也叫急动度）</p>
+                        <p>• 四阶导数：加加加速度...（好了，再导下去车要散架了）</p>
+                    </div>
+                </div>
+                
+                <div class="theorem">
+                    <h3><i class="fas fa-gavel"></i> 常见函数的高阶导数公式：数学的"循环节"</h3>
+                    <div class="formula">
+                        <p>1. \((e^x)^{(n)} = e^x\) <span style="color:#666; font-style:italic;">（e^x：导了等于没导，数学界的"永动机"）</span></p>
+                        <p>2. \((\sin x)^{(n)} = \sin\left(x + \frac{n\pi}{2}\right)\) <span style="color:#666; font-style:italic;">（正弦函数：每导一次，相位加π/2）</span></p>
+                        <p>3. \((\cos x)^{(n)} = \cos\left(x + \frac{n\pi}{2}\right)\) <span style="color:#666; font-style:italic;">（余弦函数：同上）</span></p>
+                        <p>4. \((x^m)^{(n)} = m(m-1)\cdots(m-n+1)x^{m-n} \quad (n \leq m)\)</p>
+                        <p>5. \((\ln(1+x))^{(n)} = (-1)^{n-1}\frac{(n-1)!}{(1+x)^n} \quad (x > -1)\)</p>
+                    </div>
+                    
+                    <div class="self-review">
+                        曾经我以为高阶导数就是一直求导呗，直到看到 \((\sin x)^{(100)}\) 这样的题目... 100阶？！难道要导100次？后来发现只需要找规律：每4次一个循环！数学果然是门找规律的学科，找到了规律，你就找到了偷懒的方法。
+                    </div>
+                </div>
+                
+                <div class="graph-container">
+                    <div class="canvas-container">
+                        <canvas id="higher-order-graph"></canvas>
+                    </div>
+                </div>
+                
+                <div class="graph-controls">
+                    <span>函数选择：</span>
+                    <select id="higher-order-function">
+                        <option value="sin(x)">f(x) = sin(x)</option>
+                        <option value="e^x">f(x) = e^x</option>
+                        <option value="x^3">f(x) = x³</option>
+                        <option value="cos(x)">f(x) = cos(x)</option>
+                    </select>
+                    <div>
+                        <label>导数阶数：</label>
+                        <input type="range" id="order-slider" min="0" max="4" step="1" value="0" style="width: 150px;">
+                        <span id="order-text">原函数 (0阶)</span>
+                    </div>
+                    <button onclick="updateHigherOrderGraph()">更新图形</button>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 3.1：高阶导数的"找规律游戏"</h3>
+                    <p>求函数 \(y = e^{2x}\) 的 \(n\) 阶导数。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer3-1')">显示答案</button>
+                    <div class="answer" id="answer3-1">
+                        <p><strong>解：</strong> 找规律法：</p>
+                        <p>\[
+                        \begin{aligned}
+                        y &= e^{2x} \\
+                        y' &= 2e^{2x} \\
+                        y'' &= 2^2 e^{2x} = 4e^{2x} \\
+                        y''' &= 2^3 e^{2x} = 8e^{2x} \\
+                        y^{(4)} &= 2^4 e^{2x} = 16e^{2x} \\
+                        &\vdots \\
+                        y^{(n)} &= 2^n e^{2x}
+                        \end{aligned}
+                        \]</p>
+                        <p>所以 \(y^{(n)} = 2^n e^{2x}\)。</p>
+                        <p><strong>归纳法证明：</strong></p>
+                        <p>当 \(n=1\) 时，显然成立。</p>
+                        <p>假设 \(n=k\) 时成立，即 \(y^{(k)} = 2^k e^{2x}\)</p>
+                        <p>则 \(y^{(k+1)} = \frac{d}{dx}(2^k e^{2x}) = 2^k \cdot 2e^{2x} = 2^{k+1} e^{2x}\)</p>
+                        <p>由数学归纳法，对任意正整数 \(n\)，都有 \(y^{(n)} = 2^n e^{2x}\)。</p>
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 3.2：三角函数高阶导数的"循环节"</h3>
+                    <p>求函数 \(y = \sin(3x)\) 的 10 阶导数。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer3-2')">显示答案</button>
+                    <div class="answer" id="answer3-2">
+                        <p><strong>解：</strong> 使用三角函数高阶导数公式：</p>
+                        <p>\[(\sin(ax))^{(n)} = a^n \sin\left(ax + \frac{n\pi}{2}\right)\]</p>
+                        <p>这里 \(a = 3\)，\(n = 10\)，代入公式：</p>
+                        <p>\[
+                        \begin{aligned}
+                        y^{(10)} &= 3^{10} \sin\left(3x + \frac{10\pi}{2}\right) \\
+                        &= 3^{10} \sin\left(3x + 5\pi\right) \\
+                        &= 3^{10} \sin\left(3x + \pi\right) \quad (\text{因为 } 5\pi = \pi + 4\pi, \text{正弦函数周期是 } 2\pi) \\
+                        &= 3^{10} [-\sin(3x)] \\
+                        &= -3^{10} \sin(3x)
+                        \end{aligned}
+                        \]</p>
+                        <p>计算 \(3^{10} = 59049\)，所以 \(y^{(10)} = -59049 \sin(3x)\)。</p>
+                        <p><strong>技巧：</strong> 利用周期性化简角度：\(\frac{10\pi}{2} = 5\pi = \pi + 2 \times 2\pi\)，所以等价于 \(\pi\)。</p>
+                    </div>
+                </div>
+                
+                <div class="error-tip">
+                    <h4><i class="fas fa-exclamation-triangle"></i> 易错点提醒：高阶导数的"三大坑"</h4>
+                    <p>1. <strong>记号坑：</strong> \(f^{(n)}(x)\) 是 n 阶导数，\(f^n(x)\) 是 n 次幂，一字之差，天壤之别！</p>
+                    <p>2. <strong>公式坑：</strong> 三角函数高阶导数公式中的角度容易算错，特别是除以2后忘记π的存在。</p>
+                    <p>3. <strong>规律坑：</strong> 找不到规律就硬算，结果算到3阶就放弃了。记住：先算前3-4阶，找规律！</p>
+                </div>
+                
+                <button class="btn" onclick="markAsMastered('section3')"><i class="fas fa-check-circle"></i> 标记本节为已掌握</button>
+            </section>
+            
+            <!-- 第四节：微分 -->
+            <section class="card" id="section4">
+                <h2><i class="fas fa-ruler-combined"></i> 第四节：微分 - 导数的"亲兄弟"</h2>
+                
+                <div class="definition">
+                    <h3><i class="fas fa-book"></i> 微分定义：增量的"线性替身"</h3>
+                    <p>如果函数 \(y = f(x)\) 在点 \(x_0\) 处的增量 \(\Delta y\) 可以表示为：</p>
+                    <div class="formula">
+                        <p>\[\Delta y = A\Delta x + o(\Delta x)\]</p>
+                    </div>
+                    <p>其中 \(A\) 是与 \(\Delta x\) 无关的常数，\(o(\Delta x)\) 是比 \(\Delta x\) 高阶的无穷小，则称函数在 \(x_0\) 处<strong>可微</strong>，并称 \(A\Delta x\) 为函数在 \(x_0\) 处的微分，记作：</p>
+                    <div class="formula">
+                        <p>\[dy = A\Delta x = f'(x_0)dx\]</p>
+                    </div>
+                    <p>其中 \(dx = \Delta x\)。</p>
+                    
+                    <div class="analogy">
+                        <p><strong>比喻时刻：</strong> 把函数想象成一条弯曲的路，微分就是用直线段（切线）来近似曲线段：</p>
+                        <p>• \(\Delta y\)：实际走过的弯曲路程（真实增量）</p>
+                        <p>• \(dy\)：以为走的是直线（微分近似）</p>
+                        <p>• \(o(\Delta x)\)：弯曲部分与直线的误差</p>
+                        <p>当路程很短时（\(\Delta x\) 很小），误差可以忽略不计，这就是微分的核心思想！</p>
+                    </div>
+                </div>
+                
+                <div class="theorem">
+                    <h3><i class="fas fa-gavel"></i> 定理：可微与可导的"等价关系"</h3>
+                    <p>函数 \(y = f(x)\) 在点 \(x_0\) 处可微的<strong>充分必要条件</strong>是它在 \(x_0\) 处可导，且 \(dy = f'(x_0)dx\)。</p>
+                    <p>对于一元函数：<strong>可微 ⇔ 可导</strong>（就像双胞胎，有你有我）</p>
+                    
+                    <div class="fun-fact">
+                        微分符号 \(d\) 的由来：德国数学家莱布尼茨引入，来自拉丁语"differentia"，意思是"差异"。所以微分就是研究"差异"的学问，简称"找不同"。
+                    </div>
+                </div>
+                
+                <div class="graph-container">
+                    <div class="canvas-container">
+                        <canvas id="differential-graph"></canvas>
+                    </div>
+                </div>
+                
+                <div class="graph-controls">
+                    <span>函数选择：</span>
+                    <select id="diff-function-select">
+                        <option value="x^2">f(x) = x²</option>
+                        <option value="sin(x)">f(x) = sin(x)</option>
+                        <option value="e^x">f(x) = e^x</option>
+                        <option value="sqrt(x)">f(x) = √x</option>
+                    </select>
+                    <div>
+                        <label>基点 x₀: <input type="range" id="diff-base-slider" min="-1" max="2" step="0.1" value="1" style="width: 100px;"></label>
+                        <span id="diff-base-value">1.0</span>
+                    </div>
+                    <div>
+                        <label>Δx: <input type="range" id="diff-dx-slider" min="0.1" max="2" step="0.1" value="1" style="width: 100px;"></label>
+                        <span id="diff-dx-value">1.0</span>
+                    </div>
+                    <button onclick="updateDifferentialGraph()">更新图形</button>
+                </div>
+                
+                <div class="formula">
+                    <h3><i class="fas fa-calculator"></i> 微分公式与一阶微分形式不变性</h3>
+                    <p>从导数公式可以直接得到微分公式：</p>
+                    <p>1. \(d(u \pm v) = du \pm dv\)</p>
+                    <p>2. \(d(uv) = v du + u dv\)</p>
+                    <p>3. \(d\left(\frac{u}{v}\right) = \frac{v du - u dv}{v^2} \quad (v \neq 0)\)</p>
+                    <p>4. <strong>一阶微分形式不变性：</strong> 无论 \(u\) 是自变量还是中间变量，都有 \(df(u) = f'(u) du\)</p>
+                    
+                    <div class="self-review">
+                        曾经我觉得微分公式就是导数公式加个 \(dx\)，没啥意思。直到遇到一阶微分形式不变性，才发现微分的威力：无论函数多复杂，微分形式都一样！这就像数学中的"以不变应万变"。
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 4.1：微分的直接计算</h3>
+                    <p>求函数 \(y = \ln(1 + e^{x^2})\) 的微分 \(dy\)。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer4-1')">显示答案</button>
+                    <div class="answer" id="answer4-1">
+                        <p><strong>解：</strong> 方法一：先求导再乘以 \(dx\)</p>
+                        <p>\[
+                        \begin{aligned}
+                        y' &= \frac{1}{1+e^{x^2}} \cdot (e^{x^2})' \\
+                        &= \frac{1}{1+e^{x^2}} \cdot e^{x^2} \cdot (x^2)' \\
+                        &= \frac{1}{1+e^{x^2}} \cdot e^{x^2} \cdot 2x \\
+                        &= \frac{2xe^{x^2}}{1+e^{x^2}}
+                        \end{aligned}
+                        \]</p>
+                        <p>所以 \(dy = y'dx = \frac{2xe^{x^2}}{1+e^{x^2}} dx\)。</p>
+                        
+                        <p>方法二：利用一阶微分形式不变性直接求微分：</p>
+                        <p>\[
+                        \begin{aligned}
+                        dy &= d[\ln(1+e^{x^2})] \\
+                        &= \frac{1}{1+e^{x^2}} d(1+e^{x^2}) \\
+                        &= \frac{1}{1+e^{x^2}} \cdot e^{x^2} d(x^2) \\
+                        &= \frac{1}{1+e^{x^2}} \cdot e^{x^2} \cdot 2x dx \\
+                        &= \frac{2xe^{x^2}}{1+e^{x^2}} dx
+                        \end{aligned}
+                        \]</p>
+                        <p>两种方法结果一致，但方法二更直接，体现了微分运算的简洁性。</p>
+                    </div>
+                </div>
+                
+                <div class="exercise">
+                    <h3><i class="fas fa-pencil-alt"></i> 练习题 4.2：微分的近似计算应用</h3>
+                    <p>利用微分近似计算 \(\sqrt[3]{8.02}\) 的值。</p>
+                    <button class="show-answer" onclick="toggleAnswer('answer4-2')">显示答案</button>
+                    <div class="answer" id="answer4-2">
+                        <p><strong>解：</strong> 设 \(f(x) = \sqrt[3]{x} = x^{1/3}\)，要计算 \(f(8.02)\)</p>
+                        <p>取 \(x_0 = 8\)，\(\Delta x = 0.02\)，则 \(f(8) = \sqrt[3]{8} = 2\)</p>
+                        <p>先求导数：\(f'(x) = \frac{1}{3}x^{-2/3}\)，所以 \(f'(8) = \frac{1}{3} \cdot 8^{-2/3} = \frac{1}{3} \cdot \frac{1}{4} = \frac{1}{12}\)</p>
+                        <p>根据微分近似公式：\(\Delta y \approx dy = f'(x_0) \Delta x\)</p>
+                        <p>所以 \(f(8.02) \approx f(8) + f'(8) \cdot 0.02 = 2 + \frac{1}{12} \times 0.02 = 2 + \frac{0.02}{12} = 2 + 0.001666... \approx 2.00167\)</p>
+                        <p><strong>验证：</strong> 实际值 \(\sqrt[3]{8.02} \approx 2.001665\)，误差非常小！</p>
+                        <p><strong>应用：</strong> 这种近似计算在工程、物理中非常有用，当计算复杂或无法精确计算时，微分近似能快速给出足够精确的结果。</p>
+                    </div>
+                </div>
+                
+                <div class="error-tip">
+                    <h4><i class="fas fa-exclamation-triangle"></i> 易错点提醒：微分的"四大误解"</h4>
+                    <p>1. <strong>误解一：</strong> 微分 \(dy\) 就是增量 \(\Delta y\) → 错！\(dy\) 只是 \(\Delta y\) 的线性主部，两者有误差。</p>
+                    <p>2. <strong>误解二：</strong> 微分公式忘记写 \(dx\) → 微分必须有 \(dx\)，就像导数必须有自变量一样。</p>
+                    <p>3. <strong>误解三：</strong> 可微与可导的区别 → 对于一元函数，两者等价；对于多元函数，可微要求更高。</p>
+                    <p>4. <strong>误解四：</strong> 微分近似计算时，\(\Delta x\) 取得太大 → \(\Delta x\) 越小，近似越精确！</p>
+                </div>
+                
+                <button class="btn" onclick="markAsMastered('section4')"><i class="fas fa-check-circle"></i> 标记本节为已掌握</button>
+            </section>
+        </main>
+        
+        <aside class="sidebar">
+            <h2><i class="fas fa-list"></i> 章节导航</h2>
+            <ul class="chapter-nav">
+                <li><a href="#section1" class="active"><i class="fas fa-calculator"></i> 第一节：导数概念</a></li>
+                <li><a href="#section2"><i class="fas fa-project-diagram"></i> 第二节：求导法则</a></li>
+                <li><a href="#section3"><i class="fas fa-sort-amount-up"></i> 第三节：高阶导数</a></li>
+                <li><a href="#section4"><i class="fas fa-ruler-combined"></i> 第四节：微分</a></li>
+            </ul>
+            
+            <h2 style="margin-top: 40px;"><i class="fas fa-lightbulb"></i> 本章核心思想</h2>
+            <div class="definition" style="margin-top: 15px;">
+                <p><strong>导数</strong>：变化率，切线的斜率，瞬时速度</p>
+                <p><strong>微分</strong>：增量的线性主部，局部线性逼近</p>
+                <p><strong>关系</strong>：可导 ⇔ 可微（一元函数）</p>
+                <p><strong>高阶导数</strong>：导数的导数，变化率的变化率...</p>
+            </div>
+            
+            <h2 style="margin-top: 40px;"><i class="fas fa-brain"></i> 记忆口诀大集合</h2>
+            <div class="self-review" style="margin-top: 15px;">
+                <p>"导数为零驻点寻，可能极值藏其中"</p>
+                <p>"前导后不导，后导前不导，乘积法则要记牢"</p>
+                <p>"上导下不导，减下导上不导，分母平方不能少"</p>
+                <p>"链式法则剥洋葱，一层一层往里攻"</p>
+                <p>"可导一定连续，连续未必可导"</p>
+            </div>
+            
+            <h2 style="margin-top: 40px;"><i class="fas fa-check-circle"></i> 掌握程度检测</h2>
+            <div class="exercise" style="margin-top: 15px;">
+                <p id="mastered-list">尚未掌握任何知识点</p>
+                <p>已掌握: <span id="mastered-display">0</span>/12 个知识点</p>
+                <button class="btn" onclick="checkAllKnowledge()" style="width:100%; margin-top:15px;">全面检测掌握程度</button>
+                <button class="btn" onclick="resetProgress()" style="width:100%; margin-top:10px; background: #666;">重置学习进度</button>
+            </div>
+            
+            <h2 style="margin-top: 40px;"><i class="fas fa-gamepad"></i> 导数小游戏</h2>
+            <div class="exercise" style="margin-top: 15px;">
+                <p>快速判断对错：</p>
+                <p>1. 可导一定连续 ( )</p>
+                <p>2. 连续一定可导 ( )</p>
+                <p>3. (sin x)' = cos x ( )</p>
+                <p>4. (e^x)' = e^x ( )</p>
+                <p>5. 微分就是导数 ( )</p>
+                <button class="show-answer" onclick="showGameAnswers()" style="width:100%;">查看答案</button>
+                <div id="game-answers" class="answer"></div>
+            </div>
+        </aside>
+    </div>
+    
+    <footer>
+        <p>© 2023 高等数学学习助手 | 同济大学第七版/第八版上册第二章：导数与微分</p>
+        <p>注：本内容以幽默风趣、知识点自我检讨的方式编写，旨在帮助大学生轻松理解高等数学概念</p>
+        <p style="margin-top: 15px; font-size: 0.8rem; color: #888;">"数学不会欺骗你，因为数学根本不在乎你懂不懂" — 改编自某数学家名言</p>
+    </footer>
+
+    <script>
+        // 初始化掌握状态
+        let masteredSections = new Set();
+        
+        // 更新进度条
+        function updateProgress() {
+            const sections = document.querySelectorAll('.card');
+            const currentSection = document.querySelector('.card:target') || sections[0];
+            const sectionIndex = Array.from(sections).indexOf(currentSection);
+            const progress = ((sectionIndex + 1) / sections.length) * 100;
+            
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress-text').textContent = Math.round(progress) + '%';
+            
+            // 更新导航活动状态
+            document.querySelectorAll('.chapter-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const activeLink = document.querySelector(`.chapter-nav a[href="#${currentSection.id}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // 更新掌握数量
+            updateMasteredCount();
+        }
+        
+        // 初始化进度条
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            initDerivativeGraph();
+            initChainRuleGraph();
+            initHigherOrderGraph();
+            initDifferentialGraph();
+            updateChainRuleDemo();
+        });
+        
+        // 监听hash变化（锚点链接）
+        window.addEventListener('hashchange', updateProgress);
+        
+        // 显示/隐藏答案
+        function toggleAnswer(answerId) {
+            const answer = document.getElementById(answerId);
+            answer.classList.toggle('show');
+            const button = event.target;
+            button.textContent = answer.classList.contains('show') ? '隐藏答案' : '显示答案';
+        }
+        
+        // 标记为已掌握
+        function markAsMastered(sectionId) {
+            masteredSections.add(sectionId);
+            updateMasteredCount();
+            
+            // 更新按钮状态
+            const button = event.target;
+            button.innerHTML = '<i class="fas fa-check-double"></i> 已掌握';
+            button.style.background = '#4CAF50';
+            button.onclick = null;
+            
+            // 显示提示
+            alert('太棒了！你已经掌握了这一节的内容！\n\n记住：理解比死记硬背更重要，应用比理解更高级！');
+        }
+        
+        // 更新掌握数量显示
+        function updateMasteredCount() {
+            const totalSections = 4; // 4节
+            const mastered = masteredSections.size;
+            document.getElementById('mastered-count').textContent = mastered * 3; // 每节大约3个知识点
+            document.getElementById('mastered-display').textContent = mastered * 3;
+            
+            // 更新掌握列表
+            const masteredList = document.getElementById('mastered-list');
+            if (mastered === 0) {
+                masteredList.textContent = '尚未掌握任何知识点';
+                masteredList.style.color = '#666';
+            } else {
+                let listText = '已掌握: ';
+                if (masteredSections.has('section1')) listText += '导数概念、';
+                if (masteredSections.has('section2')) listText += '求导法则、';
+                if (masteredSections.has('section3')) listText += '高阶导数、';
+                if (masteredSections.has('section4')) listText += '微分、';
+                masteredList.textContent = listText.slice(0, -1); // 去掉最后的逗号
+                masteredList.style.color = '#4CAF50';
+            }
+        }
+        
+        // 全面检测
+        function checkAllKnowledge() {
+            const questions = [
+                "1. 导数的定义是什么？（瞬时变化率/切线斜率）",
+                "2. 可导和连续的关系？（可导⇒连续，连续⇏可导）",
+                "3. 乘积法则公式？（(uv)' = u'v + uv'）",
+                "4. 链式法则口诀？（外导内不导，乘以内导）",
+                "5. 高阶导数的意义？（变化率的变化率...）",
+                "6. 微分的定义？（增量的线性主部）",
+                "7. 可微与可导的关系？（一元函数中等价）",
+                "8. 一阶微分形式不变性？（df(u) = f'(u)du）"
+            ];
+            
+            let message = "本章核心知识点检测：\n\n";
+            questions.forEach((q, i) => {
+                message += q + "\n\n";
+            });
+            
+            message += `你的掌握情况：${masteredSections.size * 3}/12 个知识点\n`;
+            if (masteredSections.size >= 3) {
+                message += "优秀！继续保持！";
+            } else if (masteredSections.size >= 2) {
+                message += "不错，但还有提升空间！";
+            } else {
+                message += "加油，还需要多复习！";
+            }
+            
+            alert(message);
+        }
+        
+        // 重置进度
+        function resetProgress() {
+            if (confirm('确定要重置学习进度吗？')) {
+                masteredSections.clear();
+                updateMasteredCount();
+                
+                // 重置所有标记按钮
+                document.querySelectorAll('.btn').forEach(btn => {
+                    if (btn.textContent.includes('已掌握')) {
+                        btn.innerHTML = '<i class="fas fa-check-circle"></i> 标记本节为已掌握';
+                        btn.style.background = '';
+                        btn.onclick = function() {
+                            const sectionId = btn.closest('.card').id;
+                            markAsMastered(sectionId);
+                        };
+                    }
+                });
+                
+                alert('学习进度已重置！重新开始学习吧！');
+            }
+        }
+        
+        // 小游戏答案
+        function showGameAnswers() {
+            const answers = [
+                "1. 可导一定连续 (✓)",
+                "2. 连续一定可导 (✗) 反例：|x|在x=0处",
+                "3. (sin x)' = cos x (✓)",
+                "4. (e^x)' = e^x (✓)",
+                "5. 微分就是导数 (✗) 微分=导数×dx"
+            ];
+            
+            const container = document.getElementById('game-answers');
+            container.innerHTML = answers.join('<br>');
+            container.classList.add('show');
+        }
+        
+        // 导数图形初始化
+        let derivativeChart = null;
+        
+        function initDerivativeGraph() {
+            const ctx = document.getElementById('derivative-graph').getContext('2d');
+            const tangentSlider = document.getElementById('tangent-slider');
+            const tangentValue = document.getElementById('tangent-value');
+            
+            tangentSlider.addEventListener('input', function() {
+                tangentValue.textContent = parseFloat(this.value).toFixed(1);
+                updateDerivativeGraph();
+            });
+            
+            updateDerivativeGraph();
+        }
+        
+        function updateDerivativeGraph() {
+            const functionType = document.getElementById('function-select').value;
+            const tangentX = parseFloat(document.getElementById('tangent-slider').value);
+            
+            let func, derivative, funcName;
+            
+            switch(functionType) {
+                case 'x^2':
+                    func = x => x * x;
+                    derivative = x => 2 * x;
+                    funcName = 'f(x) = x²';
+                    break;
+                case 'sin(x)':
+                    func = x => Math.sin(x);
+                    derivative = x => Math.cos(x);
+                    funcName = 'f(x) = sin(x)';
+                    break;
+                case 'abs(x)':
+                    func = x => Math.abs(x);
+                    derivative = x => x > 0 ? 1 : (x < 0 ? -1 : NaN);
+                    funcName = 'f(x) = |x|';
+                    break;
+                case 'x^3':
+                    func = x => x * x * x;
+                    derivative = x => 3 * x * x;
+                    funcName = 'f(x) = x³';
+                    break;
+            }
+            
+            // 生成数据
+            const labels = [];
+            const data = [];
+            const tangentData = [];
+            
+            for (let x = -2; x <= 2; x += 0.1) {
+                labels.push(x.toFixed(1));
+                data.push(func(x));
+                
+                // 切线数据
+                if (Math.abs(x - tangentX) < 0.15) {
+                    const tangentY = func(tangentX) + derivative(tangentX) * (x - tangentX);
+                    tangentData.push({
+                        x: x,
+                        y: tangentY
+                    });
+                }
+            }
+            
+            // 创建或更新图表
+            const ctx = document.getElementById('derivative-graph').getContext('2d');
+            
+            if (derivativeChart) {
+                derivativeChart.destroy();
+            }
+            
+            derivativeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: funcName,
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }, {
+                        label: `切线 (x=${tangentX.toFixed(1)})`,
+                        data: tangentData.map(point => point.y),
+                        borderColor: '#f72585',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'x'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'f(x)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toFixed(2);
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 链式法则图形初始化
+        let chainRuleChart = null;
+        
+        function initChainRuleGraph() {
+            const stepSlider = document.getElementById('chain-step-slider');
+            const stepText = document.getElementById('chain-step-text');
+            
+            stepSlider.addEventListener('input', function() {
+                const steps = ['原始函数', '第一层', '第二层', '最终导数'];
+                stepText.textContent = steps[this.value];
+                updateChainRuleGraph();
+            });
+            
+            updateChainRuleGraph();
+        }
+        
+        function updateChainRuleGraph() {
+            const functionType = document.getElementById('chain-function-select').value;
+            const step = parseInt(document.getElementById('chain-step-slider').value);
+            
+            let func, derivative, steps, funcName;
+            
+            switch(functionType) {
+                case 'sin(2x)':
+                    func = x => Math.sin(2*x);
+                    derivative = x => 2 * Math.cos(2*x);
+                    steps = [
+                        'y = sin(2x)',
+                        '外层: sin(u), 内层: u=2x',
+                        '外层导: cos(u), 内层导: 2',
+                        'y\' = 2cos(2x)'
+                    ];
+                    funcName = 'sin(2x)';
+                    break;
+                case 'e^(x^2)':
+                    func = x => Math.exp(x*x);
+                    derivative = x => 2*x * Math.exp(x*x);
+                    steps = [
+                        'y = e^(x²)',
+                        '外层: e^u, 内层: u=x²',
+                        '外层导: e^u, 内层导: 2x',
+                        'y\' = 2xe^(x²)'
+                    ];
+                    funcName = 'e^(x²)';
+                    break;
+                case 'sqrt(1+x^2)':
+                    func = x => Math.sqrt(1 + x*x);
+                    derivative = x => x / Math.sqrt(1 + x*x);
+                    steps = [
+                        'y = √(1+x²)',
+                        '外层: √u, 内层: u=1+x²',
+                        '外层导: 1/(2√u), 内层导: 2x',
+                        'y\' = x/√(1+x²)'
+                    ];
+                    funcName = '√(1+x²)';
+                    break;
+                case 'ln(cos(x))':
+                    func = x => Math.log(Math.cos(x));
+                    derivative = x => -Math.tan(x);
+                    steps = [
+                        'y = ln(cos(x))',
+                        '外层: ln(u), 中间: u=cos(v), 内层: v=x',
+                        '外层导: 1/u, 中间导: -sin(v), 内层导: 1',
+                        'y\' = -tan(x)'
+                    ];
+                    funcName = 'ln(cos(x))';
+                    break;
+            }
+            
+            // 生成数据
+            const labels = [];
+            const data = [];
+            
+            let xMin = -2, xMax = 2;
+            if (functionType === 'ln(cos(x))') {
+                xMin = -1.5;
+                xMax = 1.5; // 避免cos(x)<=0
+            }
+            
+            for (let x = xMin; x <= xMax; x += 0.1) {
+                labels.push(x.toFixed(1));
+                data.push(func(x));
+            }
+            
+            // 创建或更新图表
+            const ctx = document.getElementById('chain-rule-graph').getContext('2d');
+            
+            if (chainRuleChart) {
+                chainRuleChart.destroy();
+            }
+            
+            chainRuleChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: funcName,
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'x'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'f(x)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        subtitle: {
+                            display: true,
+                            text: steps[step],
+                            font: {
+                                size: 14
+                            },
+                            padding: {
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${funcName}: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 高阶导数图形初始化
+        let higherOrderChart = null;
+        
+        function initHigherOrderGraph() {
+            const orderSlider = document.getElementById('order-slider');
+            const orderText = document.getElementById('order-text');
+            
+            orderSlider.addEventListener('input', function() {
+                const order = parseInt(this.value);
+                const orders = ['原函数 (0阶)', '一阶导数', '二阶导数', '三阶导数', '四阶导数'];
+                orderText.textContent = orders[order];
+                updateHigherOrderGraph();
+            });
+            
+            updateHigherOrderGraph();
+        }
+        
+        function updateHigherOrderGraph() {
+            const functionType = document.getElementById('higher-order-function').value;
+            const order = parseInt(document.getElementById('order-slider').value);
+            
+            let funcs = [], labels = [];
+            
+            switch(functionType) {
+                case 'sin(x)':
+                    funcs = [
+                        x => Math.sin(x),
+                        x => Math.cos(x),
+                        x => -Math.sin(x),
+                        x => -Math.cos(x),
+                        x => Math.sin(x)
+                    ];
+                    labels = ['sin(x)', 'cos(x)', '-sin(x)', '-cos(x)', 'sin(x)'];
+                    break;
+                case 'e^x':
+                    funcs = [
+                        x => Math.exp(x),
+                        x => Math.exp(x),
+                        x => Math.exp(x),
+                        x => Math.exp(x),
+                        x => Math.exp(x)
+                    ];
+                    labels = ['e^x', 'e^x', 'e^x', 'e^x', 'e^x'];
+                    break;
+                case 'x^3':
+                    funcs = [
+                        x => x*x*x,
+                        x => 3*x*x,
+                        x => 6*x,
+                        x => 6,
+                        x => 0
+                    ];
+                    labels = ['x³', '3x²', '6x', '6', '0'];
+                    break;
+                case 'cos(x)':
+                    funcs = [
+                        x => Math.cos(x),
+                        x => -Math.sin(x),
+                        x => -Math.cos(x),
+                        x => Math.sin(x),
+                        x => Math.cos(x)
+                    ];
+                    labels = ['cos(x)', '-sin(x)', '-cos(x)', 'sin(x)', 'cos(x)'];
+                    break;
+            }
+            
+            // 生成数据
+            const xLabels = [];
+            const data = [];
+            
+            for (let x = -2; x <= 2; x += 0.1) {
+                xLabels.push(x.toFixed(1));
+                data.push(funcs[order](x));
+            }
+            
+            // 创建或更新图表
+            const ctx = document.getElementById('higher-order-graph').getContext('2d');
+            
+            if (higherOrderChart) {
+                higherOrderChart.destroy();
+            }
+            
+            higherOrderChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xLabels,
+                    datasets: [{
+                        label: labels[order],
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'x'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'y'
+                            }
+                        }
+                    },
+                    plugins: {
+                        subtitle: {
+                            display: true,
+                            text: `${order}阶导数: ${labels[order]}`,
+                            font: {
+                                size: 14
+                            },
+                            padding: {
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${labels[order]}: ${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 微分图形初始化
+        let differentialChart = null;
+        
+        function initDifferentialGraph() {
+            const baseSlider = document.getElementById('diff-base-slider');
+            const baseValue = document.getElementById('diff-base-value');
+            const dxSlider = document.getElementById('diff-dx-slider');
+            const dxValue = document.getElementById('diff-dx-value');
+            
+            baseSlider.addEventListener('input', function() {
+                baseValue.textContent = parseFloat(this.value).toFixed(1);
+                updateDifferentialGraph();
+            });
+            
+            dxSlider.addEventListener('input', function() {
+                dxValue.textContent = parseFloat(this.value).toFixed(1);
+                updateDifferentialGraph();
+            });
+            
+            updateDifferentialGraph();
+        }
+        
+        function updateDifferentialGraph() {
+            const functionType = document.getElementById('diff-function-select').value;
+            const x0 = parseFloat(document.getElementById('diff-base-slider').value);
+            const dx = parseFloat(document.getElementById('diff-dx-slider').value);
+            const x1 = x0 + dx;
+            
+            let func, derivative, funcName;
+            
+            switch(functionType) {
+                case 'x^2':
+                    func = x => x * x;
+                    derivative = x => 2 * x;
+                    funcName = 'f(x) = x²';
+                    break;
+                case 'sin(x)':
+                    func = x => Math.sin(x);
+                    derivative = x => Math.cos(x);
+                    funcName = 'f(x) = sin(x)';
+                    break;
+                case 'e^x':
+                    func = x => Math.exp(x);
+                    derivative = x => Math.exp(x);
+                    funcName = 'f(x) = e^x';
+                    break;
+                case 'sqrt(x)':
+                    func = x => Math.sqrt(x);
+                    derivative = x => 1/(2*Math.sqrt(x));
+                    funcName = 'f(x) = √x';
+                    break;
+            }
+            
+            // 计算值
+            const y0 = func(x0);
+            const y1 = func(x1);
+            const dy = derivative(x0) * dx;
+            const deltaY = y1 - y0;
+            
+            // 生成数据
+            const labels = [];
+            const funcData = [];
+            const tangentData = [];
+            
+            let xMin = Math.min(x0, x1) - 0.5;
+            let xMax = Math.max(x0, x1) + 0.5;
+            
+            if (functionType === 'sqrt(x)') {
+                xMin = Math.max(0, xMin); // √x定义域为x≥0
+            }
+            
+            for (let x = xMin; x <= xMax; x += 0.1) {
+                labels.push(x.toFixed(1));
+                funcData.push(func(x));
+                
+                // 切线数据
+                const tangentY = y0 + derivative(x0) * (x - x0);
+                tangentData.push(tangentY);
+            }
+            
+            // 创建或更新图表
+            const ctx = document.getElementById('differential-graph').getContext('2d');
+            
+            if (differentialChart) {
+                differentialChart.destroy();
+            }
+            
+            differentialChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: funcName,
+                        data: funcData,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }, {
+                        label: '切线 (近似线性)',
+                        data: tangentData,
+                        borderColor: '#f72585',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
+                    }, {
+                        label: `Δy = ${deltaY.toFixed(3)}`,
+                        data: Array(labels.length).fill(null),
+                        backgroundColor: 'rgba(76, 201, 240, 0.5)',
+                        borderColor: 'rgba(76, 201, 240, 0.5)',
+                        borderWidth: 0,
+                        pointRadius: 0
+                    }, {
+                        label: `dy = ${dy.toFixed(3)}`,
+                        data: Array(labels.length).fill(null),
+                        backgroundColor: 'rgba(248, 150, 30, 0.5)',
+                        borderColor: 'rgba(248, 150, 30, 0.5)',
+                        borderWidth: 0,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'x'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'f(x)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        subtitle: {
+                            display: true,
+                            text: `Δx = ${dx.toFixed(1)}, Δy = ${deltaY.toFixed(3)}, dy = ${dy.toFixed(3)}, 误差 = ${Math.abs(deltaY - dy).toFixed(3)}`,
+                            font: {
+                                size: 14
+                            },
+                            padding: {
+                                bottom: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex < 2) {
+                                        return context.dataset.label + ': ' + context.parsed.y.toFixed(2);
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 添加特殊点标注
+            differentialChart.data.datasets[2].data[labels.indexOf(x0.toFixed(1))] = y0;
+            differentialChart.data.datasets[2].data[labels.indexOf(x1.toFixed(1))] = y1;
+            
+            differentialChart.data.datasets[3].data[labels.indexOf(x0.toFixed(1))] = y0;
+            differentialChart.data.datasets[3].data[labels.indexOf(x1.toFixed(1))] = y0 + dy;
+            
+            differentialChart.update();
+        }
+        
+        // 链式法则演示文本
+        function updateChainRuleDemo() {
+            const select = document.getElementById('chain-rule-select');
+            const demo = document.getElementById('chain-rule-demo');
+            let content = '';
+            
+            switch(select.value) {
+                case 'sin2x':
+                    content = `
+                        <p>对于 y = sin(2x)：</p>
+                        <p>令 u = 2x，则 y = sin(u)</p>
+                        <p>$$\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx} = \cos(u) \cdot 2 = 2\cos(2x)$$</p>
+                        <p><small>比喻：就像剥洋葱，先剥sin，再剥2x</small></p>
+                    `;
+                    break;
+                case 'sqrtcosx':
+                    content = `
+                        <p>对于 y = √cos(x)：</p>
+                        <p>令 u = cos(x)，则 y = √u = u^{1/2}</p>
+                        <p>$$\frac{dy}{dx} = \frac{1}{2}u^{-1/2} \cdot (-\sin(x)) = -\frac{\sin(x)}{2\sqrt{\cos(x)}}$$</p>
+                        <p><small>比喻：先开方，再cos，最后x，从外到内剥三层</small></p>
+                    `;
+                    break;
+                case 'exp3x':
+                    content = `
+                        <p>对于 y = e^{3x²}：</p>
+                        <p>令 u = 3x²，则 y = e^u</p>
+                        <p>$$\frac{dy}{dx} = e^u \cdot 6x = 6x e^{3x^2}$$</p>
+                        <p><small>比喻：e函数是外套，3x²是内衬，x是最里面的T恤</small></p>
+                    `;
+                    break;
+            }
+            
+            demo.innerHTML = content;
+            
+            // 重新渲染MathJax
+            if (window.MathJax) {
+                MathJax.typesetPromise([demo]);
+            }
+        }
+    </script>
+</body>
+</html>
