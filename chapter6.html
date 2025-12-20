@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高数第六章：定积分应用完全指南 | 同济七版/八版</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .math-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            font-size: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .math-bg span {
+            margin: 10px;
+            font-family: 'Cambria Math', serif;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        .emoji {
+            font-size: 1.8rem;
+            margin-right: 10px;
+        }
+        
+        .chapter-intro {
+            background: var(--light);
+            padding: 25px;
+            margin: 20px;
+            border-radius: 15px;
+            border-left: 6px solid var(--primary);
+        }
+        
+        .intro-quote {
+            font-size: 1.2rem;
+            color: var(--dark);
+            font-style: italic;
+            text-align: center;
+            margin: 10px 0 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed var(--primary);
+        }
+        
+        .section {
+            margin: 30px;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+        
+        h2 {
+            color: var(--primary);
+            border-bottom: 3px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: var(--dark);
+            margin: 15px 0;
+            padding-left: 10px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .knowledge-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid var(--warning);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .card-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .formula-box {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+            font-family: 'Cambria Math', serif;
+            font-size: 1.2rem;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.1);
+        }
+        
+        .formula-important {
+            background: linear-gradient(135deg, #fff9e6, #ffeaa7);
+            border-color: var(--warning);
+        }
+        
+        .thought-bubble {
+            background: #e8f4fc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 20px;
+            border: 2px solid #a5d8ff;
+            position: relative;
+        }
+        
+        .thought-bubble:before {
+            content: "💭";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            font-size: 1.5rem;
+            background: white;
+            padding: 5px;
+            border-radius: 50%;
+        }
+        
+        .exercise-box {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 15px;
+            border: 2px solid #81c784;
+        }
+        
+        .answer-box {
+            background: #f1f8e9;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4caf50;
+            display: none;
+        }
+        
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-danger {
+            background: var(--accent);
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .graph-container {
+            width: 100%;
+            height: 350px;
+            margin: 25px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: white;
+            position: relative;
+            border: 2px solid #ddd;
+        }
+        
+        .hand-drawn-graph {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: white;
+        }
+        
+        .graph-axis {
+            position: absolute;
+            background: #333;
+        }
+        
+        .graph-axis-x {
+            width: 80%;
+            height: 3px;
+            bottom: 20%;
+            left: 10%;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .graph-axis-y {
+            width: 3px;
+            height: 60%;
+            bottom: 20%;
+            left: 10%;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .graph-text {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            background: rgba(255,255,255,0.8);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .graph-legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            z-index: 10;
+        }
+        
+        .graph-legend-item {
+            display: flex;
+            align-items: center;
+            margin: 3px 0;
+        }
+        
+        .graph-legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border: 1px solid #333;
+        }
+        
+        .coordinate-system {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .coordinate-item {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--primary);
+        }
+        
+        .warning-box {
+            background: #ffebee;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #f44336;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            overflow-x: auto;
+            background: var(--dark);
+            padding: 0;
+            margin: 0;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .tab {
+            padding: 18px 25px;
+            color: white;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab:hover {
+            background: #34495e;
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            border-bottom: 3px solid var(--secondary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .micro-element-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .demo-steps {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .demo-step {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin: 10px;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            line-height: 30px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--dark);
+            color: white;
+            margin-top: 40px;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section {
+                margin: 15px;
+                padding: 20px;
+            }
+            
+            .graph-container {
+                height: 300px;
+            }
+            
+            .coordinate-item {
+                min-width: 100%;
+            }
+            
+            .tab {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="math-bg">
+                <span>∫</span><span>∑</span><span>π</span><span>∞</span><span>≈</span><span>∂</span>
+                <span>∫</span><span>∑</span><span>π</span><span>∞</span><span>≈</span><span>∂</span>
+            </div>
+            <h1><span class="emoji">📐</span>第六章：定积分的应用完全指南</h1>
+            <p class="subtitle">同济大学第七版/第八版上册 | 微元法全方位解析</p>
+            <p style="margin-top: 15px; font-size: 1rem; opacity: 0.9;">"微元法不是魔法，但能帮你解决所有积分应用问题！"</p>
+        </header>
+        
+        <div class="chapter-intro">
+            <h2><span class="emoji">🎯</span>本章核心思想</h2>
+            <p>定积分的应用核心就是<strong>微元法</strong>！不管面积、体积、弧长还是物理问题，都是"先找微元，再积分"！</p>
+            <div class="intro-quote">
+                "微元法就像搭积木：先做小积木（微元），再把所有小积木拼起来（积分）！"
+            </div>
+            <p><strong>关键：</strong> 找到正确的微元表达式 dQ = f(x)dx，然后积分 Q = ∫ dQ</p>
+        </div>
+        
+        <!-- 导航标签 -->
+        <div class="nav-tabs">
+            <div class="tab active" onclick="showTab(0)">微元法核心</div>
+            <div class="tab" onclick="showTab(1)">面积计算</div>
+            <div class="tab" onclick="showTab(2)">体积计算</div>
+            <div class="tab" onclick="showTab(3)">弧长计算</div>
+            <div class="tab" onclick="showTab(4)">物理应用</div>
+            <div class="tab" onclick="showTab(5)">总结趣闻</div>
+        </div>
+        
+        <!-- 标签1: 微元法核心 -->
+        <div class="tab-content active" id="tab1">
+            <div class="section">
+                <h2><span class="emoji">🔑</span>微元法：定积分应用的核心</h2>
+                
+                <div class="knowledge-card">
+                    <div class="card-title">
+                        <span class="card-icon">💡</span>
+                        <h3>微元法四步走</h3>
+                    </div>
+                    
+                    <div class="micro-element-demo">
+                        <div class="demo-steps">
+                            <div class="demo-step">
+                                <div class="step-number">1</div>
+                                <h4>建立坐标系</h4>
+                                <p>选择合适原点，确定积分变量</p>
+                                <p style="color: #666; font-size: 0.9rem;">关键第一步！</p>
+                            </div>
+                            <div class="demo-step">
+                                <div class="step-number">2</div>
+                                <h4>取微元</h4>
+                                <p>在[x, x+dx]上取代表性微元</p>
+                                <p style="color: #666; font-size: 0.9rem;">微元形状要简单</p>
+                            </div>
+                            <div class="demo-step">
+                                <div class="step-number">3</div>
+                                <h4>近似表达</h4>
+                                <p>用简单情况近似微元上的量</p>
+                                <p style="color: #666; font-size: 0.9rem;">dQ = f(x)dx</p>
+                            </div>
+                            <div class="demo-step">
+                                <div class="step-number">4</div>
+                                <h4>积分求和</h4>
+                                <p>Q = ∫ dQ，注意积分限</p>
+                                <p style="color: #666; font-size: 0.9rem;">从a积到b</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="thought-bubble">
+                        <p><strong>自我检讨：</strong> 曾经我以为微元法就是"dx前面加个积分号"，后来发现关键在于<strong>找到正确的微元表达式dQ</strong>！就像做菜，关键不是翻炒，而是调料比例！</p>
+                    </div>
+                    
+                    <div class="formula-box formula-important">
+                        <p><strong>核心公式：</strong> \( Q = \int_a^b dQ \)</p>
+                        <p>其中 \( dQ = f(x)dx \) 是所求量 \( Q \) 的微元</p>
+                    </div>
+                    
+                    <div class="graph-container" id="microElementGraph">
+                        <!-- 微元法示意图 -->
+                    </div>
+                    
+                    <div class="warning-box">
+                        <p><strong>微元法三大原则：</strong></p>
+                        <ol>
+                            <li><strong>整体性：</strong> 微元必须能"拼成"整体</li>
+                            <li><strong>近似性：</strong> 微元上用简单情况近似</li>
+                            <li><strong>精确性：</strong> 误差必须是dx的高阶无穷小</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 标签2: 面积计算 -->
+        <div class="tab-content" id="tab2">
+            <div class="section">
+                <h2><span class="emoji">📏</span>面积计算：三种坐标系的微元法</h2>
+                
+                <div class="knowledge-card">
+                    <div class="card-title">
+                        <span class="card-icon">💡</span>
+                        <h3>面积计算的微元思想</h3>
+                    </div>
+                    
+                    <div class="thought-bubble">
+                        <p><strong>关键理解：</strong> 不管什么坐标系，面积微元都是"一小块面积"，积分就是"把所有小块加起来"！就像拼图，不管什么形状，都是一小块一小块拼的！</p>
+                    </div>
+                    
+                    <div class="coordinate-system">
+                        <!-- 直角坐标 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">📐</span>
+                                <h4>直角坐标系</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p><strong>面积微元：</strong> \( dS = |f(x) - g(x)| dx \)</p>
+                                <p><strong>总面积：</strong> \( S = \int_a^b |f(x) - g(x)| dx \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="areaRectGraph">
+                                <!-- 直角坐标面积示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题1：</strong> 求由 \( y = x^2 \) 和 \( y = 2x \) 所围图形的面积。</p>
+                                <button class="btn" onclick="toggleAnswer('area1')">显示答案</button>
+                                <div class="answer-box" id="area1">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 求交点：\( x^2 = 2x \) ⇒ \( x=0, x=2 \)</p>
+                                    <p>2. 在[0,2]上，\( 2x \ge x^2 \)</p>
+                                    <p>3. 面积微元：\( dS = (2x - x^2)dx \)</p>
+                                    <p>4. 总面积：\( S = \int_0^2 (2x - x^2)dx = \left[ x^2 - \frac{x^3}{3} \right]_0^2 = \frac{4}{3} \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 参数方程 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">🔄</span>
+                                <h4>参数方程</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p>曲线 \( \begin{cases} x = \varphi(t) \\ y = \psi(t) \end{cases} \)</p>
+                                <p><strong>面积微元：</strong> \( dS = \psi(t) \varphi'(t) dt \)</p>
+                                <p><strong>总面积：</strong> \( S = \int_{\alpha}^{\beta} \psi(t) \varphi'(t) dt \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="areaParamGraph">
+                                <!-- 参数方程面积示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题2：</strong> 求摆线 \( \begin{cases} x = a(t-\sin t) \\ y = a(1-\cos t) \end{cases} \) (0≤t≤2π)与x轴围成的面积。</p>
+                                <button class="btn" onclick="toggleAnswer('area2')">显示答案</button>
+                                <div class="answer-box" id="area2">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 面积微元：\( dS = y(t) x'(t) dt = a(1-\cos t) \cdot a(1-\cos t) dt \)</p>
+                                    <p>2. 总面积：\( S = \int_0^{2\pi} a^2(1-\cos t)^2 dt \)</p>
+                                    <p>3. 计算得：\( S = 3\pi a^2 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 极坐标 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">🌀</span>
+                                <h4>极坐标系</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p>曲线 \( r = r(\theta) \)</p>
+                                <p><strong>面积微元：</strong> \( dS = \frac{1}{2} r^2(\theta) d\theta \)</p>
+                                <p><strong>总面积：</strong> \( S = \frac{1}{2} \int_{\alpha}^{\beta} r^2(\theta) d\theta \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="areaPolarGraph">
+                                <!-- 极坐标面积示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题3：</strong> 求心形线 \( r = a(1 + \cos\theta) \) 所围面积。</p>
+                                <button class="btn" onclick="toggleAnswer('area3')">显示答案</button>
+                                <div class="answer-box" id="area3">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 面积微元：\( dS = \frac{1}{2} [a(1+\cos\theta)]^2 d\theta \)</p>
+                                    <p>2. 由对称性：\( S = \frac{1}{2} \int_0^{2\pi} \frac{1}{2} a^2(1+\cos\theta)^2 d\theta \)</p>
+                                    <p>3. 计算得：\( S = \frac{3}{2}\pi a^2 \)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <p><strong>面积计算易错点：</strong></p>
+                        <ol>
+                            <li><strong>直角坐标：</strong> 忘记取绝对值，没判断哪条曲线在上面</li>
+                            <li><strong>参数方程：</strong> 积分上下限是参数t的范围，不是x的范围</li>
+                            <li><strong>极坐标：</strong> 忘记1/2系数！面积微元是扇形不是矩形</li>
+                            <li><strong>通用：</strong> 先画图！先画图！先画图！</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 标签3: 体积计算 -->
+        <div class="tab-content" id="tab3">
+            <div class="section">
+                <h2><span class="emoji">🧊</span>体积计算：旋转体与平行截面</h2>
+                
+                <div class="knowledge-card">
+                    <div class="card-title">
+                        <span class="card-icon">💡</span>
+                        <h3>体积计算的微元思想</h3>
+                    </div>
+                    
+                    <div class="thought-bubble">
+                        <p><strong>内心OS：</strong> 绕x轴转、绕y轴转、平行截面...我的脑子也在转！直到我发现，它们都是"切片求和"的思想！就像切面包，一片一片切，再算总体积！</p>
+                    </div>
+                    
+                    <div class="coordinate-system">
+                        <!-- 旋转体体积 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">🔄</span>
+                                <h4>旋转体体积</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p><strong>绕x轴（圆盘法）：</strong></p>
+                                <p>体积微元：\( dV = \pi [f(x)]^2 dx \)</p>
+                                <p>总体积：\( V = \pi \int_a^b [f(x)]^2 dx \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="volumeRotateGraph">
+                                <!-- 旋转体体积示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题4：</strong> 求 \( y = \sin x \) (0≤x≤π)绕x轴旋转所得体积。</p>
+                                <button class="btn" onclick="toggleAnswer('volume1')">显示答案</button>
+                                <div class="answer-box" id="volume1">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 体积微元：\( dV = \pi (\sin x)^2 dx \)</p>
+                                    <p>2. 总体积：\( V = \pi \int_0^\pi \sin^2 x dx \)</p>
+                                    <p>3. 计算得：\( V = \frac{\pi^2}{2} \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 柱壳法 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">📦</span>
+                                <h4>柱壳法（绕y轴）</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p><strong>体积微元：</strong> \( dV = 2\pi x f(x) dx \)</p>
+                                <p><strong>总体积：</strong> \( V = 2\pi \int_a^b x f(x) dx \)</p>
+                                <p>理解：圆柱壳体积 = 周长×高×厚度</p>
+                            </div>
+                            
+                            <div class="graph-container" id="volumeShellGraph">
+                                <!-- 柱壳法示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题5：</strong> 求 \( y = x^2 \) (0≤x≤1)绕y轴旋转所得体积。</p>
+                                <button class="btn" onclick="toggleAnswer('volume2')">显示答案</button>
+                                <div class="answer-box" id="volume2">
+                                    <p><strong>解（柱壳法）：</strong></p>
+                                    <p>1. 体积微元：\( dV = 2\pi x \cdot x^2 dx = 2\pi x^3 dx \)</p>
+                                    <p>2. 总体积：\( V = 2\pi \int_0^1 x^3 dx = \frac{\pi}{2} \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 平行截面 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">🍞</span>
+                                <h4>平行截面体积</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p>已知截面面积 \( A(x) \)</p>
+                                <p><strong>体积微元：</strong> \( dV = A(x) dx \)</p>
+                                <p><strong>总体积：</strong> \( V = \int_a^b A(x) dx \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="volumeSectionGraph">
+                                <!-- 平行截面体积示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题6：</strong> 一立体垂直于x轴的截面都是半径为√x的圆，x∈[0,4]，求体积。</p>
+                                <button class="btn" onclick="toggleAnswer('volume3')">显示答案</button>
+                                <div class="answer-box" id="volume3">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 截面面积：\( A(x) = \pi (\sqrt{x})^2 = \pi x \)</p>
+                                    <p>2. 体积微元：\( dV = \pi x dx \)</p>
+                                    <p>3. 总体积：\( V = \pi \int_0^4 x dx = 8\pi \)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <p><strong>体积计算要点：</strong></p>
+                        <ol>
+                            <li><strong>选择合适的方法：</strong> 圆盘法 vs 柱壳法</li>
+                            <li><strong>确定旋转轴：</strong> 绕x轴还是绕y轴？</li>
+                            <li><strong>微元形状：</strong> 圆盘、柱壳还是薄片？</li>
+                            <li><strong>对称性：</strong> 利用对称性简化计算</li>
+                            <li><strong>参数方程：</strong> 注意dx = x'(t)dt</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 标签4: 弧长计算 -->
+        <div class="tab-content" id="tab4">
+            <div class="section">
+                <h2><span class="emoji">📐</span>弧长计算：勾股定理的积分形式</h2>
+                
+                <div class="knowledge-card">
+                    <div class="card-title">
+                        <span class="card-icon">💡</span>
+                        <h3>弧长计算的微元思想</h3>
+                    </div>
+                    
+                    <div class="thought-bubble">
+                        <p><strong>关键理解：</strong> 弧长公式看起来五花八门，其实都是勾股定理的积分形式！\( ds^2 = dx^2 + dy^2 \) 永远不会变！</p>
+                    </div>
+                    
+                    <div class="coordinate-system">
+                        <!-- 直角坐标弧长 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">📐</span>
+                                <h4>直角坐标系</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p>曲线 \( y = f(x) \)</p>
+                                <p><strong>弧微分：</strong> \( ds = \sqrt{1 + [f'(x)]^2} dx \)</p>
+                                <p><strong>弧长：</strong> \( s = \int_a^b \sqrt{1 + [f'(x)]^2} dx \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="arcRectGraph">
+                                <!-- 直角坐标弧长示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题7：</strong> 求 \( y = \frac{2}{3}x^{3/2} \) (0≤x≤3)的弧长。</p>
+                                <button class="btn" onclick="toggleAnswer('arc1')">显示答案</button>
+                                <div class="answer-box" id="arc1">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 求导：\( y' = x^{1/2} \)</p>
+                                    <p>2. 弧微分：\( ds = \sqrt{1 + x} dx \)</p>
+                                    <p>3. 弧长：\( s = \int_0^3 \sqrt{1+x} dx = \frac{14}{3} \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 参数方程弧长 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">🔄</span>
+                                <h4>参数方程</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p>曲线 \( \begin{cases} x = \varphi(t) \\ y = \psi(t) \end{cases} \)</p>
+                                <p><strong>弧微分：</strong> \( ds = \sqrt{[\varphi'(t)]^2 + [\psi'(t)]^2} dt \)</p>
+                                <p><strong>弧长：</strong> \( s = \int_{\alpha}^{\beta} \sqrt{[\varphi'(t)]^2 + [\psi'(t)]^2} dt \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="arcParamGraph">
+                                <!-- 参数方程弧长示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题8：</strong> 求摆线 \( \begin{cases} x = a(t-\sin t) \\ y = a(1-\cos t) \end{cases} \) (0≤t≤2π)的弧长。</p>
+                                <button class="btn" onclick="toggleAnswer('arc2')">显示答案</button>
+                                <div class="answer-box" id="arc2">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 求导：\( x' = a(1-\cos t) \), \( y' = a\sin t \)</p>
+                                    <p>2. 弧微分：\( ds = \sqrt{a^2(1-\cos t)^2 + a^2\sin^2 t} dt = 2a|\sin\frac{t}{2}| dt \)</p>
+                                    <p>3. 弧长：\( s = \int_0^{2\pi} 2a|\sin\frac{t}{2}| dt = 8a \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 极坐标弧长 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">🌀</span>
+                                <h4>极坐标系</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p>曲线 \( r = r(\theta) \)</p>
+                                <p><strong>弧微分：</strong> \( ds = \sqrt{r^2(\theta) + [r'(\theta)]^2} d\theta \)</p>
+                                <p><strong>弧长：</strong> \( s = \int_{\alpha}^{\beta} \sqrt{r^2(\theta) + [r'(\theta)]^2} d\theta \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="arcPolarGraph">
+                                <!-- 极坐标弧长示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题9：</strong> 求心形线 \( r = a(1 + \cos\theta) \) 的弧长。</p>
+                                <button class="btn" onclick="toggleAnswer('arc3')">显示答案</button>
+                                <div class="answer-box" id="arc3">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 求导：\( r' = -a\sin\theta \)</p>
+                                    <p>2. 弧微分：\( ds = \sqrt{a^2(1+\cos\theta)^2 + a^2\sin^2\theta} d\theta = 2a|\cos\frac{\theta}{2}| d\theta \)</p>
+                                    <p>3. 弧长：\( s = \int_0^{2\pi} 2a|\cos\frac{\theta}{2}| d\theta = 8a \)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <p><strong>弧长计算易错点：</strong></p>
+                        <ol>
+                            <li><strong>公式记错：</strong> 直角坐标是√(1+(y')²)，不是√(1+y')</li>
+                            <li><strong>极坐标公式：</strong> 是√(r²+(r')²)，不是√(r²-(r')²)</li>
+                            <li><strong>绝对值：</strong> 开根号后注意取绝对值</li>
+                            <li><strong>参数方程：</strong> 积分变量是参数t，不是x</li>
+                            <li><strong>对称性：</strong> 利用对称性简化计算</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 标签5: 物理应用 -->
+        <div class="tab-content" id="tab5">
+            <div class="section">
+                <h2><span class="emoji">⚛️</span>物理应用：微元法的实战演练</h2>
+                
+                <div class="knowledge-card">
+                    <div class="card-title">
+                        <span class="card-icon">💡</span>
+                        <h3>物理应用的核心思想</h3>
+                    </div>
+                    
+                    <div class="thought-bubble">
+                        <p><strong>自我检讨：</strong> 物理应用最怕单位搞错！就像做菜放错盐——公式都对，结果全废！记住：<strong>单位！单位！单位！</strong></p>
+                    </div>
+                    
+                    <div class="coordinate-system">
+                        <!-- 变力做功 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">⚡</span>
+                                <h4>变力做功</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p><strong>功的微元：</strong> \( dW = F(x) dx \)</p>
+                                <p><strong>总功：</strong> \( W = \int_a^b F(x) dx \)</p>
+                                <p>胡克定律：\( F = kx \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="workGraph">
+                                <!-- 变力做功示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题10：</strong> 弹簧原长0.2m，k=100N/m。求从0.25m拉伸到0.35m所做的功。</p>
+                                <button class="btn" onclick="toggleAnswer('work1')">显示答案</button>
+                                <div class="answer-box" id="work1">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 伸长量：0.05m→0.15m</p>
+                                    <p>2. 功微元：\( dW = 100x dx \)</p>
+                                    <p>3. 总功：\( W = \int_{0.05}^{0.15} 100x dx = 1.0 \, \text{J} \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 水压力 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">💧</span>
+                                <h4>水压力</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p><strong>压强：</strong> \( p = \rho g h \)</p>
+                                <p><strong>压力微元：</strong> \( dP = \rho g h(x) f(x) dx \)</p>
+                                <p><strong>总压力：</strong> \( P = \int_a^b \rho g h(x) f(x) dx \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="pressureGraph">
+                                <!-- 水压力示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题11：</strong> 矩形闸门宽3m，高4m，顶部在水面下2m。求水压力(ρ=1000kg/m³, g=9.8m/s²)。</p>
+                                <button class="btn" onclick="toggleAnswer('pressure1')">显示答案</button>
+                                <div class="answer-box" id="pressure1">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 深度范围：h∈[2,6]m</p>
+                                    <p>2. 压力微元：\( dP = 1000×9.8×h×3 dh \)</p>
+                                    <p>3. 总压力：\( P = \int_2^6 29400h dh = 470.4 \, \text{kN} \)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 引力 -->
+                        <div class="coordinate-item">
+                            <div class="card-title">
+                                <span class="card-icon">🌍</span>
+                                <h4>万有引力</h4>
+                            </div>
+                            
+                            <div class="formula-box">
+                                <p><strong>引力定律：</strong> \( F = G\frac{m_1 m_2}{r^2} \)</p>
+                                <p><strong>引力微元：</strong> \( dF = \frac{Gm dm}{r^2} \)</p>
+                                <p><strong>总引力：</strong> \( F = \int \frac{Gm dm}{r^2} \)</p>
+                            </div>
+                            
+                            <div class="graph-container" id="gravityGraph">
+                                <!-- 引力示意图 -->
+                            </div>
+                            
+                            <div class="exercise-box">
+                                <p><strong>练习题12：</strong> 细杆长2m，质量4kg。在延长线上距杆1m处有质点2kg。求引力(G=6.67×10⁻¹¹)。</p>
+                                <button class="btn" onclick="toggleAnswer('gravity1')">显示答案</button>
+                                <div class="answer-box" id="gravity1">
+                                    <p><strong>解：</strong></p>
+                                    <p>1. 杆位置：x∈[1,3]m</p>
+                                    <p>2. 引力微元：\( dF = \frac{G×2×2 dx}{x^2} \)</p>
+                                    <p>3. 总引力：\( F = \int_1^3 \frac{4G}{x^2} dx ≈ 1.78×10^{-10} \, \text{N} \)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <p><strong>物理应用要点：</strong></p>
+                        <ol>
+                            <li><strong>建立坐标系：</strong> 原点放在哪很重要！</li>
+                            <li><strong>单位统一：</strong> 所有物理量用国际单位制</li>
+                            <li><strong>微元表达式：</strong> 找到正确的dQ = f(x)dx</li>
+                            <li><strong>积分限：</strong> 对应物理过程的起止位置</li>
+                            <li><strong>矢量性：</strong> 引力等矢量要分解计算</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 标签6: 总结趣闻 -->
+        <div class="tab-content" id="tab6">
+            <div class="section">
+                <h2><span class="emoji">📚</span>总结与数学史趣闻</h2>
+                
+                <div class="knowledge-card">
+                    <div class="card-title">
+                        <span class="card-icon">✅</span>
+                        <h3>微元法思想总结</h3>
+                    </div>
+                    
+                    <div class="formula-box formula-important">
+                        <p><strong>统一公式：</strong> \( Q = \int_a^b dQ \)</p>
+                        <p>其中 \( dQ = f(x)dx \) 是所求量 \( Q \) 的微元</p>
+                    </div>
+                    
+                    <div class="micro-element-demo">
+                        <div class="demo-steps">
+                            <div class="demo-step">
+                                <h4>面积微元</h4>
+                                <p>直角坐标：\( dS = |f-g|dx \)</p>
+                                <p>极坐标：\( dS = \frac{1}{2}r^2 d\theta \)</p>
+                            </div>
+                            <div class="demo-step">
+                                <h4>体积微元</h4>
+                                <p>圆盘法：\( dV = \pi f^2 dx \)</p>
+                                <p>柱壳法：\( dV = 2\pi x f dx \)</p>
+                            </div>
+                            <div class="demo-step">
+                                <h4>弧长微元</h4>
+                                <p>直角坐标：\( ds = \sqrt{1+(y')^2}dx \)</p>
+                                <p>参数方程：\( ds = \sqrt{(x')^2+(y')^2}dt \)</p>
+                            </div>
+                            <div class="demo-step">
+                                <h4>物理量微元</h4>
+                                <p>做功：\( dW = F dx \)</p>
+                                <p>压力：\( dP = \rho g h dA \)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="thought-bubble">
+                        <p><strong>考试秘籍：</strong></p>
+                        <p>1. <strong>识别问题类型：</strong> 面积？体积？弧长？物理量？</p>
+                        <p>2. <strong>选择坐标系：</strong> 直角坐标？参数方程？极坐标？</p>
+                        <p>3. <strong>写出微元：</strong> 找到正确的dQ = f(x)dx</p>
+                        <p>4. <strong>确定积分限：</strong> 画图！画图！画图！</p>
+                        <p>5. <strong>计算积分：</strong> 注意单位和对称性</p>
+                    </div>
+                    
+                    <div class="exercise-box">
+                        <h3><span class="emoji">📜</span>数学史趣闻：微积分的发展</h3>
+                        <p><strong>阿基米德（公元前287-前212）</strong>：穷竭法的先驱，用内接多边形逼近圆面积，已有微积分思想萌芽。</p>
+                        <p><strong>刘徽（公元3世纪）</strong>：中国数学家，用割圆术计算圆周率，通过不断增加多边形边数逼近圆。</p>
+                        <p><strong>牛顿（1643-1727）和莱布尼茨（1646-1716）</strong>：分别独立发明微积分，建立了系统的微积分理论。</p>
+                        <p><strong>柯西（1789-1857）</strong>：给微积分奠定了严格的逻辑基础，提出了极限的严格定义。</p>
+                        <p><strong>启示：</strong> 伟大的数学思想往往在不同文明中独立产生，微积分是人类智慧的结晶！</p>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h3><span class="emoji">⚠️</span>期末考点预测</h3>
+                        <ol>
+                            <li><strong>必考：</strong> 直角坐标下的面积和旋转体体积</li>
+                            <li><strong>常考：</strong> 参数方程下的弧长，极坐标下的面积</li>
+                            <li><strong>可能考：</strong> 物理应用（变力做功、水压力）</li>
+                            <li><strong>难点：</strong> 不同坐标系间的转换</li>
+                            <li><strong>技巧：</strong> 利用对称性、奇偶性简化计算</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <footer>
+                    <p>高等数学第六章：定积分的应用完全指南 | 同济大学第七版/第八版上册</p>
+                    <p>设计：一个被微积分折磨过但最终战胜它的学长</p>
+                    <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+                        记住：微元法是核心，坐标系是工具，积分是手段，理解是目的！加油，高数人！ 💪
+                    </p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签切换功能
+        let currentTab = 0;
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        function showTab(index) {
+            // 更新标签状态
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabs[index].classList.add('active');
+            
+            // 更新内容显示
+            tabContents.forEach(content => content.classList.remove('active'));
+            tabContents[index].classList.add('active');
+            
+            currentTab = index;
+            
+            // 绘制当前标签的图形
+            drawCurrentGraph();
+            
+            // 更新MathJax渲染
+            if (window.MathJax) {
+                setTimeout(() => MathJax.typesetPromise(), 100);
+            }
+        }
+        
+        // 答案显示/隐藏
+        function toggleAnswer(answerId) {
+            const answer = document.getElementById(answerId);
+            const isVisible = answer.style.display === 'block';
+            
+            // 切换当前答案的显示状态
+            answer.style.display = isVisible ? 'none' : 'block';
+            
+            // 更新MathJax渲染
+            if (window.MathJax) {
+                setTimeout(() => MathJax.typesetPromise(), 100);
+            }
+        }
+        
+        // 绘制图形函数
+        function drawCurrentGraph() {
+            // 先清空所有图形容器（防止重复）
+            document.querySelectorAll('.graph-container').forEach(container => {
+                if (container.children.length > 0 && container.children[0].classList.contains('hand-drawn-graph')) {
+                    container.innerHTML = '';
+                }
+            });
+            
+            switch(currentTab) {
+                case 0:
+                    drawMicroElementGraph();
+                    break;
+                case 1:
+                    drawAreaRectGraph();
+                    drawAreaParamGraph();
+                    drawAreaPolarGraph();
+                    break;
+                case 2:
+                    drawVolumeRotateGraph();
+                    drawVolumeShellGraph();
+                    drawVolumeSectionGraph();
+                    break;
+                case 3:
+                    drawArcRectGraph();
+                    drawArcParamGraph();
+                    drawArcPolarGraph();
+                    break;
+                case 4:
+                    drawWorkGraph();
+                    drawPressureGraph();
+                    drawGravityGraph();
+                    break;
+            }
+        }
+        
+        // 1. 微元法示意图 - 简化曲线，减少蓝色曲线
+        function drawMicroElementGraph() {
+            const container = document.getElementById('microElementGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <div class="graph-axis graph-axis-x"></div>
+                    <div class="graph-axis graph-axis-y"></div>
+                    <div class="graph-text" style="bottom: 18%; left: 8%;">O</div>
+                    <div class="graph-text" style="bottom: 18%; left: 85%;">x</div>
+                    <div class="graph-text" style="top: 40%; left: 8%;">f(x)</div>
+                    <div class="graph-text" style="bottom: 18%; left: 30%;">a</div>
+                    <div class="graph-text" style="bottom: 18%; left: 60%;">b</div>
+                    
+                    <!-- 微元示意 -->
+                    <div style="position: absolute; bottom: 20%; left: 40%; width: 10%; height: 45%; background: rgba(231, 76, 60, 0.3); border: 2px solid #e74c3c;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e74c3c; font-weight: bold; font-size: 16px;">dQ</div>
+                    </div>
+                    
+                    <!-- 函数示意点 -->
+                    <div style="position: absolute; width: 8px; height: 8px; bottom: 65%; left: 35%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 8px; height: 8px; bottom: 55%; left: 45%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 8px; height: 8px; bottom: 45%; left: 55%; background: #3498db; border-radius: 50%;"></div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="bottom: 15%; left: 45%;">dx</div>
+                    <div class="graph-text" style="bottom: 65%; left: 35%;">f(x)</div>
+                    <div class="graph-text" style="top: 10%; left: 20%; color: #2c3e50;">微元法：Q = ∫ₐᵇ f(x) dx</div>
+                    
+                    <!-- 微元法公式 -->
+                    <div style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); display: flex; gap: 20px;">
+                        <div style="text-align: center; background: rgba(231, 76, 60, 0.1); padding: 10px; border-radius: 5px; border: 1px solid #e74c3c;">
+                            <div style="font-weight: bold; color: #e74c3c;">dQ = f(x)dx</div>
+                            <div style="font-size: 12px;">微元表达式</div>
+                        </div>
+                        <div style="text-align: center; background: rgba(46, 204, 113, 0.1); padding: 10px; border-radius: 5px; border: 1px solid #27ae60;">
+                            <div style="font-weight: bold; color: #27ae60;">Q = ∫ dQ</div>
+                            <div style="font-size: 12px;">积分求和</div>
+                        </div>
+                    </div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>函数 f(x)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(231, 76, 60, 0.3); border-color: #e74c3c;"></div>
+                            <span>微元 dQ = f(x)dx</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div style="color: #2c3e50; font-weight: bold;">核心思想：先找微元，再积分</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 2.1 直角坐标面积示意图 - 简化曲线
+        function drawAreaRectGraph() {
+            const container = document.getElementById('areaRectGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <div class="graph-axis graph-axis-x"></div>
+                    <div class="graph-axis graph-axis-y"></div>
+                    <div class="graph-text" style="bottom: 18%; left: 8%;">O</div>
+                    <div class="graph-text" style="bottom: 18%; left: 85%;">x</div>
+                    <div class="graph-text" style="top: 40%; left: 8%;">y</div>
+                    
+                    <!-- 两条曲线的示意点 -->
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 65%; left: 20%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 60%; left: 30%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 55%; left: 40%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 50%; left: 50%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 45%; left: 60%; background: #3498db; border-radius: 50%;"></div>
+                    
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 50%; left: 20%; background: #9b59b6; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 48%; left: 30%; background: #9b59b6; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 46%; left: 40%; background: #9b59b6; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 44%; left: 50%; background: #9b59b6; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 42%; left: 60%; background: #9b59b6; border-radius: 50%;"></div>
+                    
+                    <!-- 面积微元 -->
+                    <div style="position: absolute; bottom: 20%; left: 40%; width: 10%; height: 45%; background: rgba(46, 204, 113, 0.3); border: 2px solid #27ae60;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #27ae60; font-weight: bold; font-size: 14px;">dS</div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="bottom: 15%; left: 45%;">dx</div>
+                    <div class="graph-text" style="bottom: 65%; left: 35%; color: #3498db;">f(x)</div>
+                    <div class="graph-text" style="bottom: 50%; left: 35%; color: #9b59b6;">g(x)</div>
+                    <div class="graph-text" style="top: 15%; left: 20%; color: #27ae60;">dS = |f(x)-g(x)| dx</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>曲线 y = f(x)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #9b59b6; border-radius: 50%;"></div>
+                            <span>曲线 y = g(x)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(46, 204, 113, 0.3); border-color: #27ae60;"></div>
+                            <span>面积微元 dS</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 2.2 参数方程面积示意图 - 简化曲线
+        function drawAreaParamGraph() {
+            const container = document.getElementById('areaParamGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <div class="graph-axis graph-axis-x"></div>
+                    <div class="graph-axis graph-axis-y"></div>
+                    <div class="graph-text" style="bottom: 18%; left: 8%;">O</div>
+                    <div class="graph-text" style="bottom: 18%; left: 85%;">x</div>
+                    <div class="graph-text" style="top: 40%; left: 8%;">y</div>
+                    
+                    <!-- 参数曲线的示意点 -->
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 60%; left: 20%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 55%; left: 30%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 50%; left: 40%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 45%; left: 50%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 40%; left: 60%; background: #3498db; border-radius: 50%;"></div>
+                    
+                    <!-- 参数点 -->
+                    <div style="position: absolute; width: 20px; height: 20px; bottom: 45%; left: 40%; background: #f39c12; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 10px;">t</div>
+                    
+                    <!-- 面积微元 -->
+                    <div style="position: absolute; bottom: 30%; left: 40%; width: 10%; height: 35%; background: rgba(46, 204, 113, 0.3); border: 2px solid #27ae60;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #27ae60; font-weight: bold; font-size: 14px;">dS</div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 15%; left: 20%; color: #2c3e50;">x=φ(t), y=ψ(t)</div>
+                    <div class="graph-text" style="top: 25%; left: 20%; color: #f39c12;">参数 t ∈ [α,β]</div>
+                    <div class="graph-text" style="bottom: 40%; left: 45%; color: #27ae60;">dS = y(t) x'(t) dt</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>参数曲线</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #f39c12; border-radius: 50%;"></div>
+                            <span>参数点 t</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(46, 204, 113, 0.3); border-color: #27ae60;"></div>
+                            <span>面积微元 dS</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 2.3 极坐标面积示意图 - 简化曲线
+        function drawAreaPolarGraph() {
+            const container = document.getElementById('areaPolarGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 极坐标网格 -->
+                    <div style="position: absolute; width: 60%; height: 60%; top: 20%; left: 20%;">
+                        <!-- 极轴 -->
+                        <div style="position: absolute; width: 100%; height: 2px; top: 50%; background: #333; transform-origin: left center; transform: rotate(0deg);"></div>
+                        
+                        <!-- 极坐标曲线示意点 -->
+                        <div style="position: absolute; width: 6px; height: 6px; top: 45%; left: 55%; background: #3498db; border-radius: 50%;"></div>
+                        <div style="position: absolute; width: 6px; height: 6px; top: 40%; left: 65%; background: #3498db; border-radius: 50%;"></div>
+                        <div style="position: absolute; width: 6px; height: 6px; top: 35%; left: 75%; background: #3498db; border-radius: 50%;"></div>
+                        
+                        <!-- 扇形面积微元 -->
+                        <div style="position: absolute; width: 0; height: 0; border-left: 50px solid transparent; border-right: 50px solid transparent; border-bottom: 30px solid rgba(46, 204, 113, 0.4); top: 35%; left: 25%; transform: rotate(45deg); border-left: 0; border-right: 50px solid rgba(46, 204, 113, 0.4); border-bottom: 30px solid transparent; border-top: 30px solid transparent;"></div>
+                    </svg>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 10%; left: 50%; transform: translateX(-50%); color: #2c3e50;">r = r(θ)</div>
+                    <div class="graph-text" style="top: 40%; left: 60%; color: #27ae60;">dS = ½ r² dθ</div>
+                    <div class="graph-text" style="bottom: 20%; left: 50%; transform: translateX(-50%);">S = ½ ∫ r²(θ) dθ</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>极坐标曲线 r(θ)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(46, 204, 113, 0.4);"></div>
+                            <span>面积微元 dS = ½ r² dθ</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div style="color: #2c3e50;">注意：½ 系数！</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 3.1 旋转体体积示意图 - 简化曲线
+        function drawVolumeRotateGraph() {
+            const container = document.getElementById('volumeRotateGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 旋转体示意 -->
+                    <div style="position: absolute; width: 40%; height: 50%; bottom: 25%; left: 30%;">
+                        <!-- 旋转体 -->
+                        <div style="position: absolute; width: 100%; height: 100%; border-radius: 50% 50% 0 0; background: linear-gradient(to bottom, rgba(52,152,219,0.1), rgba(52,152,219,0.2)); border: 2px solid #3498db;"></div>
+                        
+                        <!-- 旋转轴 -->
+                        <div style="position: absolute; width: 100%; height: 3px; top: 50%; background: #e74c3c; border: 1px solid #c0392b;"></div>
+                        <div class="graph-text" style="top: 48%; left: 5%; color: #e74c3c; font-size: 12px;">x轴</div>
+                        
+                        <!-- 圆盘微元 -->
+                        <div style="position: absolute; width: 60%; height: 15%; top: 40%; left: 20%; background: rgba(231, 76, 60, 0.4); border: 2px solid #e74c3c; border-radius: 50%;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e74c3c; font-weight: bold; font-size: 12px;">dV</div>
+                        </div>
+                        
+                        <!-- 半径示意 -->
+                        <div style="position: absolute; width: 30%; height: 2px; top: 40%; left: 35%; background: #2c3e50;"></div>
+                        <div class="graph-text" style="top: 38%; left: 45%; font-size: 12px;">f(x)</div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 15%; left: 20%; color: #2c3e50;">旋转体：y = f(x)绕x轴旋转</div>
+                    <div class="graph-text" style="top: 40%; left: 50%; transform: translateX(-50%); color: #e74c3c;">dV = π[f(x)]² dx</div>
+                    <div class="graph-text" style="bottom: 15%; left: 50%; transform: translateX(-50%);">圆盘法</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(52,152,219,0.2); border-color: #3498db;"></div>
+                            <span>旋转体</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #e74c3c;"></div>
+                            <span>旋转轴 (x轴)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(231, 76, 60, 0.4); border-color: #e74c3c; border-radius: 50%;"></div>
+                            <span>体积微元 dV</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 3.2 柱壳法示意图 - 简化曲线
+        function drawVolumeShellGraph() {
+            const container = document.getElementById('volumeShellGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 柱壳示意 -->
+                    <div style="position: absolute; width: 60%; height: 50%; bottom: 25%; left: 20%;">
+                        <!-- 圆柱壳 -->
+                        <div style="position: absolute; width: 20%; height: 100%; left: 20%; background: rgba(231, 76, 60, 0.3); border: 2px solid #e74c3c; border-radius: 10px;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e74c3c; font-weight: bold; font-size: 12px;">dV</div>
+                        </div>
+                        
+                        <!-- 标注 -->
+                        <div style="position: absolute; width: 10%; height: 2px; bottom: 50%; left: 20%; background: #333;"></div>
+                        <div class="graph-text" style="bottom: 48%; left: 25%; font-size: 12px;">x</div>
+                        
+                        <div style="position: absolute; width: 2px; height: 30%; left: 30%; bottom: 25%; background: #333;"></div>
+                        <div class="graph-text" style="bottom: 40%; left: 32%; font-size: 12px;">f(x)</div>
+                        
+                        <!-- 旋转轴 -->
+                        <div style="position: absolute; width: 3px; height: 100%; left: 5%; background: #27ae60; border: 1px solid #219653;"></div>
+                        <div class="graph-text" style="top: 10%; left: 8%; color: #27ae60; font-size: 12px;">y轴</div>
+                    </div>
+                    
+                    <!-- 标注公式 -->
+                    <div class="graph-text" style="top: 15%; left: 20%; color: #2c3e50;">曲线 y = f(x)绕y轴旋转</div>
+                    <div class="graph-text" style="top: 40%; left: 50%; transform: translateX(-50%); color: #e74c3c;">dV = 2πx f(x) dx</div>
+                    <div class="graph-text" style="bottom: 15%; left: 50%; transform: translateX(-50%);">柱壳法</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(231, 76, 60, 0.3); border-color: #e74c3c;"></div>
+                            <span>体积微元 dV</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #27ae60;"></div>
+                            <span>旋转轴 (y轴)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div style="color: #2c3e50; font-size: 11px;">圆柱壳 = 周长×高×厚度</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 3.3 平行截面体积示意图
+        function drawVolumeSectionGraph() {
+            const container = document.getElementById('volumeSectionGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 平行截面示意 -->
+                    <div style="position: absolute; width: 80%; height: 60%; bottom: 20%; left: 10%;">
+                        <!-- 立体轮廓 -->
+                        <div style="position: absolute; width: 100%; height: 100%; background: linear-gradient(to right, rgba(52,152,219,0.1), rgba(52,152,219,0.1)); border: 2px solid #3498db; border-radius: 5px;"></div>
+                        
+                        <!-- 几个平行截面 -->
+                        <div style="position: absolute; width: 80%; height: 4%; top: 20%; left: 10%; background: rgba(231, 76, 60, 0.5);"></div>
+                        <div style="position: absolute; width: 75%; height: 4%; top: 40%; left: 12.5%; background: rgba(231, 76, 60, 0.5);"></div>
+                        <div style="position: absolute; width: 70%; height: 4%; top: 60%; left: 15%; background: rgba(231, 76, 60, 0.5);"></div>
+                        <div style="position: absolute; width: 65%; height: 4%; top: 80%; left: 17.5%; background: rgba(231, 76, 60, 0.5);"></div>
+                        
+                        <!-- 体积微元 -->
+                        <div style="position: absolute; width: 70%; height: 15%; top: 60%; left: 15%; background: rgba(46, 204, 113, 0.3); border: 2px solid #27ae60;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #27ae60; font-weight: bold; font-size: 12px;">dV</div>
+                        </div>
+                        
+                        <!-- 截面面积标注 -->
+                        <div class="graph-text" style="top: 58%; left: 45%; color: #e74c3c; font-size: 12px;">A(x)</div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 15%; left: 20%; color: #2c3e50;">平行截面立体</div>
+                    <div class="graph-text" style="top: 40%; left: 50%; transform: translateX(-50%); color: #e74c3c;">截面面积 A(x)</div>
+                    <div class="graph-text" style="bottom: 10%; left: 50%; transform: translateX(-50%); color: #27ae60;">dV = A(x) dx</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(52,152,219,0.1); border-color: #3498db;"></div>
+                            <span>立体轮廓</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(231, 76, 60, 0.5);"></div>
+                            <span>平行截面</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(46, 204, 113, 0.3); border-color: #27ae60;"></div>
+                            <span>体积微元 dV</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 4.1 直角坐标弧长示意图 - 简化
+        function drawArcRectGraph() {
+            const container = document.getElementById('arcRectGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <div class="graph-axis graph-axis-x"></div>
+                    <div class="graph-axis graph-axis-y"></div>
+                    <div class="graph-text" style="bottom: 18%; left: 8%;">O</div>
+                    <div class="graph-text" style="bottom: 18%; left: 85%;">x</div>
+                    <div class="graph-text" style="top: 40%; left: 8%;">y</div>
+                    
+                    <!-- 曲线的示意点 -->
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 60%; left: 20%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 55%; left: 30%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 50%; left: 40%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 45%; left: 50%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 40%; left: 60%; background: #3498db; border-radius: 50%;"></div>
+                    
+                    <!-- 弧微分 -->
+                    <div style="position: absolute; width: 12%; height: 12%; top: 60%; left: 40%;">
+                        <div style="position: absolute; width: 100%; height: 3px; background: #e74c3c; transform: rotate(45deg); top: 50%;"></div>
+                        <div style="position: absolute; width: 100%; height: 3px; background: #27ae60; top: 50%;"></div>
+                        <div style="position: absolute; width: 3px; height: 100%; background: #f39c12; left: 50%;"></div>
+                        
+                        <div class="graph-text" style="top: 45%; left: 25%; color: #e74c3c; font-size: 12px;">dx</div>
+                        <div class="graph-text" style="top: 60%; left: 55%; color: #27ae60; font-size: 12px;">dy</div>
+                        <div class="graph-text" style="top: 50%; left: 40%; color: #3498db; font-size: 12px;">ds</div>
+                    </div>
+                    
+                    <!-- 勾股定理 -->
+                    <div style="position: absolute; top: 15%; left: 20%; background: rgba(52,152,219,0.1); padding: 10px; border-radius: 5px; border: 1px solid #3498db;">
+                        <div style="font-weight: bold; color: #3498db;">勾股定理的积分形式</div>
+                        <div style="font-size: 14px;">ds² = dx² + dy²</div>
+                    </div>
+                    
+                    <!-- 标注公式 -->
+                    <div class="graph-text" style="bottom: 10%; left: 50%; transform: translateX(-50%);">ds = √(1 + [f'(x)]²) dx</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>曲线 y = f(x)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #e74c3c;"></div>
+                            <span>dx</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #27ae60;"></div>
+                            <span>dy</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #f39c12;"></div>
+                            <span>ds</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 4.2 参数方程弧长示意图 - 简化
+        function drawArcParamGraph() {
+            const container = document.getElementById('arcParamGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <div class="graph-axis graph-axis-x"></div>
+                    <div class="graph-axis graph-axis-y"></div>
+                    <div class="graph-text" style="bottom: 18%; left: 8%;">O</div>
+                    <div class="graph-text" style="bottom: 18%; left: 85%;">x</div>
+                    <div class="graph-text" style="top: 40%; left: 8%;">y</div>
+                    
+                    <!-- 参数曲线的示意点 -->
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 60%; left: 20%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 55%; left: 30%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 50%; left: 40%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 45%; left: 50%; background: #3498db; border-radius: 50%;"></div>
+                    
+                    <!-- 参数点 -->
+                    <div style="position: absolute; width: 20px; height: 20px; bottom: 45%; left: 40%; background: #f39c12; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 10px;">t</div>
+                    <div style="position: absolute; width: 20px; height: 20px; bottom: 55%; left: 50%; background: #f39c12; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 10px;">t+dt</div>
+                    
+                    <!-- 弧微分 -->
+                    <div style="position: absolute; width: 15%; height: 8%; top: 60%; left: 45%;">
+                        <div style="position: absolute; width: 100%; height: 3px; background: #e74c3c; transform: rotate(30deg); top: 50%;"></div>
+                        <div class="graph-text" style="top: 45%; left: 40%; color: #3498db; font-size: 12px;">ds</div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 15%; left: 20%; color: #2c3e50;">x=φ(t), y=ψ(t)</div>
+                    <div class="graph-text" style="top: 25%; left: 20%; color: #f39c12;">参数 t, t+dt</div>
+                    <div class="graph-text" style="bottom: 15%; left: 50%; transform: translateX(-50%);">ds = √([φ'(t)]² + [ψ'(t)]²) dt</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>参数曲线</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #f39c12; border-radius: 50%;"></div>
+                            <span>参数点</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #e74c3c;"></div>
+                            <span>弧微分 ds</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 4.3 极坐标弧长示意图 - 简化
+        function drawArcPolarGraph() {
+            const container = document.getElementById('arcPolarGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 极坐标示意 -->
+                    <div style="position: absolute; width: 60%; height: 60%; top: 20%; left: 20%;">
+                        <!-- 极轴 -->
+                        <div style="position: absolute; width: 100%; height: 2px; top: 50%; left: 0; background: #333; transform-origin: left center; transform: rotate(0deg);"></div>
+                        
+                        <!-- 极坐标曲线示意点 -->
+                        <div style="position: absolute; width: 6px; height: 6px; top: 45%; left: 55%; background: #3498db; border-radius: 50%;"></div>
+                        <div style="position: absolute; width: 6px; height: 6px; top: 40%; left: 65%; background: #3498db; border-radius: 50%;"></div>
+                        <div style="position: absolute; width: 6px; height: 6px; top: 35%; left: 75%; background: #3498db; border-radius: 50%;"></div>
+                        
+                        <!-- 弧微分 -->
+                        <div style="position: absolute; width: 30px; height: 30px; top: 40%; left: 60%;">
+                            <div style="position: absolute; width: 100%; height: 3px; background: #e74c3c; transform: rotate(20deg); top: 50%;"></div>
+                            <div class="graph-text" style="top: 45%; left: 40%; color: #e74c3c; font-size: 12px;">ds</div>
+                        </div>
+                        
+                        <!-- 角度标注 -->
+                        <div style="position: absolute; width: 20px; height: 20px; top: 45%; left: 50%; border: 2px solid #f39c12; border-radius: 50%;">
+                            <div style="position: absolute; width: 10px; height: 2px; top: 50%; left: 50%; background: #f39c12; transform: rotate(45deg);"></div>
+                        </div>
+                        <div class="graph-text" style="top: 40%; left: 55%; color: #f39c12; font-size: 12px;">dθ</div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 15%; left: 50%; transform: translateX(-50%); color: #2c3e50;">r = r(θ)</div>
+                    <div class="graph-text" style="top: 40%; left: 60%; color: #e74c3c;">弧微分 ds</div>
+                    <div class="graph-text" style="bottom: 20%; left: 50%; transform: translateX(-50%);">ds = √(r² + [r']²) dθ</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>极坐标曲线 r(θ)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #e74c3c;"></div>
+                            <span>弧微分 ds</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #f39c12;"></div>
+                            <span>角度 dθ</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 5.1 变力做功示意图 - 改进弹簧表示
+        function drawWorkGraph() {
+            const container = document.getElementById('workGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 坐标系 -->
+                    <div class="graph-axis graph-axis-x"></div>
+                    <div class="graph-axis graph-axis-y"></div>
+                    <div class="graph-text" style="bottom: 18%; left: 8%;">O</div>
+                    <div class="graph-text" style="bottom: 18%; left: 85%;">x</div>
+                    <div class="graph-text" style="top: 40%; left: 8%;">F</div>
+                    
+                    <!-- 变力曲线的示意点 -->
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 60%; left: 20%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 58%; left: 30%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 56%; left: 40%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 54%; left: 50%; background: #3498db; border-radius: 50%;"></div>
+                    <div style="position: absolute; width: 6px; height: 6px; bottom: 52%; left: 60%; background: #3498db; border-radius: 50%;"></div>
+                    
+                    <!-- 功微元 -->
+                    <div style="position: absolute; bottom: 20%; left: 40%; width: 10%; height: 40%; background: rgba(46, 204, 113, 0.3); border: 2px solid #27ae60;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #27ae60; font-weight: bold; font-size: 12px;">dW</div>
+                    </div>
+                    
+                    <!-- 弹簧示意 - 改进 -->
+                    <div style="position: absolute; width: 30%; height: 15%; bottom: 40%; left: 10%;">
+                        <!-- 固定端 -->
+                        <div style="position: absolute; width: 5px; height: 100%; background: #333; left: 0;"></div>
+                        
+                        <!-- 弹簧线圈 -->
+                        <div style="position: absolute; width: 80%; height: 50%; top: 25%; left: 10%;">
+                            <div style="position: absolute; width: 15%; height: 100%; border: 2px solid #e74c3c; border-radius: 50%; left: 0%;"></div>
+                            <div style="position: absolute; width: 15%; height: 100%; border: 2px solid #e74c3c; border-radius: 50%; left: 15%;"></div>
+                            <div style="position: absolute; width: 15%; height: 100%; border: 2px solid #e74c3c; border-radius: 50%; left: 30%;"></div>
+                            <div style="position: absolute; width: 15%; height: 100%; border: 2px solid #e74c3c; border-radius: 50%; left: 45%;"></div>
+                        </div>
+                        
+                        <!-- 质点 -->
+                        <div style="position: absolute; width: 15px; height: 15px; background: #3498db; border-radius: 50%; top: 42.5%; left: 85%;"></div>
+                        
+                        <!-- 位移标注 -->
+                        <div style="position: absolute; width: 60%; height: 2px; top: 50%; left: 20%; background: #2c3e50;"></div>
+                        <div class="graph-text" style="top: 52%; left: 40%; font-size: 12px;">dx</div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 15%; left: 20%; color: #2c3e50;">变力 F(x) = kx</div>
+                    <div class="graph-text" style="top: 40%; left: 50%; transform: translateX(-50%); color: #27ae60;">dW = F(x) dx</div>
+                    <div class="graph-text" style="bottom: 10%; left: 50%; transform: translateX(-50%);">功 W = ∫ F(x) dx</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                            <span>变力 F(x)</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(46, 204, 113, 0.3); border-color: #27ae60;"></div>
+                            <span>功微元 dW</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #e74c3c;"></div>
+                            <span>弹簧</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 5.2 水压力示意图
+        function drawPressureGraph() {
+            const container = document.getElementById('pressureGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 水池示意 -->
+                    <div style="position: absolute; width: 80%; height: 70%; bottom: 15%; left: 10%;">
+                        <!-- 水面 -->
+                        <div style="position: absolute; width: 100%; height: 20%; top: 0; background: linear-gradient(to bottom, #3498db, #2980b9); border-radius: 5px 5px 0 0;">
+                            <div style="position: absolute; width: 100%; height: 5px; top: 90%; background: rgba(255,255,255,0.5);"></div>
+                        </div>
+                        
+                        <!-- 闸门 -->
+                        <div style="position: absolute; width: 20%; height: 60%; top: 20%; left: 40%; background: linear-gradient(to right, #95a5a6, #7f8c8d); border: 3px solid #2c3e50; border-radius: 3px;"></div>
+                        
+                        <!-- 压力微元 -->
+                        <div style="position: absolute; width: 20%; height: 15%; top: 40%; left: 40%; background: rgba(231, 76, 60, 0.4); border: 2px solid #e74c3c;">
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #e74c3c; font-weight: bold; font-size: 12px;">dP</div>
+                        </div>
+                        
+                        <!-- 水深标注 -->
+                        <div style="position: absolute; width: 2px; height: 40%; top: 20%; left: 35%; background: #333; border-left: 1px dashed #333;"></div>
+                        <div class="graph-text" style="top: 30%; left: 30%;">h</div>
+                        
+                        <!-- 水面线标注 -->
+                        <div style="position: absolute; width: 30%; height: 2px; top: 20%; left: 10%; background: #3498db;"></div>
+                        <div class="graph-text" style="top: 18%; left: 15%; color: #3498db;">水面</div>
+                        
+                        <!-- 压力箭头 -->
+                        <div style="position: absolute; width: 10%; height: 2px; top: 47.5%; left: 60%; background: #e74c3c;"></div>
+                        <div style="position: absolute; width: 0; height: 0; top: 45%; left: 70%; border-left: 8px solid #e74c3c; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+                    </div>
+                    
+                    <!-- 标注 -->
+                    <div class="graph-text" style="top: 10%; left: 20%; color: #2c3e50;">水压力 P = ρgh</div>
+                    <div class="graph-text" style="top: 25%; left: 60%; color: #e74c3c;">dP = ρg h(x) f(x) dx</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db;"></div>
+                            <span>水</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #95a5a6;"></div>
+                            <span>闸门</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: rgba(231, 76, 60, 0.4); border-color: #e74c3c;"></div>
+                            <span>压力微元 dP</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 5.3 引力示意图 - 改进距离表示
+        function drawGravityGraph() {
+            const container = document.getElementById('gravityGraph');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="hand-drawn-graph">
+                    <!-- 细杆和质点 -->
+                    <div style="position: absolute; width: 80%; height: 20%; top: 40%; left: 10%;">
+                        <!-- 细杆 -->
+                        <div style="position: absolute; width: 100%; height: 8px; background: linear-gradient(to right, #2c3e50, #34495e); top: 50%; border-radius: 4px;"></div>
+                        
+                        <!-- 质点 -->
+                        <div style="position: absolute; width: 25px; height: 25px; background: radial-gradient(circle at 30% 30%, #e74c3c, #c0392b); border-radius: 50%; top: 42.5%; left: -5%; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                            <div class="graph-text" style="top: -20px; left: 0; color: #e74c3c; font-size: 12px;">质点 m</div>
+                        </div>
+                        
+                        <!-- 距离标注 -->
+                        <div style="position: absolute; width: 10%; height: 2px; top: 50%; left: 0%; background: #333; border-top: 1px dashed #333;"></div>
+                        <div class="graph-text" style="top: 52%; left: 5%; font-size: 12px;">a</div>
+                        
+                        <!-- 微元 -->
+                        <div style="position: absolute; width: 8px; height: 15px; background: #3498db; top: 45%; left: 30%; border-radius: 2px;">
+                            <div class="graph-text" style="top: -15px; left: -5px; color: #3498db; font-size: 12px;">dm</div>
+                        </div>
+                        
+                        <!-- 距离 - 改进为虚线 -->
+                        <div style="position: absolute; width: 30%; height: 2px; top: 50%; left: 30%; background: #27ae60; border-top: 2px dashed #27ae60; transform: rotate(10deg);"></div>
+                        <div class="graph-text" style="top: 40%; left: 45%; color: #27ae60; font-size: 12px;">r</div>
+                        
+                        <!-- 引力箭头 -->
+                        <div style="position: absolute; width: 20%; height: 2px; top: 50%; left: 30%; background: #e74c3c; transform: rotate(10deg);"></div>
+                        <div style="position: absolute; width: 0; height: 0; top: 48%; left: 50%; border-left: 8px solid #e74c3c; border-top: 5px solid transparent; border-bottom: 5px solid transparent; transform: rotate(10deg);"></div>
+                    </div>
+                    
+                    <!-- 引力公式 -->
+                    <div style="position: absolute; top: 15%; left: 50%; transform: translateX(-50%); background: rgba(52,152,219,0.1); padding: 10px; border-radius: 5px; border: 1px solid #3498db;">
+                        <div style="font-weight: bold; color: #3498db;">万有引力定律</div>
+                        <div style="font-size: 14px;">F = G m₁m₂ / r²</div>
+                    </div>
+                    
+                    <!-- 微元公式 -->
+                    <div class="graph-text" style="bottom: 20%; left: 50%; transform: translateX(-50%); color: #27ae60;">dF = G m dm / r²</div>
+                    <div class="graph-text" style="bottom: 10%; left: 50%; transform: translateX(-50%);">总引力 F = ∫ dF</div>
+                    
+                    <div class="graph-legend">
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #2c3e50;"></div>
+                            <span>细杆</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #e74c3c; border-radius: 50%;"></div>
+                            <span>质点 m</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #3498db;"></div>
+                            <span>质量微元 dm</span>
+                        </div>
+                        <div class="graph-legend-item">
+                            <div class="graph-legend-color" style="background: #27ae60; border-top: 2px dashed #27ae60;"></div>
+                            <span>距离 r</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绘制初始图形
+            drawCurrentGraph();
+            
+            // 初始化MathJax
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        });
+    </script>
+</body>
+</html>
