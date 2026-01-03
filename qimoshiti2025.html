@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学试题与解答</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4a6fa5;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+        }
+        .question-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .section-title {
+            color: #4a6fa5;
+            border-left: 5px solid #4a6fa5;
+            padding-left: 15px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        .question:last-child {
+            border-bottom: none;
+        }
+        .question-text {
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .answer {
+            background-color: #f0f7ff;
+            border-left: 4px solid #3498db;
+            padding: 18px;
+            margin-top: 15px;
+            border-radius: 0 5px 5px 0;
+        }
+        .answer-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .answer-title:before {
+            content: "✓";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .option {
+            margin-bottom: 5px;
+            padding-left: 10px;
+        }
+        .correct-answer {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        .incorrect-answer {
+            color: #e74c3c;
+        }
+        .explanation {
+            color: #555;
+            font-size: 0.95em;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        .math {
+            font-family: "Cambria Math", "Times New Roman", serif;
+            font-size: 1.1em;
+        }
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .correction-note {
+            background-color: #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            border-left: 3px solid #fdcb6e;
+        }
+        .correction-note:before {
+            content: "注：";
+            font-weight: 600;
+            color: #e17055;
+        }
+        .method-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-top: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted #ccc;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .question-section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .answer {
+                background-color: #f9f9f9;
+            }
+            .correction-note {
+                background-color: #f9f9f9;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>高等数学试题与解答</h1>
+        <p>整理自试题图片（已根据更正信息更新）</p>
+    </div>
+
+    <div class="question-section">
+        <h2 class="section-title">一、判断题（共计10分，每题2分）</h2>
+        
+        <div class="question">
+            <div class="question-text">1. 数列 \(\{x_n\}\) 收敛，则数列 \(\{x_n\}\) 一定有界。</div>
+            <div class="answer">
+                <div class="answer-title">答案：正确</div>
+                <div class="explanation">
+                    收敛数列必有界，这是数列收敛的一个基本性质。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">2. 函数 \(f(x)\) 在 \(x_0\) 点可导，但 \(f(x)\) 在 \(x_0\) 点不一定连续。</div>
+            <div class="answer">
+                <div class="answer-title">答案：错误</div>
+                <div class="explanation">
+                    可导必连续，连续不一定可导。如果函数在一点可导，则它在该点一定连续。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">3. 若函数在点 \(x_0\) 处取得极值，则 \(x_0\) 为其稳定点。</div>
+            <div class="answer">
+                <div class="answer-title">答案：错误</div>
+                <div class="explanation">
+                    函数在点 \(x_0\) 处取得极值，且在该点可导，则 \(x_0\) 为稳定点（导数为零）。但如果函数在该点不可导，则可能取得极值但不是稳定点（如 \(f(x)=|x|\) 在 \(x=0\) 处）。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">4. 被积函数 \(f(x)\) 在区间 \(I\) 上连续，则 \(f(x)\) 在该区间上一定存在原函数。</div>
+            <div class="answer">
+                <div class="answer-title">答案：正确</div>
+                <div class="explanation">
+                    连续函数在其定义区间上一定存在原函数（不定积分）。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">5. 若函数 \(f(x)\) 在区间 \([a,b]\) 上仅有有限间断点，则 \(f(x)\) 在该区间上可积。</div>
+            <div class="answer">
+                <div class="answer-title">答案：错误（需增加有界条件）</div>
+                <div class="explanation">
+                    原命题不准确。正确的说法是：若函数 \(f(x)\) 在区间 \([a,b]\) 上<span class="highlight">有界</span>且仅有有限个间断点，则 \(f(x)\) 在该区间上可积（黎曼可积）。如果函数在间断点处无界（如无穷间断点），则不可积。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="question-section">
+        <h2 class="section-title">二、选择题（共计30分，每题2分）</h2>
+        
+        <div class="question">
+            <div class="question-text">6. 函数 \( f(x) = \sin(x^2 - x) \) 是（ ）。</div>
+            <div class="option">A. 有界函数</div>
+            <div class="option">B. 周期函数</div>
+            <div class="option">C. 奇函数</div>
+            <div class="option">D. 偶函数</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">A. 有界函数</span></div>
+                <div class="explanation">
+                    \(\sin u\) 是有界函数，值域为 \([-1,1]\)，无论 \(u=x^2-x\) 是什么形式，\(f(x)=\sin(x^2-x)\) 始终有界。检查奇偶性：\(f(-x)=\sin(x^2+x) \neq \pm f(x)\)，非奇非偶。\(x^2-x\) 不是线性函数，所以 \(f(x)\) 不是周期函数。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">7. 函数 \( f(x) = 
+                \begin{cases} 
+                \frac{\sin ax}{x}, & x \neq 0, \\ 
+                2, & x = 0 
+                \end{cases} \) 在区间 \((-\infty, +\infty)\) 内连续，\( a = (    ) \)。</div>
+            <div class="correction-note">根据更正信息修正了题目：当 \(x \neq 0\) 时为 \(\frac{\sin ax}{x}\)，当 \(x = 0\) 时为 \(2\)。</div>
+            <div class="option">A. -2</div>
+            <div class="option">B. 1</div>
+            <div class="option">C. 2</div>
+            <div class="option">D. -1</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">C. 2</span></div>
+                <div class="explanation">
+                    要使函数在 \(x=0\) 处连续，需满足 \(\lim\limits_{x \to 0} f(x) = f(0) = 2\)。<br>
+                    计算极限：\(\lim\limits_{x \to 0} \frac{\sin ax}{x} = \lim\limits_{x \to 0} \frac{a \cdot \sin ax}{ax} = a \cdot \lim\limits_{t \to 0} \frac{\sin t}{t} = a \cdot 1 = a\)。<br>
+                    所以需要 \(a = 2\)，才能使极限值为2等于 \(f(0)\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">8. 设 \( f(x) \) 在 \( x = x_0 \) 处可导，则 \( f'(x_0) = (    ) \)。</div>
+            <div class="option">A. \(\lim_{\Delta x \to 0} \frac{f(x_0 - \Delta x) - f(x_0)}{\Delta x}\)</div>
+            <div class="option">B. \(\lim_{x \to 0} \frac{f(x) - f(0)}{x}\)</div>
+            <div class="option">C. \(\lim_{\Delta x \to 0} \frac{f(x_0) - f(x_0 + \Delta x)}{\Delta x}\)</div>
+            <div class="option">D. \(\lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x}\)</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">D. \(\lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x}\)</span></div>
+                <div class="explanation">
+                    导数的定义是 \(f'(x_0)=\lim\limits_{\Delta x \to 0} \frac{f(x_0+\Delta x)-f(x_0)}{\Delta x}\)。选项A是左导数的相反数；选项B是 \(x_0=0\) 时的导数定义，但题目是 \(x_0\) 不一定为0；选项C是 \(-f'(x_0)\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">9. 曲线 \( y = \frac{x^2 + 1}{x - 1} \) 的垂直渐近线为（ ）。</div>
+            <div class="option">A. \( x = 1 \)</div>
+            <div class="option">B. \( x = 0 \)</div>
+            <div class="option">C. 无</div>
+            <div class="option">D. \( y = 1 \)</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">A. \( x = 1 \)</span></div>
+                <div class="explanation">
+                    垂直渐近线出现在分母为零而分子不为零的点。当 \(x=1\) 时，分母为零，分子为 \(1^2+1=2\neq 0\)，所以 \(x=1\) 是垂直渐近线。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">10. 设 \( y = x^n + e^x \)，则 \( y^{(n)} = \)（ ）。</div>
+            <div class="option">A. \( e^x \)</div>
+            <div class="option">B. \( n! \)</div>
+            <div class="option">C. \( n! + ne^x \)</div>
+            <div class="option">D. \( n! + e^x \)</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">D. \( n! + e^x \)</span></div>
+                <div class="explanation">
+                    \(y=x^n+e^x\)，对 \(x^n\) 求 \(n\) 阶导数为 \(n!\)，对 \(e^x\) 求任意阶导数仍为 \(e^x\)，所以 \(y^{(n)}=n!+e^x\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">11. 函数 \( y = \ln x \) 在点 \( (e, 1) \) 处的切线方程是（ ）。</div>
+            <div class="option">A. \( y - e = -e(x - 1) \)</div>
+            <div class="option">B. \( y = \frac{1}{e}x \)</div>
+            <div class="option">C. \( y - 1 = -e(x - e) \)</div>
+            <div class="option">D. \( y - e = \frac{1}{e}(x - 1) \)</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">B. \( y = \frac{1}{e}x \)</span></div>
+                <div class="explanation">
+                    \(y=\ln x\)，导数 \(y'=\frac{1}{x}\)，在点 \((e,1)\) 处斜率为 \(k=\frac{1}{e}\)。切线方程：\(y-1=\frac{1}{e}(x-e)\)，即 \(y=\frac{1}{e}x\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">12. 定积分 \(\int_{1}^{2} \ln x \, dx\) 与 \(\int_{1}^{2} (\ln x)^{2} \, dx\) 的大小关系是（ ）。</div>
+            <div class="option">A. 前者大</div>
+            <div class="option">B. 前者小</div>
+            <div class="option">C. 两者相等</div>
+            <div class="option">D. 无法判定</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">A. 前者大</span></div>
+                <div class="explanation">
+                    在区间 \([1,2]\) 上，令 \(t=\ln x\)，则 \(t \in [0, \ln 2]\)，且 \(\ln 2 \approx 0.693 < 1\)。<br>
+                    当 \(0 < t < 1\) 时，有 \(t > t^2\)，所以 \(\ln x > (\ln x)^2\) 在 \((1,2]\) 上成立。<br>
+                    因此，\(\int_{1}^{2} \ln x \, dx > \int_{1}^{2} (\ln x)^2 \, dx\)。<br>
+                    计算验证：<br>
+                    \(\int_{1}^{2} \ln x \, dx = [x\ln x - x]_{1}^{2} = (2\ln 2 - 2) - (0 - 1) = 2\ln 2 - 1 \approx 0.386\)<br>
+                    \(\int_{1}^{2} (\ln x)^2 \, dx = [x(\ln x)^2 - 2x\ln x + 2x]_{1}^{2} = (2(\ln 2)^2 - 4\ln 2 + 4) - (0 - 0 + 2) \approx 0.188\)<br>
+                    确实前者大于后者。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">13. 下列为一阶线性常微分方程的是（ ）。</div>
+            <div class="option">A. \( y' + xy = e^y \)</div>
+            <div class="option">B. \( y' + xy^2 = y \)</div>
+            <div class="option">C. \( y' + xy = e^x \)</div>
+            <div class="option">D. \( y' + y = \frac{x}{y} \)</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">C. \( y' + xy = e^x \)</span></div>
+                <div class="explanation">
+                    一阶线性微分方程的标准形式为 \(y'+P(x)y=Q(x)\)。选项C符合：\(y'+xy=e^x\)，其中 \(P(x)=x\)，\(Q(x)=e^x\)。选项A中 \(e^y\) 非线性；选项B含 \(y^2\) 非线性；选项D含 \(\frac{x}{y}\) 非线性。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">14. 若函数 \( f(x) \) 在 \((a, b)\) 内满足 \( f'(x) > 0 \) 且 \( f''(x) < 0 \)，则函数 \( f(x) \) 及曲线 \( y = f(x) \) 在此区间内是（ ）。</div>
+            <div class="option">A. 函数单调减少，曲线是凹弧</div>
+            <div class="option">B. 函数单调减少，曲线是凸弧</div>
+            <div class="option">C. 函数单调增加，曲线是凹弧</div>
+            <div class="option">D. 函数单调增加，曲线是凸弧</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">D. 函数单调增加，曲线是凸弧</span></div>
+                <div class="explanation">
+                    \(f'(x)>0\) 说明函数单调增加；\(f''(x)<0\) 说明曲线是凸的（向下凸）。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">15. 下列反常积分发散的是（ ）。</div>
+            <div class="option">A. \(\int_{0}^{1} \frac{1}{\sqrt{x}} dx\)</div>
+            <div class="option">B. \(\int_{0}^{1} \frac{1}{x^2} dx\)</div>
+            <div class="option">C. \(\int_{1}^{\infty} \frac{1}{x\sqrt{x}} dx\)</div>
+            <div class="option">D. \(\int_{1}^{\infty} \frac{1}{x^2} dx\)</div>
+            <div class="answer">
+                <div class="answer-title">答案：<span class="correct-answer">B. \(\int_{0}^{1} \frac{1}{x^2} dx\)</span></div>
+                <div class="explanation">
+                    计算各积分：<br>
+                    A. \(\int_{0}^{1} x^{-1/2} dx = [2x^{1/2}]_0^1 = 2\)，收敛；<br>
+                    B. \(\int_{0}^{1} x^{-2} dx = [-x^{-1}]_0^1 = \infty\)，发散；<br>
+                    C. \(\int_{1}^{\infty} x^{-3/2} dx = [-2x^{-1/2}]_1^{\infty} = 2\)，收敛；<br>
+                    D. \(\int_{1}^{\infty} x^{-2} dx = [-x^{-1}]_1^{\infty} = 1\)，收敛。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="question-section">
+        <h2 class="section-title">三、填空题（共计15分，每题3分）</h2>
+        
+        <div class="question">
+            <div class="question-text">16. 参数方程 \(\begin{cases} x = \cos t \\ y = t^2 \end{cases}\) 所确定的导数 \(\frac{dy}{dx} =\) ______。</div>
+            <div class="answer">
+                <div class="answer-title">答案：\(-2t \csc t\) 或 \(-2t/\sin t\)</div>
+                <div class="explanation">
+                    \(\frac{dy}{dx} = \frac{dy/dt}{dx/dt} = \frac{2t}{-\sin t} = -\frac{2t}{\sin t} = -2t \csc t\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">17. 函数极限 \(\lim_{x \to 0} \frac{\int_{0}^{x} \tan t dt}{x \sin x} =\) ______。</div>
+            <div class="answer">
+                <div class="answer-title">答案：\(\frac{1}{2}\)</div>
+                <div class="explanation">
+                    使用洛必达法则：<br>
+                    原式 = \(\lim\limits_{x\to 0} \frac{\tan x}{\sin x + x\cos x}\)（分子分母同时求导）<br>
+                    = \(\lim\limits_{x\to 0} \frac{\sin x}{\cos x(\sin x + x\cos x)}\)<br>
+                    = \(\lim\limits_{x\to 0} \frac{\sin x}{\sin x\cos x + x\cos^2 x}\)<br>
+                    使用等价无穷小：\(\sin x \sim x\)，\(\cos x \to 1\)<br>
+                    = \(\lim\limits_{x\to 0} \frac{x}{x\cdot 1 + x\cdot 1} = \lim\limits_{x\to 0} \frac{x}{2x} = \frac{1}{2}\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">18. 设 \( y = \ln(1 + x^2) \)，则 \( y \) 对自变量 \( x \) 的微分 \( dy =\) ______。</div>
+            <div class="answer">
+                <div class="answer-title">答案：\(\frac{2x}{1+x^2} dx\)</div>
+                <div class="explanation">
+                    \(y' = \frac{2x}{1+x^2}\)，所以微分 \(dy = y' dx = \frac{2x}{1+x^2} dx\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">19. 设函数 \( f(x) = \begin{cases} x, & x \neq 1 \\ 0, & x = 1 \end{cases} \)，则 \( x = 1 \) 是 \( f(x) \) 的 ______ 间断点。</div>
+            <div class="answer">
+                <div class="answer-title">答案：可去</div>
+                <div class="explanation">
+                    \(\lim\limits_{x\to 1} f(x) = \lim\limits_{x\to 1} x = 1\)，但 \(f(1)=0\)，极限存在但不等于函数值，所以是可去间断点。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">20. 曲线 \( y = 3 - x^2 \) 与直线 \( y = 2x \) 所围成的平面区域的面积 \( S =\) ______。</div>
+            <div class="answer">
+                <div class="answer-title">答案：\(\frac{32}{3}\)</div>
+                <div class="explanation">
+                    联立方程：\(3-x^2=2x\)，得 \(x^2+2x-3=0\)，解得 \(x=1\) 或 \(x=-3\)。<br>
+                    面积 \(S = \int_{-3}^{1} [(3-x^2) - (2x)] dx = \int_{-3}^{1} (3 - x^2 - 2x) dx\)<br>
+                    \(= \left[3x - \frac{x^3}{3} - x^2\right]_{-3}^{1} = \left(3 - \frac{1}{3} - 1\right) - \left(-9 + 9 - 9\right)\)<br>
+                    \(= \frac{5}{3} - (-9) = \frac{5}{3} + 9 = \frac{32}{3}\)。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="question-section">
+        <h2 class="section-title">四、计算题（共计40分）</h2>
+        
+        <div class="question">
+            <div class="question-text">21. (5分) 求极限 \(\lim_{x \to 0} \frac{\sin x - x}{x^3}\)。</div>
+            <div class="answer">
+                <div class="answer-title">解答：</div>
+                <div class="explanation">
+                    使用洛必达法则：<br>
+                    \(\lim\limits_{x\to 0} \frac{\sin x - x}{x^3} \stackrel{L'H}{=} \lim\limits_{x\to 0} \frac{\cos x - 1}{3x^2} \stackrel{L'H}{=} \lim\limits_{x\to 0} \frac{-\sin x}{6x} = \lim\limits_{x\to 0} \frac{-x}{6x} = -\frac{1}{6}\)。<br>
+                    或者使用泰勒展开：\(\sin x = x - \frac{x^3}{6} + o(x^3)\)，代入得 \(\frac{(x - \frac{x^3}{6} + o(x^3)) - x}{x^3} = -\frac{1}{6} + o(1)\)，所以极限为 \(-\frac{1}{6}\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">22. (6分) 求极限 \(\lim_{n \to \infty} n \left( \frac{1}{n^2 + \pi} + \frac{1}{n^2 + 2\pi} + \cdots + \frac{1}{n^2 + n\pi} \right)\)。</div>
+            <div class="answer">
+                <div class="answer-title">解答：</div>
+                <div class="explanation">
+                    将和式视为黎曼和：<br>
+                    原式 = \(\lim\limits_{n\to\infty} \sum_{k=1}^{n} \frac{n}{n^2 + k\pi} = \lim\limits_{n\to\infty} \frac{1}{n} \sum_{k=1}^{n} \frac{1}{1 + \frac{k\pi}{n^2}}\)，但这不是标准的黎曼和形式。<br>
+                    使用夹逼定理：<br>
+                    对于每个 \(k=1,2,\ldots,n\)，有 \(\frac{1}{n^2 + n\pi} \leq \frac{1}{n^2 + k\pi} \leq \frac{1}{n^2 + \pi}\)，<br>
+                    所以 \(\frac{n^2}{n^2 + n\pi} \leq n \sum_{k=1}^{n} \frac{1}{n^2 + k\pi} \leq \frac{n^2}{n^2 + \pi}\)。<br>
+                    由于 \(\lim\limits_{n\to\infty} \frac{n^2}{n^2 + n\pi} = 1\)，\(\lim\limits_{n\to\infty} \frac{n^2}{n^2 + \pi} = 1\)，<br>
+                    由夹逼定理得原极限 = 1。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">23. (6分) 设函数 \( y = y(x) \) 由方程 \( \ln y = 2 - ye^x \) 确定，求 \(\frac{dy}{dx}\)。</div>
+            <div class="answer">
+                <div class="answer-title">解答：</div>
+                <div class="explanation">
+                    对方程两边关于 \(x\) 求导：<br>
+                    \(\frac{1}{y} \frac{dy}{dx} = - \left( \frac{dy}{dx} e^x + y e^x \right)\)。<br>
+                    整理得：\(\frac{1}{y} \frac{dy}{dx} = - e^x \frac{dy}{dx} - y e^x\)。<br>
+                    移项：\(\frac{dy}{dx} \left( \frac{1}{y} + e^x \right) = - y e^x\)。<br>
+                    所以 \(\frac{dy}{dx} = \frac{- y e^x}{\frac{1}{y} + e^x} = \frac{- y e^x}{\frac{1 + y e^x}{y}} = \frac{- y^2 e^x}{1 + y e^x}\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">24. (6分) 计算不定积分 \(\int xe^x dx\)。</div>
+            <div class="answer">
+                <div class="answer-title">解答：</div>
+                <div class="explanation">
+                    使用分部积分法：<br>
+                    令 \(u = x\)，\(dv = e^x dx\)，则 \(du = dx\)，\(v = e^x\)。<br>
+                    \(\int x e^x dx = x e^x - \int e^x dx = x e^x - e^x + C = e^x (x - 1) + C\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">25. (6分) 计算定积分 \(\int_{0}^{\frac{\sqrt{3}}{2}} \frac{x}{\sqrt{1-x^2}} dx\)。</div>
+            <div class="correction-note">根据更正信息修正了积分上限：从 \(\frac{\sqrt{5}}{2}\) 改为 \(\frac{\sqrt{3}}{2}\)。</div>
+            <div class="answer">
+                <div class="answer-title">解答：</div>
+                <div class="explanation">
+                    令 \(u = 1 - x^2\)，则 \(du = -2x dx\)，即 \(x dx = -\frac{1}{2} du\)。<br>
+                    当 \(x=0\) 时，\(u=1\)；当 \(x=\frac{\sqrt{3}}{2}\) 时，\(u=1-\frac{3}{4} = \frac{1}{4}\)。<br>
+                    所以积分 = \(\int_{1}^{\frac{1}{4}} \frac{1}{\sqrt{u}} \cdot \left(-\frac{1}{2}\right) du = -\frac{1}{2} \int_{1}^{\frac{1}{4}} u^{-1/2} du\)<br>
+                    = \(\frac{1}{2} \int_{\frac{1}{4}}^{1} u^{-1/2} du = \frac{1}{2} \left[ 2u^{1/2} \right]_{\frac{1}{4}}^{1} = \left[ u^{1/2} \right]_{\frac{1}{4}}^{1}\)<br>
+                    = \(1^{1/2} - \left(\frac{1}{4}\right)^{1/2} = 1 - \frac{1}{2} = \frac{1}{2}\)。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">26. (6分) 求微分方程 \( 2y'' + y' - y = 0 \) 的通解。</div>
+            <div class="answer">
+                <div class="answer-title">解答：</div>
+                <div class="explanation">
+                    特征方程为 \(2r^2 + r - 1 = 0\)，即 \((2r - 1)(r + 1) = 0\)，解得 \(r_1 = \frac{1}{2}\)，\(r_2 = -1\)。<br>
+                    所以通解为 \(y = C_1 e^{\frac{1}{2}x} + C_2 e^{-x}\)，其中 \(C_1, C_2\) 为任意常数。
+                </div>
+            </div>
+        </div>
+        
+        <div class="question">
+            <div class="question-text">27. (6分) 某车间靠墙壁要盖一间长方形小屋，现有存砖只够砌 20 米长的墙壁，问应围成的长方形的长，宽各为多少才能使这间小屋面积最大。</div>
+            <div class="answer">
+                <div class="answer-title">解答：</div>
+                <div class="explanation">
+                    设长方形靠墙的边（长）为 \(x\) 米，垂直墙的边（宽）为 \(y\) 米。<br>
+                    由题意，墙壁总长为 \(x + 2y = 20\)（因为一边靠墙，只需砌三面墙）。<br>
+                    面积 \(S = xy\)。<br>
+                    由 \(x + 2y = 20\) 得 \(x = 20 - 2y\)，代入面积公式：<br>
+                    \(S = (20 - 2y)y = 20y - 2y^2\)。<br>
+                    求导数：\(S' = 20 - 4y\)，令 \(S' = 0\) 得 \(y = 5\)。<br>
+                    二阶导数：\(S'' = -4 < 0\)，所以 \(y = 5\) 时面积最大。<br>
+                    此时 \(x = 20 - 2 \times 5 = 10\)。<br>
+                    答：长方形的长为 10 米，宽为 5 米时面积最大。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="question-section">
+        <h2 class="section-title">五、证明题（共计5分）</h2>
+        
+        <div class="question">
+            <div class="question-text">28. (5分) 设 \( x > 0 \)，证明不等式：  
+                \[\frac{x}{1 + x} < \ln(1 + x) < x.\]</div>
+            <div class="answer">
+                <div class="answer-title">证明：</div>
+                <div class="explanation">
+                    <div class="method-title">方法一：利用函数的单调性（微分法）</div>
+                    
+                    <strong>证明左边不等式：</strong> \(\frac{x}{1+x} < \ln(1+x)\)<br>
+                    令 \(f(x) = \ln(1+x) - \frac{x}{1+x}\)，则 \(f(0) = 0\)。<br>
+                    \(f'(x) = \frac{1}{1+x} - \frac{1}{(1+x)^2} = \frac{x}{(1+x)^2} > 0\)（当 \(x>0\) 时）。<br>
+                    所以 \(f(x)\) 在 \([0,+\infty)\) 上单调递增，故当 \(x>0\) 时，\(f(x) > f(0) = 0\)，即 \(\ln(1+x) > \frac{x}{1+x}\)。<br><br>
+                    
+                    <strong>证明右边不等式：</strong> \(\ln(1+x) < x\)<br>
+                    令 \(g(x) = x - \ln(1+x)\)，则 \(g(0) = 0\)。<br>
+                    \(g'(x) = 1 - \frac{1}{1+x} = \frac{x}{1+x} > 0\)（当 \(x>0\) 时）。<br>
+                    所以 \(g(x)\) 在 \([0,+\infty)\) 上单调递增，故当 \(x>0\) 时，\(g(x) > g(0) = 0\)，即 \(x > \ln(1+x)\)。<br><br>
+                    
+                    <div class="method-title">方法二：利用拉格朗日中值定理</div>
+                    
+                    考虑函数 \(f(t) = \ln(1+t)\) 在区间 \([0, x]\) 上（\(x > 0\)）。<br>
+                    由拉格朗日中值定理，存在 \(\xi \in (0, x)\)，使得：<br>
+                    \[
+                    \frac{f(x) - f(0)}{x - 0} = f'(\xi) = \frac{1}{1+\xi}
+                    \]
+                    即
+                    \[
+                    \frac{\ln(1+x) - \ln(1+0)}{x} = \frac{1}{1+\xi}
+                    \]
+                    \[
+                    \frac{\ln(1+x)}{x} = \frac{1}{1+\xi}
+                    \]
+                    由于 \(0 < \xi < x\)，所以 \(1 < 1+\xi < 1+x\)，从而：
+                    \[
+                    \frac{1}{1+x} < \frac{1}{1+\xi} < \frac{1}{1} = 1
+                    \]
+                    即
+                    \[
+                    \frac{1}{1+x} < \frac{\ln(1+x)}{x} < 1
+                    \]
+                    两边乘以 \(x\)（\(x > 0\)）得：
+                    \[
+                    \frac{x}{1+x} < \ln(1+x) < x
+                    \]
+                    这正是要证明的不等式。<br><br>
+                    
+                    <div class="method-title">方法三：利用积分不等式</div>
+                    
+                    对于 \(t > 0\)，有基本不等式：
+                    \[
+                    \frac{1}{1+t} < 1 < 1+t \quad \text{当} \quad t>0
+                    \]
+                    但更精确地，考虑积分：
+                    \[
+                    \ln(1+x) = \int_0^x \frac{1}{1+t} dt
+                    \]
+                    当 \(t \in (0, x)\) 时，有：
+                    \[
+                    \frac{1}{1+x} < \frac{1}{1+t} < 1
+                    \]
+                    对 \(t\) 从 0 到 \(x\) 积分：
+                    \[
+                    \int_0^x \frac{1}{1+x} dt < \int_0^x \frac{1}{1+t} dt < \int_0^x 1 dt
+                    \]
+                    即
+                    \[
+                    \frac{x}{1+x} < \ln(1+x) < x
+                    \]
+                    
+                    综上，当 \(x>0\) 时，有 \(\frac{x}{1+x} < \ln(1+x) < x\)。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: #7f8c8d; font-size: 0.9em; padding-top: 20px; border-top: 1px solid #eee;">
+        <p>试题整理与解答完成</p>
+        <p>注：已根据提供的更正信息更新了第5、7、12、17、25、27、28题，第28题增加了拉格朗日中值定理和积分不等式两种证明方法。</p>
+    </div>
+</body>
+</html>
