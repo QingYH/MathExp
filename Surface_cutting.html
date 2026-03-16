@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>高等数学：二次曲面 · 触控隐藏面板</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', sans-serif;
+            touch-action: none;
+            background-color: #11131f;
+        }
+        
+        /* 信息栏 - 顶部 */
+        #info {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(20, 20, 30, 0.9);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 170, 102, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 20;
+            pointer-events: none;
+            font-size: 14px;
+            text-align: center;
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+        
+        #info h1 {
+            margin: 0;
+            font-size: 16px;
+            color: #ffaa66;
+            display: inline;
+            font-weight: 500;
+        }
+        
+        #info p {
+            margin: 0;
+            display: inline;
+            opacity: 0.8;
+            margin-left: 8px;
+        }
+        
+        /* 底部控制面板 - 两行布局 */
+        #controls-panel {
+            position: absolute;
+            bottom: 16px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 30;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+        
+        .control-row {
+            background: rgba(20, 20, 30, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 40px;
+            padding: 12px 16px;
+            color: #eee;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 12px;
+            pointer-events: auto;
+            border-left: 4px solid #ffaa66;
+            font-size: 14px;
+        }
+        
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1 1 auto;
+            min-width: 130px;
+        }
+        
+        .control-item label {
+            font-size: 13px;
+            font-weight: 400;
+            color: #ddd;
+            white-space: nowrap;
+            min-width: 40px;
+        }
+        
+        .control-item select {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #555;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 30px;
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+            width: 100%;
+            max-width: 140px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .control-item input[type=range] {
+            flex: 1;
+            min-width: 90px;
+            height: 5px;
+            background: #444;
+            accent-color: #ffaa66;
+            border-radius: 10px;
+        }
+        
+        .control-item input[type=color] {
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid #555;
+            border-radius: 30px;
+            width: 40px;
+            height: 32px;
+            padding: 2px;
+            cursor: pointer;
+        }
+        
+        .value-badge {
+            background: #ffaa66;
+            color: #111;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 12px;
+            min-width: 35px;
+            text-align: center;
+        }
+        
+        /* 右下角提示 */
+        #note {
+            position: absolute;
+            bottom: 140px;
+            right: 12px;
+            color: rgba(255,255,255,0.6);
+            font-size: 11px;
+            z-index: 25;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 14px;
+            border-radius: 30px;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+        
+        /* 隐藏状态 */
+        .hidden-ui {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        
+        /* 小屏幕适配 */
+        @media (max-width: 480px) {
+            .control-row {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 14px;
+            }
+            .control-item {
+                width: 100%;
+            }
+            .control-item select {
+                max-width: none;
+            }
+            #info {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            #info h1 {
+                font-size: 14px;
+            }
+            #note {
+                bottom: 240px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部信息栏 -->
+    <div id="info">
+        <h1>📐 二次曲面 · 截痕法</h1>
+        <p>7种曲面 | 可调颜色/网格/面色</p>
+    </div>
+    
+    <!-- 底部控制面板 -->
+    <div id="controls-panel">
+        <div class="control-row">
+            <div class="control-item">
+                <label>曲面</label>
+                <select id="surface-select">
+                    <option value="ellipsoid">🌍 椭球面</option>
+                    <option value="hyperboloid1">⏳ 单叶双曲面</option>
+                    <option value="hyperboloid2" selected>⌛ 双叶双曲面</option>
+                    <option value="paraboloid">🥣 椭圆抛物面</option>
+                    <option value="rotationalParaboloid">🌀 旋转抛物面</option>
+                    <option value="hyperbolicParaboloid">🐎 双曲抛物面</option>
+                    <option value="cone">🔺 圆锥面</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label>截平</label>
+                <select id="plane-select">
+                    <option value="xy" selected>z = 常数</option>
+                    <option value="xz">y = 常数</option>
+                    <option value="yz">x = 常数</option>
+                </select>
+            </div>
+            <div class="control-item">
+                <label>截距</label>
+                <input type="range" id="slice-value" min="-4.0" max="4.0" step="0.05" value="2.0">
+                <span id="slice-display" class="value-badge">2.00</span>
+            </div>
+        </div>
+        
+        <div class="control-row">
+            <div class="control-item">
+                <label>颜色</label>
+                <input type="color" id="color-picker" value="#aa66cc">
+            </div>
+            <div class="control-item">
+                <label>网格</label>
+                <input type="range" id="grid-density" min="0" max="40" step="1" value="20">
+                <span id="density-display" class="value-badge">20</span>
+            </div>
+            <div class="control-item">
+                <label>显示</label>
+                <select id="display-mode">
+                    <option value="wire+face" selected>网格+面色</option>
+                    <option value="wire-only">仅网格</option>
+                    <option value="face-only">仅面色</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 右下角提示 -->
+    <div id="note">
+        ⚡ 红色截痕 | 点击屏幕隐藏/显示面板
+    </div>
+
+    <!-- 引入 Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // --- 初始化场景 ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x11131f);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(8, 5, 12);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+
+        // --- 控制器 (移动端优化) ---
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.rotateSpeed = 0.5;
+        controls.zoomSpeed = 0.8;
+        controls.panSpeed = 0.5;
+        controls.target.set(0, 0, 0);
+        controls.maxPolarAngle = Math.PI / 1.8;
+
+        // --- 灯光 ---
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(1, 2, 1);
+        scene.add(dirLight);
+        const backLight = new THREE.PointLight(0x4466aa, 0.6);
+        backLight.position.set(-5, 0, 5);
+        scene.add(backLight);
+        const fillLight = new THREE.PointLight(0x88aaff, 0.4);
+        fillLight.position.set(3, 1, 3);
+        scene.add(fillLight);
+
+        // --- 辅助网格和轴线 ---
+        const gridHelper = new THREE.GridHelper(10, 16, 0x88aaff, 0x335588);
+        gridHelper.position.y = 0;
+        scene.add(gridHelper);
+        const axesHelper = new THREE.AxesHelper(6);
+        scene.add(axesHelper);
+
+        function createAxisLabel(text, color, position) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            div.style.color = color;
+            div.style.fontSize = '16px';
+            div.style.fontWeight = 'bold';
+            div.style.textShadow = '1px 1px 2px black';
+            const label = new CSS2DObject(div);
+            label.position.copy(position);
+            return label;
+        }
+        scene.add(createAxisLabel('X', '#ff6666', new THREE.Vector3(6, 0.2, 0)));
+        scene.add(createAxisLabel('Y', '#66ff66', new THREE.Vector3(0, 5, 0)));
+        scene.add(createAxisLabel('Z', '#6666ff', new THREE.Vector3(0, 0.2, 5)));
+
+        // --- 星星背景 ---
+        const starsGeo = new THREE.BufferGeometry();
+        const starsCount = 400;
+        const starPositions = new Float32Array(starsCount * 3);
+        for (let i = 0; i < starsCount; i++) {
+            const r = 20 + Math.random() * 20;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            starPositions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+            starPositions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+            starPositions[i*3+2] = r * Math.cos(phi);
+        }
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0x99aacc, size: 0.1 });
+        const stars = new THREE.Points(starsGeo, starsMat);
+        scene.add(stars);
+
+        // --- 核心数据组 ---
+        let surfaceGroup = new THREE.Group();
+        let planeGroup = new THREE.Group();
+        let intersectionGroup = new THREE.Group();
+        scene.add(surfaceGroup);
+        scene.add(planeGroup);
+        scene.add(intersectionGroup);
+
+        // --- 工具函数：生成参数化曲面的顶点 ---
+        function generateSurfaceVertices(surfaceType, density) {
+            const vertices = [];
+            const indices = [];
+            
+            const uSegs = Math.max(4, Math.floor(density * 1.2));
+            const vSegs = Math.max(4, Math.floor(density * 1.2));
+            
+            switch(surfaceType) {
+                case 'ellipsoid': {
+                    const a = 2, b = 3, c = Math.sqrt(2);
+                    for (let i = 0; i <= uSegs; i++) {
+                        const u = (i / uSegs) * Math.PI;
+                        for (let j = 0; j <= vSegs; j++) {
+                            const v = (j / vSegs) * Math.PI * 2;
+                            const x = a * Math.sin(u) * Math.cos(v);
+                            const y = b * Math.sin(u) * Math.sin(v);
+                            const z = c * Math.cos(u);
+                            vertices.push(x, y, z);
+                        }
+                    }
+                    for (let i = 0; i < uSegs; i++) {
+                        for (let j = 0; j < vSegs; j++) {
+                            const a = i * (vSegs+1) + j;
+                            const b = i * (vSegs+1) + j + 1;
+                            const c = (i+1) * (vSegs+1) + j;
+                            const d = (i+1) * (vSegs+1) + j + 1;
+                            indices.push(a, b, c);
+                            indices.push(b, d, c);
+                        }
+                    }
+                    break;
+                }
+                case 'hyperboloid1': {
+                    const a = 2, b = 3, c = 2;
+                    for (let i = 0; i <= uSegs; i++) {
+                        const u = -1.5 + (i / uSegs) * 3;
+                        for (let j = 0; j <= vSegs; j++) {
+                            const v = (j / vSegs) * Math.PI * 2;
+                            const x = a * Math.cosh(u) * Math.cos(v);
+                            const y = b * Math.cosh(u) * Math.sin(v);
+                            const z = c * Math.sinh(u);
+                            vertices.push(x, y, z);
+                        }
+                    }
+                    for (let i = 0; i < uSegs; i++) {
+                        for (let j = 0; j < vSegs; j++) {
+                            const a = i * (vSegs+1) + j;
+                            const b = i * (vSegs+1) + j + 1;
+                            const c = (i+1) * (vSegs+1) + j;
+                            const d = (i+1) * (vSegs+1) + j + 1;
+                            indices.push(a, b, c);
+                            indices.push(b, d, c);
+                        }
+                    }
+                    break;
+                }
+                case 'hyperboloid2': {
+                    const a = 2, b = 3, c = 2;
+                    for (let sign of [1, -1]) {
+                        const baseIndex = vertices.length / 3;
+                        for (let i = 0; i <= uSegs; i++) {
+                            const u = (i / uSegs) * 2.2;
+                            for (let j = 0; j <= vSegs; j++) {
+                                const v = (j / vSegs) * Math.PI * 2;
+                                const x = sign * a * Math.cosh(u);
+                                const y = b * Math.sinh(u) * Math.cos(v);
+                                const z = c * Math.sinh(u) * Math.sin(v);
+                                vertices.push(x, y, z);
+                            }
+                        }
+                        for (let i = 0; i < uSegs; i++) {
+                            for (let j = 0; j < vSegs; j++) {
+                                const a = baseIndex + i * (vSegs+1) + j;
+                                const b = baseIndex + i * (vSegs+1) + j + 1;
+                                const c = baseIndex + (i+1) * (vSegs+1) + j;
+                                const d = baseIndex + (i+1) * (vSegs+1) + j + 1;
+                                indices.push(a, b, c);
+                                indices.push(b, d, c);
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 'paraboloid': {
+                    const a = Math.sqrt(3), b = 2;
+                    for (let i = 0; i <= uSegs; i++) {
+                        const r = (i / uSegs) * 2.2;
+                        for (let j = 0; j <= vSegs; j++) {
+                            const v = (j / vSegs) * Math.PI * 2;
+                            const x = a * r * Math.cos(v);
+                            const y = b * r * Math.sin(v);
+                            const z = r * r;
+                            vertices.push(x, y, z);
+                        }
+                    }
+                    for (let i = 0; i < uSegs; i++) {
+                        for (let j = 0; j < vSegs; j++) {
+                            const a = i * (vSegs+1) + j;
+                            const b = i * (vSegs+1) + j + 1;
+                            const c = (i+1) * (vSegs+1) + j;
+                            const d = (i+1) * (vSegs+1) + j + 1;
+                            indices.push(a, b, c);
+                            indices.push(b, d, c);
+                        }
+                    }
+                    break;
+                }
+                case 'rotationalParaboloid': {
+                    for (let i = 0; i <= uSegs; i++) {
+                        const r = (i / uSegs) * 2.2;
+                        for (let j = 0; j <= vSegs; j++) {
+                            const v = (j / vSegs) * Math.PI * 2;
+                            const x = r * Math.cos(v);
+                            const y = r * Math.sin(v);
+                            const z = r * r;
+                            vertices.push(x, y, z);
+                        }
+                    }
+                    for (let i = 0; i < uSegs; i++) {
+                        for (let j = 0; j < vSegs; j++) {
+                            const a = i * (vSegs+1) + j;
+                            const b = i * (vSegs+1) + j + 1;
+                            const c = (i+1) * (vSegs+1) + j;
+                            const d = (i+1) * (vSegs+1) + j + 1;
+                            indices.push(a, b, c);
+                            indices.push(b, d, c);
+                        }
+                    }
+                    break;
+                }
+                case 'hyperbolicParaboloid': {
+                    const range = 2;
+                    for (let i = 0; i <= uSegs; i++) {
+                        const u = -range + (i / uSegs) * 2 * range;
+                        for (let j = 0; j <= vSegs; j++) {
+                            const v = -range + (j / vSegs) * 2 * range;
+                            const x = 2 * u;
+                            const y = 2 * v;
+                            const z = u*u - v*v;
+                            vertices.push(x, y, z);
+                        }
+                    }
+                    for (let i = 0; i < uSegs; i++) {
+                        for (let j = 0; j < vSegs; j++) {
+                            const a = i * (vSegs+1) + j;
+                            const b = i * (vSegs+1) + j + 1;
+                            const c = (i+1) * (vSegs+1) + j;
+                            const d = (i+1) * (vSegs+1) + j + 1;
+                            indices.push(a, b, c);
+                            indices.push(b, d, c);
+                        }
+                    }
+                    break;
+                }
+                case 'cone': {
+                    for (let i = 0; i <= uSegs; i++) {
+                        const u = -2.5 + (i / uSegs) * 5;
+                        for (let j = 0; j <= vSegs; j++) {
+                            const v = (j / vSegs) * Math.PI * 2;
+                            const x = 2 * u * Math.cos(v);
+                            const y = 3 * u * Math.sin(v);
+                            const z = u;
+                            vertices.push(x, y, z);
+                        }
+                    }
+                    for (let i = 0; i < uSegs; i++) {
+                        for (let j = 0; j < vSegs; j++) {
+                            const a = i * (vSegs+1) + j;
+                            const b = i * (vSegs+1) + j + 1;
+                            const c = (i+1) * (vSegs+1) + j;
+                            const d = (i+1) * (vSegs+1) + j + 1;
+                            indices.push(a, b, c);
+                            indices.push(b, d, c);
+                        }
+                    }
+                    break;
+                }
+            }
+            
+            return { vertices, indices };
+        }
+
+        // --- 工具函数：计算截痕点 ---
+        function computeIntersectionPoints(surfaceType, planeType, sliceVal) {
+            const points = [];
+            const steps = 150;
+            
+            try {
+                switch(surfaceType) {
+                    case 'ellipsoid':
+                        if (planeType === 'xy') {
+                            const z = sliceVal;
+                            const C = 1 - z*z/2;
+                            if (C < 0) return [];
+                            const rx = Math.sqrt(4 * C);
+                            const ry = Math.sqrt(9 * C);
+                            for (let i = 0; i <= steps; i++) {
+                                const t = (i / steps) * Math.PI * 2;
+                                points.push(new THREE.Vector3(rx * Math.cos(t), ry * Math.sin(t), z));
+                            }
+                        } else if (planeType === 'xz') {
+                            const y = sliceVal;
+                            const C = 1 - y*y/9;
+                            if (C < 0) return [];
+                            const rx = Math.sqrt(4 * C);
+                            const rz = Math.sqrt(2 * C);
+                            for (let i = 0; i <= steps; i++) {
+                                const t = (i / steps) * Math.PI * 2;
+                                points.push(new THREE.Vector3(rx * Math.cos(t), y, rz * Math.sin(t)));
+                            }
+                        } else {
+                            const x = sliceVal;
+                            const C = 1 - x*x/4;
+                            if (C < 0) return [];
+                            const ry = Math.sqrt(9 * C);
+                            const rz = Math.sqrt(2 * C);
+                            for (let i = 0; i <= steps; i++) {
+                                const t = (i / steps) * Math.PI * 2;
+                                points.push(new THREE.Vector3(x, ry * Math.cos(t), rz * Math.sin(t)));
+                            }
+                        }
+                        break;
+                        
+                    case 'hyperboloid2':
+                        if (planeType === 'xy') {
+                            const z = sliceVal;
+                            const C = 1 + z*z/4;
+                            for (let i = 0; i <= steps; i++) {
+                                const t = -3 + (i/steps)*6;
+                                const y = t;
+                                const x = Math.sqrt(4 * (C + y*y/9));
+                                if (!isNaN(x)) {
+                                    points.push(new THREE.Vector3(x, y, z));
+                                    points.push(new THREE.Vector3(-x, y, z));
+                                }
+                            }
+                        } else if (planeType === 'xz') {
+                            const y = sliceVal;
+                            const C = 1 + y*y/9;
+                            for (let i = 0; i <= steps; i++) {
+                                const t = -3 + (i/steps)*6;
+                                const z = t;
+                                const x = Math.sqrt(4 * (C + z*z/4));
+                                if (!isNaN(x)) {
+                                    points.push(new THREE.Vector3(x, y, z));
+                                    points.push(new THREE.Vector3(-x, y, z));
+                                }
+                            }
+                        } else {
+                            const x = sliceVal;
+                            const C = x*x/4 - 1;
+                            if (C < 0) return [];
+                            const ry = Math.sqrt(9 * C);
+                            const rz = Math.sqrt(4 * C);
+                            for (let i = 0; i <= steps; i++) {
+                                const t = (i / steps) * Math.PI * 2;
+                                points.push(new THREE.Vector3(x, ry * Math.cos(t), rz * Math.sin(t)));
+                            }
+                        }
+                        break;
+                        
+                    default:
+                        return [];
+                }
+            } catch (e) {
+                return [];
+            }
+            
+            return points.filter(p => !isNaN(p.x) && !isNaN(p.y) && !isNaN(p.z));
+        }
+
+        // --- 核心更新函数 ---
+        function updateVisuals() {
+            const surfaceType = document.getElementById('surface-select').value;
+            const planeType = document.getElementById('plane-select').value;
+            const sliceVal = parseFloat(document.getElementById('slice-value').value);
+            const baseColor = document.getElementById('color-picker').value;
+            const density = parseInt(document.getElementById('grid-density').value);
+            const displayMode = document.getElementById('display-mode').value;
+            
+            while(surfaceGroup.children.length) surfaceGroup.remove(surfaceGroup.children[0]);
+            while(planeGroup.children.length) planeGroup.remove(planeGroup.children[0]);
+            while(intersectionGroup.children.length) intersectionGroup.remove(intersectionGroup.children[0]);
+            
+            const color = new THREE.Color(baseColor);
+            
+            const { vertices, indices } = generateSurfaceVertices(surfaceType, density);
+            
+            if (displayMode !== 'wire-only' && vertices.length > 0 && indices.length > 0) {
+                const geom = new THREE.BufferGeometry();
+                geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geom.setIndex(indices);
+                geom.computeVertexNormals();
+                
+                const mat = new THREE.MeshPhongMaterial({
+                    color: color,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.7,
+                    emissive: 0x000000,
+                    shininess: 30
+                });
+                const mesh = new THREE.Mesh(geom, mat);
+                surfaceGroup.add(mesh);
+            }
+            
+            if (displayMode !== 'face-only' && vertices.length > 0 && indices.length > 0) {
+                const geom = new THREE.BufferGeometry();
+                geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geom.setIndex(indices);
+                const edges = new THREE.EdgesGeometry(geom);
+                const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: color.clone().multiplyScalar(1.5) }));
+                surfaceGroup.add(line);
+            }
+            
+            // 绘制截平面
+            let planePos;
+            const planeSize = 9;
+            if (planeType === 'xy') {
+                planePos = new THREE.Vector3(0, 0, sliceVal);
+            } else if (planeType === 'xz') {
+                planePos = new THREE.Vector3(0, sliceVal, 0);
+            } else {
+                planePos = new THREE.Vector3(sliceVal, 0, 0);
+            }
+            
+            const planeGeo = new THREE.PlaneGeometry(planeSize, planeSize);
+            const planeMat = new THREE.MeshPhongMaterial({
+                color: 0x88aaff,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.15,
+                emissive: 0x112233
+            });
+            const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+            if (planeType === 'xz') planeMesh.rotation.x = Math.PI/2;
+            if (planeType === 'yz') planeMesh.rotation.y = Math.PI/2;
+            planeMesh.position.copy(planePos);
+            planeGroup.add(planeMesh);
+            
+            const borderGeo = new THREE.EdgesGeometry(planeGeo);
+            const borderMat = new THREE.LineBasicMaterial({ color: 0xaaccff });
+            const border = new THREE.LineSegments(borderGeo, borderMat);
+            border.position.copy(planePos);
+            border.rotation.copy(planeMesh.rotation);
+            planeGroup.add(border);
+            
+            // 生成截痕线
+            const points = computeIntersectionPoints(surfaceType, planeType, sliceVal);
+            if (points.length > 1) {
+                const geo = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0xff3366 }));
+                intersectionGroup.add(line);
+            }
+            
+            document.getElementById('slice-display').innerText = sliceVal.toFixed(2);
+            document.getElementById('density-display').innerText = density;
+        }
+
+        // --- 事件绑定 ---
+        document.getElementById('surface-select').addEventListener('change', updateVisuals);
+        document.getElementById('plane-select').addEventListener('change', updateVisuals);
+        document.getElementById('slice-value').addEventListener('input', (e) => {
+            document.getElementById('slice-display').innerText = parseFloat(e.target.value).toFixed(2);
+            updateVisuals();
+        });
+        document.getElementById('color-picker').addEventListener('input', updateVisuals);
+        document.getElementById('grid-density').addEventListener('input', (e) => {
+            document.getElementById('density-display').innerText = e.target.value;
+            updateVisuals();
+        });
+        document.getElementById('display-mode').addEventListener('change', updateVisuals);
+
+        updateVisuals();
+
+        // --- 触控隐藏/显示UI功能 ---
+        const infoEl = document.getElementById('info');
+        const controlsEl = document.getElementById('controls-panel');
+        const noteEl = document.getElementById('note');
+        
+        let hideTimeout = null;
+        let uiVisible = true;
+        
+        function hideUI() {
+            if (!uiVisible) return;
+            infoEl.classList.add('hidden-ui');
+            controlsEl.classList.add('hidden-ui');
+            noteEl.classList.add('hidden-ui');
+            uiVisible = false;
+        }
+        
+        function showUI() {
+            if (uiVisible) return;
+            infoEl.classList.remove('hidden-ui');
+            controlsEl.classList.remove('hidden-ui');
+            noteEl.classList.remove('hidden-ui');
+            uiVisible = true;
+        }
+        
+        // 触摸开始：隐藏UI
+        renderer.domElement.addEventListener('touchstart', (e) => {
+            // 如果触摸的是控件区域，不隐藏（让控件可操作）
+            if (e.target.closest('.control-row') || e.target.closest('select') || e.target.closest('input')) {
+                return;
+            }
+            hideUI();
+        }, { passive: true });
+        
+        // 触摸结束：延迟显示UI
+        renderer.domElement.addEventListener('touchend', (e) => {
+            // 清除之前的定时器
+            if (hideTimeout) clearTimeout(hideTimeout);
+            // 延迟显示，避免误触
+            hideTimeout = setTimeout(() => {
+                showUI();
+            }, 500);
+        });
+        
+        // 触摸移动过程中取消隐藏定时器
+        renderer.domElement.addEventListener('touchmove', (e) => {
+            if (hideTimeout) clearTimeout(hideTimeout);
+        }, { passive: true });
+        
+        // 鼠标设备支持（用于调试）
+        renderer.domElement.addEventListener('mousedown', (e) => {
+            hideUI();
+        });
+        
+        renderer.domElement.addEventListener('mouseup', (e) => {
+            if (hideTimeout) clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                showUI();
+            }, 500);
+        });
+
+        // 防止触摸滚动
+        document.body.addEventListener('touchmove', (e) => {
+            if (e.target === renderer.domElement) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // --- 动画循环 ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+
+        // --- 窗口自适应 ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
