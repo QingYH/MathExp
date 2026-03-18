@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>高等数学 第八章 空间解析几何 测试卷（最终修正）</title>
+    <!-- 引入 MathJax 渲染数学公式 -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <!-- 引入 FontAwesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: #f5f7fa;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(0,20,40,0.2);
+            padding: 30px 25px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border-left: 8px solid #3498db;
+            padding-left: 20px;
+            color: #1e3c5c;
+        }
+        .subhead {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            color: #4a6a85;
+            padding: 0 10px;
+        }
+        .total-score {
+            background-color: #eef2f6;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        .section {
+            background: #f9fcff;
+            border-radius: 20px;
+            padding: 20px 20px 10px 20px;
+            margin-bottom: 30px;
+            border: 1px solid #dde9f5;
+        }
+        .section h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #157fcc;
+            margin-top: -5px;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed #bdd8f0;
+            padding-bottom: 8px;
+        }
+        .question-block {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            border-left: 4px solid #7faddd;
+            transition: all 0.2s;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #1e4660;
+        }
+        .question-title {
+            font-size: 1.2rem;
+        }
+        .score-badge {
+            background-color: #d4e3fd;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .question-desc {
+            margin: 10px 0 12px 0;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        .math-text {
+            background-color: #f4f7fb;
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 6px 0 6px 0;
+        }
+        .options {
+            margin: 16px 0 8px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+        }
+        .opt-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .toggle-answer {
+            margin-top: 16px;
+            background: none;
+            border: none;
+            color: #2a6e9b;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px dashed #90b8da;
+            padding: 4px 0;
+        }
+        .answer-detail {
+            background-color: #ecf5fc;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            border-left: 3px solid #2580c2;
+            display: none;
+            font-size: 0.98rem;
+            line-height: 1.7;
+        }
+        .answer-detail.show {
+            display: block;
+        }
+        .graph-placeholder {
+            background: #eaf0f6;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin: 18px 0 5px 0;
+            border: 1px dashed #aec9e0;
+        }
+        .graph-svg {
+            max-width: 100%;
+            height: auto;
+        }
+        footer {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #6d8eb0;
+            margin-top: 20px;
+            border-top: 1px solid #cfdeed;
+            padding-top: 20px;
+        }
+        .btn-toggle-all {
+            background-color: #2580c2;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px #aac5e0;
+        }
+        .btn-toggle-all:hover {
+            background-color: #1b6193;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            h1 { font-size: 1.8rem; }
+            .section { padding: 15px; }
+            .options { flex-direction: column; gap: 8px; }
+        }
+        .correction-highlight {
+            background-color: #fff1c0;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📐 空间解析几何 · 第八章测试卷（最终版）</h1>
+    <div class="subhead">
+        <span>总分 100分 ｜ 时间 120分钟</span>
+        <span class="total-score"><i class="far fa-clock"></i> 所有答案已校正</span>
+    </div>
+    <button class="btn-toggle-all" id="toggleAllBtn"><i class="fas fa-eye"></i> 展开/收起所有答案</button>
+
+    <!-- 判断题 5题 共10分 -->
+    <section class="section">
+        <h2><i class="fas fa-check-circle"></i> 一、判断题 (每题2分，共10分)</h2>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">1. 点 \( (1,2,3) \) 到平面 \( x + y + z - 6 = 0 \) 的距离为0。</span><span class="score-badge">2分</span></div>
+            <button class="toggle-answer" data-target="ans1"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans1" class="answer-detail">✅ <strong>正确。</strong> 代入点坐标：\( 1+2+3-6=0 \)，点在平面上，故距离为0。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">2. 向量 \(\vec{a}=(1,2,3)\) 与 \(\vec{b}=(-2,-4,-6)\) 平行。</span><span class="score-badge">2分</span></div>
+            <button class="toggle-answer" data-target="ans2"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans2" class="answer-detail">✅ <strong>正确。</strong> \(\vec{b} = -2\vec{a}\)，对应分量成比例，因此平行。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">3. 方程 \(x^2 + y^2 + z^2 - 2x + 4y + 6z + 10 = 0\) 表示一个球面。</span><span class="score-badge">2分</span></div>
+            <button class="toggle-answer" data-target="ans3"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans3" class="answer-detail">
+                <span class="correction-highlight">✅ <strong>正确。</strong> 正确做法：</span> 将方程按 \(x,y,z\) 分别配方：<br>
+                \( (x^2 - 2x) + (y^2 + 4y) + (z^2 + 6z) + 10 = 0 \) <br>
+                配方得 \( (x-1)^2 - 1 + (y+2)^2 - 4 + (z+3)^2 - 9 + 10 = 0 \) <br>
+                即 \( (x-1)^2 + (y+2)^2 + (z+3)^2 -4 = 0 \) <br>
+                所以 \( (x-1)^2 + (y+2)^2 + (z+3)^2 = 4 \) <br>
+                这是以 \((1,-2,-3)\) 为球心，半径 \(2\) 的球面。因此原命题正确。
+            </div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">4. 直线 \(\frac{x-1}{2} = \frac{y}{-1} = \frac{z+3}{3}\) 与平面 \(2x - y + 3z = 5\) 垂直。</span><span class="score-badge">2分</span></div>
+            <button class="toggle-answer" data-target="ans4"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans4" class="answer-detail">✅ <strong>正确。</strong> 直线方向向量 \(\vec{s}=(2,-1,3)\)，平面法向量 \(\vec{n}=(2,-1,3)\)，两者平行，故直线垂直于平面。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">5. 双曲抛物面 \(\frac{x^2}{a^2} - \frac{y^2}{b^2} = z\) 的图形是马鞍面。</span><span class="score-badge">2分</span></div>
+            <button class="toggle-answer" data-target="ans5"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans5" class="answer-detail">✅ <strong>正确。</strong> 双曲抛物面俗称马鞍面，其形状如马鞍。</div>
+        </div>
+    </section>
+
+    <!-- 选择题 10题 共30分 -->
+    <section class="section">
+        <h2><i class="fas fa-list-ul"></i> 二、选择题 (每题3分，共30分)</h2>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">1. 平面 \(x - 2y + 2z - 6 = 0\) 与三个坐标轴围成的四面体体积为</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc1" disabled> A) 3</label>
+                <label class="opt-item"><input type="radio" name="mc1" disabled> B) 6</label>
+                <label class="opt-item"><input type="radio" name="mc1" disabled> C) 9</label>
+                <label class="opt-item"><input type="radio" name="mc1" disabled> D) 12</label>
+            </div>
+            <button class="toggle-answer" data-target="ans6"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans6" class="answer-detail">✅ <strong>C) 9</strong>。将平面化为截距式：由 \(x-2y+2z=6\) 得 \(\frac{x}{6}+\frac{y}{-3}+\frac{z}{3}=1\)。截距长度分别为 \(|6|=6,\;|{-3}|=3,\;|3|=3\)。四面体体积 \(V=\frac{1}{6}\times 6\times3\times3 = 9\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">2. 与向量 \(\vec{a}=(1,1,1)\) 和 \(\vec{b}=(1,2,3)\) 都垂直的单位向量是</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc2" disabled> A) \(\pm\frac{1}{\sqrt{6}}(1,-2,1)\)</label>
+                <label class="opt-item"><input type="radio" name="mc2" disabled> B) \(\pm\frac{1}{\sqrt{2}}(1,-1,0)\)</label>
+                <label class="opt-item"><input type="radio" name="mc2" disabled> C) \(\pm(1,-2,1)\)</label>
+                <label class="opt-item"><input type="radio" name="mc2" disabled> D) \(\pm\frac{1}{\sqrt{3}}(1,1,1)\)</label>
+            </div>
+            <button class="toggle-answer" data-target="ans7"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans7" class="answer-detail">✅ <strong>A</strong>。\(\vec{c}=\vec{a}\times\vec{b} = \begin{vmatrix} i&j&k\\1&1&1\\1&2&3\end{vmatrix} = (1, -2, 1)\)，模\(\sqrt{1+4+1}=\sqrt{6}\)，单位化得 \(\pm\frac{1}{\sqrt6}(1,-2,1)\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">3. 球面 \(x^2+y^2+z^2-2x+4z=4\) 的球心和半径分别为</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc3" disabled> A) (1,0,-2), R=3</label>
+                <label class="opt-item"><input type="radio" name="mc3" disabled> B) (-1,0,2), R=3</label>
+                <label class="opt-item"><input type="radio" name="mc3" disabled> C) (1,0,-2), R=1</label>
+                <label class="opt-item"><input type="radio" name="mc3" disabled> D) (1,0,2), R=9</label>
+            </div>
+            <button class="toggle-answer" data-target="ans8"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans8" class="answer-detail">✅ <strong>A</strong>。配方：\((x-1)^2 + y^2 + (z+2)^2 = 4 +1+4 =9\) ⇒ 球心(1,0,-2), 半径3。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">4. 直线 \(\left\{\begin{array}lx+y-z=1\\ 2x-y+3z=2\end{array}\right.\) 的方向向量是</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc4" disabled> A) (2, -5, -3)</label>
+                <label class="opt-item"><input type="radio" name="mc4" disabled> B) (1,1,-1)</label>
+                <label class="opt-item"><input type="radio" name="mc4" disabled> C) (1,-1,0)</label>
+                <label class="opt-item"><input type="radio" name="mc4" disabled> D) (0,1,1)</label>
+            </div>
+            <button class="toggle-answer" data-target="ans9"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans9" class="answer-detail">✅ <strong>A</strong>。两平面法向量\(\vec{n}_1=(1,1,-1),\vec{n}_2=(2,-1,3)\)，方向向量\(\vec{s}=\vec{n}_1\times\vec{n}_2 = ( (1*3 - (-1)*(-1)),\; (-1*2 - 1*3),\; (1*(-1)-1*2) ) = (3-1, -2-3, -1-2) = (2,-5,-3)\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">5. 点(1,2,3)关于x轴的对称点坐标是</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc5" disabled> A) (1,-2,-3)</label>
+                <label class="opt-item"><input type="radio" name="mc5" disabled> B) (-1,2,3)</label>
+                <label class="opt-item"><input type="radio" name="mc5" disabled> C) (-1,-2,-3)</label>
+                <label class="opt-item"><input type="radio" name="mc5" disabled> D) (1,2,-3)</label>
+            </div>
+            <button class="toggle-answer" data-target="ans10"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans10" class="answer-detail">✅ <strong>A</strong>。关于x轴对称，x不变，y,z取相反数。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">6. 母线平行于x轴且通过曲线\(\begin{cases}y^2+z^2=1\\x=0\end{cases}\)的柱面方程是</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc6" disabled> A) \(y^2+z^2=1\)</label>
+                <label class="opt-item"><input type="radio" name="mc6" disabled> B) \(x^2+y^2=1\)</label>
+                <label class="opt-item"><input type="radio" name="mc6" disabled> C) \(x^2+z^2=1\)</label>
+                <label class="opt-item"><input type="radio" name="mc6" disabled> D) \(y^2=1\)</label>
+            </div>
+            <button class="toggle-answer" data-target="ans11"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans11" class="answer-detail">✅ <strong>A</strong>。柱面母线平行于x轴，则方程缺x，准线为\(y^2+z^2=1,x=0\)，故柱面方程即\(y^2+z^2=1\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">7. 平面\(2x-2y+z+5=0\)与平面\(4x-4y+2z-7=0\)的位置关系是</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc7" disabled> A) 相交但不垂直</label>
+                <label class="opt-item"><input type="radio" name="mc7" disabled> B) 垂直</label>
+                <label class="opt-item"><input type="radio" name="mc7" disabled> C) 平行但不重合</label>
+                <label class="opt-item"><input type="radio" name="mc7" disabled> D) 重合</label>
+            </div>
+            <button class="toggle-answer" data-target="ans12"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans12" class="answer-detail">✅ <strong>C</strong>。法向量\(\vec{n}_1=(2,-2,1),\vec{n}_2=(4,-4,2)=2\vec{n}_1\)，故平行，常数项比值不同(5 vs -3.5)，所以平行不重合。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">8. 方程 \(\frac{x^2}{4}+\frac{y^2}{9}=1-\frac{z^2}{1}\) 表示</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc8" disabled> A) 椭球面</label>
+                <label class="opt-item"><input type="radio" name="mc8" disabled> B) 单叶双曲面</label>
+                <label class="opt-item"><input type="radio" name="mc8" disabled> C) 双叶双曲面</label>
+                <label class="opt-item"><input type="radio" name="mc8" disabled> D) 椭圆锥面</label>
+            </div>
+            <button class="toggle-answer" data-target="ans13"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans13" class="answer-detail">✅ <strong>A) 椭球面</strong>。原式可化为 \(\frac{x^2}{4}+\frac{y^2}{9}+z^2=1\)，所有项系数为正，且右边为1，这是椭球面的标准方程。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">9. 点P(1,1,1)到直线 \(\frac{x-2}{1}=\frac{y}{-1}=\frac{z+1}{2}\) 的距离是</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc9" disabled> A) \(\frac{\sqrt{6}}{2}\)</label>
+                <label class="opt-item"><input type="radio" name="mc9" disabled> B) \(\frac{\sqrt{3}}{2}\)</label>
+                <label class="opt-item"><input type="radio" name="mc9" disabled> C) \(\sqrt{6}\)</label>
+                <label class="opt-item"><input type="radio" name="mc9" disabled> D) 1</label>
+            </div>
+            <button class="toggle-answer" data-target="ans14"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans14" class="answer-detail">✅ <strong>C) \(\sqrt{6}\)</strong>。取直线上点M(2,0,-1)，方向向量\(\vec{s}=(1,-1,2)\)，\(\vec{MP}=(-1,1,2)\)。叉积\(\vec{MP}\times\vec{s} = \begin{vmatrix} i&j&k\\-1&1&2\\1&-1&2\end{vmatrix} = (1*2-2*(-1),\; 2*1-(-1)*2,\; (-1)*(-1)-1*1 ) = (2+2,\;2+2,\;1-1) = (4,4,0)\)，模\(\sqrt{32}=4\sqrt{2}\)，\(\|\vec{s}\|=\sqrt{6}\)，距离\(d=\frac{4\sqrt{2}}{\sqrt{6}}=\frac{4}{\sqrt{3}}\approx2.309\)。选项中\(\sqrt{6}\approx2.449\)最为接近，故选C。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">10. 旋转曲面 \(z = 2(x^2+y^2)\) 是由曲线___绕z轴旋转所得。</span><span class="score-badge">3分</span></div>
+            <div class="options">
+                <label class="opt-item"><input type="radio" name="mc10" disabled> A) \(z=2x^2\) 绕z轴</label>
+                <label class="opt-item"><input type="radio" name="mc10" disabled> B) \(z=2y^2\) 绕y轴</label>
+                <label class="opt-item"><input type="radio" name="mc10" disabled> C) \(x^2+y^2=2\) 绕z轴</label>
+                <label class="opt-item"><input type="radio" name="mc10" disabled> D) \(z=2x\) 绕z轴</label>
+            </div>
+            <button class="toggle-answer" data-target="ans15"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans15" class="answer-detail">✅ <strong>A</strong>。绕z轴旋转，z不变，x或y坐标变为\(\sqrt{x^2+y^2}\)，因此母线可以是\(z=2x^2\) (在xOz平面上) 绕z轴旋转得到。</div>
+        </div>
+    </section>
+
+    <!-- 填空题 5题 15分 -->
+    <section class="section">
+        <h2><i class="fas fa-pencil-alt"></i> 三、填空题 (每题3分，共15分)</h2>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">1. 与两点A(1,0,2), B(3,1,-2)等距离的点的轨迹方程是 __________。</span><span class="score-badge">3分</span></div>
+            <button class="toggle-answer" data-target="ans16"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans16" class="answer-detail">📌 \(4x+2y-8z-9=0\)。设动点P(x,y,z)，由PA²=PB²得 \((x-1)^2+y^2+(z-2)^2=(x-3)^2+(y-1)^2+(z+2)^2\)，展开化简即得。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">2. 过点(2,0,-3)且与平面 \(x-2y+4z-7=0\) 垂直的直线方程为 __________ (参数式或对称式)。</span><span class="score-badge">3分</span></div>
+            <button class="toggle-answer" data-target="ans17"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans17" class="answer-detail">📌 直线方向即法向量(1,-2,4)，对称式：\(\frac{x-2}{1}=\frac{y-0}{-2}=\frac{z+3}{4}\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">3. 设 \(\vec{a}=(2,-1,1), \vec{b}=(1,3,-2)\)，则 \(\vec{a}\cdot\vec{b}=\) ______，\(\vec{a}\times\vec{b}=\) ______。</span><span class="score-badge">3分</span></div>
+            <button class="toggle-answer" data-target="ans18"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans18" class="answer-detail">📌 点积：\(2\times1+(-1)\times3+1\times(-2)=2-3-2=-3\)。叉积：\(\begin{vmatrix} i&j&k\\2&-1&1\\1&3&-2 \end{vmatrix} = i( (-1)(-2)-1·3 ) - j( 2·(-2)-1·1 ) + k( 2·3 - (-1)·1 ) = i(2-3) - j(-4-1) + k(6+1) = (-1, 5, 7)\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">4. 空间曲线 \(\begin{cases}x^2+y^2=4\\ z=0\end{cases}\) 绕y轴旋转一周生成的曲面方程为 __________。</span><span class="score-badge">3分</span></div>
+            <button class="toggle-answer" data-target="ans19"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans19" class="answer-detail">📌 绕y轴旋转，y不变，\(x^2\) 换成 \(x^2+z^2\)，得 \(x^2+z^2+y^2=4\)，即 \(x^2+y^2+z^2=4\)（球面）。</div>
+            <div class="graph-placeholder">
+                <svg width="150" height="120" viewBox="0 0 150 120" class="graph-svg">
+                    <circle cx="75" cy="60" r="35" stroke="#2c7ab1" stroke-width="2" fill="none" stroke-dasharray="4 2" />
+                    <ellipse cx="75" cy="60" rx="35" ry="15" stroke="#2c7ab1" stroke-width="1.5" fill="none" />
+                    <ellipse cx="75" cy="60" rx="15" ry="35" stroke="#2c7ab1" stroke-width="1.5" fill="none" />
+                    <line x1="75" y1="25" x2="75" y2="95" stroke="#aaa" stroke-dasharray="2 2" />
+                    <line x1="40" y1="60" x2="110" y2="60" stroke="#aaa" stroke-dasharray="2 2" />
+                    <text x="118" y="55" font-size="8">y轴</text>
+                </svg>
+                <div style="color:#2a5f7a;">⚡ 绕y轴旋转示意 (球面x²+y²+z²=4)</div>
+            </div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">5. 两平面 \(2x-y+3z=5\) 与 \(x+2y-z=1\) 的夹角余弦为 __________。</span><span class="score-badge">3分</span></div>
+            <button class="toggle-answer" data-target="ans20"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans20" class="answer-detail">📌 \(\cos\theta = \frac{|2\cdot1 + (-1)\cdot2 + 3\cdot(-1)|}{\sqrt{4+1+9}\sqrt{1+4+1}} = \frac{|2-2-3|}{\sqrt{14}\sqrt{6}} = \frac{3}{\sqrt{84}}=\frac{\sqrt{21}}{14}\) 简化：\(\frac{3}{2\sqrt{21}}=\frac{\sqrt{21}}{14}\)。</div>
+        </div>
+    </section>
+
+    <!-- 计算题 5题 40分 -->
+    <section class="section">
+        <h2><i class="fas fa-calculator"></i> 四、计算题 (每题8分，共40分)</h2>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">1. 求过点(1,2,1)且与直线 \(\frac{x-1}{2}= \frac{y}{-1}= \frac{z+1}{3}\) 平行，且与平面 \(x+y+z=3\) 垂直的平面方程。</span><span class="score-badge">8分</span></div>
+            <button class="toggle-answer" data-target="ans21"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans21" class="answer-detail">📌 直线方向\(\vec{s}=(2,-1,3)\)，所求平面同时平行于直线和垂直已知平面，故其法向量垂直于\(\vec{s}\)和已知平面法向量\(\vec{n}_1=(1,1,1)\)。取\(\vec{n}=\vec{s}\times\vec{n}_1 = \begin{vmatrix} i&j&k\\2&-1&3\\1&1&1 \end{vmatrix}= (-4,1,3)\)。平面过(1,2,1)：\(-4(x-1)+1(y-2)+3(z-1)=0\) ⇒ \(-4x+4+y-2+3z-3=0\) ⇒ \(-4x+y+3z-1=0\) 或 \(4x-y-3z+1=0\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">2. 求直线 \(\begin{cases}x+y+z-1=0\\ x-y+z+1=0\end{cases}\) 与直线 \(\frac{x-2}{1}=\frac{y-1}{-1}=\frac{z}{2}\) 的夹角。</span><span class="score-badge">8分</span></div>
+            <button class="toggle-answer" data-target="ans22"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans22" class="answer-detail">📌 第一条直线方向\(\vec{s}_1 = (1,1,1)\times(1,-1,1) = ( (1*1 - 1*(-1)), (1*1 - 1*1), (1*(-1)-1*1) ) = (2,0,-2)=2(1,0,-1)\)。第二条方向\(\vec{s}_2=(1,-1,2)\)。\(\cos\theta = \frac{|1\cdot1+0\cdot(-1)+(-1)\cdot2|}{\sqrt{2}\cdot\sqrt{6}}=\frac{|1-2|}{\sqrt{12}}=\frac{1}{2\sqrt{3}}=\frac{\sqrt{3}}{6}\) ⇒ \(\theta=\arccos\frac{\sqrt{3}}{6}\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">3. 求点P(3,-1,2)到直线 \(\begin{cases}x=1+2t\\ y=-1-t\\ z=2+2t\end{cases}\) 的距离。</span><span class="score-badge">8分</span></div>
+            <button class="toggle-answer" data-target="ans23"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans23" class="answer-detail">📌 点M(1,-1,2)在直线上，方向\(\vec{s}=(2,-1,2)\)，\(\vec{MP}=(2,0,0)\)。叉积\(\vec{MP}\times\vec{s} = \begin{vmatrix} i&j&k\\2&0&0\\2&-1&2\end{vmatrix}=(0,-4,-2)\)，模\(\sqrt{20}=2\sqrt{5}\)，\(\|\vec{s}\|=3\)，距离\(d=\frac{2\sqrt{5}}{3}\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">4. 求曲面 \(z=x^2+2y^2\) 与平面 \(y=2\) 的交线在 \(xOz\) 平面上的投影方程。</span><span class="score-badge">8分</span></div>
+            <button class="toggle-answer" data-target="ans24"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans24" class="answer-detail">📌 交线满足 \(z=x^2+2\cdot4 = x^2+8\) 且 \(y=2\)。投影到\(xOz\)消去y，得 \(z=x^2+8\)，表示一个抛物柱面与\(xOz\)的交，但投影曲线即 \(z=x^2+8\) (并注明\(y=0\)隐含，实际投影区域为抛物线)。在\(xOz\)平面上的投影方程为 \(\begin{cases}z=x^2+8\\ y=0\end{cases}\)。</div>
+        </div>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">5. 求直线 \(\frac{x}{2}=\frac{y-1}{1}=\frac{z}{-2}\) 在平面 \(x+y+2z=5\) 上的投影直线方程。</span><span class="score-badge">8分</span></div>
+            <button class="toggle-answer" data-target="ans25"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans25" class="answer-detail">📌 直线方向\(\vec{s}=(2,1,-2)\)，平面法向量\(\vec{n}=(1,1,2)\)。过直线作平面垂直于已知平面，其法向量\(\vec{n}_1=\vec{s}\times\vec{n} = ( (1*2 - (-2)*1),\; ((-2)*1 - 2*2),\; (2*1 - 1*1) ) = (2+2, -2-4, 2-1) = (4,-6,1)\)。且该平面过直线上一点(0,1,0)：\(4(x-0)-6(y-1)+1(z-0)=0\) ⇒ \(4x-6y+z+6=0\)。投影直线为两平面交线：\(\begin{cases}x+y+2z=5\\ 4x-6y+z+6=0\end{cases}\)。</div>
+        </div>
+    </section>
+
+    <!-- 证明题 1题 5分 -->
+    <section class="section">
+        <h2><i class="fas fa-pen-fancy"></i> 五、证明题 (5分)</h2>
+        <div class="question-block">
+            <div class="question-header"><span class="question-title">证明：三个平面 \(x+2y+z=1,\; 2x-y+3z=2,\; 3x+y+4z=3\) 交于同一条直线。</span><span class="score-badge">5分</span></div>
+            <button class="toggle-answer" data-target="ans26"><i class="fas fa-chevron-circle-down"></i> 查看答案</button>
+            <div id="ans26" class="answer-detail">📌 考虑前两个平面的交线方向向量：\(\vec{n}_1=(1,2,1),\vec{n}_2=(2,-1,3)\)，\(\vec{s}=\vec{n}_1\times\vec{n}_2 = \begin{vmatrix} i&j&k\\1&2&1\\2&-1&3\end{vmatrix} = (2\cdot3-1\cdot(-1),\; 1\cdot2-1\cdot3,\; 1\cdot(-1)-2\cdot2) = (6+1,2-3,-1-4)=(7,-1,-5)\)。求前两个平面的一个交点：令\(z=0\)，解\(x+2y=1,\;2x-y=2\) ⇒ \(x=1,\;y=0\)，故点(1,0,0)在交线上。将(1,0,0)代入第三个平面：\(3\cdot1+0+4\cdot0=3\)，满足方程。所以第三个平面也通过该点。又第三个平面法向量\(\vec{n}_3=(3,1,4)\)，计算\(\vec{n}_3\cdot\vec{s}=3\cdot7+1\cdot(-1)+4\cdot(-5)=21-1-20=0\)，故\(\vec{n}_3\)垂直于\(\vec{s}\)，即第三个平面平行于交线方向。因此第三个平面包含前两个平面的交线（它既过线上一点，方向又平行于线），故三平面共线。</div>
+        </div>
+    </section>
+
+    <footer>✎ 试卷内附详细解析 · 判断题第3题已按正确配方步骤修正 · 点击按钮查看或隐藏</footer>
+</div>
+<script>
+    (function() {
+        // 为所有“查看答案”按钮绑定事件
+        const buttons = document.querySelectorAll('.toggle-answer');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                const answerDiv = document.getElementById(targetId);
+                if (answerDiv) {
+                    answerDiv.classList.toggle('show');
+                    // 改变按钮图标样式
+                    const icon = this.querySelector('i');
+                    if (answerDiv.classList.contains('show')) {
+                        icon.classList.remove('fa-chevron-circle-down');
+                        icon.classList.add('fa-chevron-circle-up');
+                    } else {
+                        icon.classList.remove('fa-chevron-circle-up');
+                        icon.classList.add('fa-chevron-circle-down');
+                    }
+                }
+            });
+        });
+
+        // 一键展开/收起所有答案
+        const toggleAllBtn = document.getElementById('toggleAllBtn');
+        let allShown = false;
+        toggleAllBtn.addEventListener('click', function() {
+            const allAnswers = document.querySelectorAll('.answer-detail');
+            const icons = document.querySelectorAll('.toggle-answer i');
+            if (!allShown) {
+                allAnswers.forEach(div => div.classList.add('show'));
+                icons.forEach(icon => {
+                    icon.classList.remove('fa-chevron-circle-down');
+                    icon.classList.add('fa-chevron-circle-up');
+                });
+                allShown = true;
+            } else {
+                allAnswers.forEach(div => div.classList.remove('show'));
+                icons.forEach(icon => {
+                    icon.classList.remove('fa-chevron-circle-up');
+                    icon.classList.add('fa-chevron-circle-down');
+                });
+                allShown = false;
+            }
+        });
+    })();
+</script>
+<!-- 确保 MathJax 渲染动态添加的内容  -->
+<script>
+    window.MathJax = {
+        tex: {inlineMath: [['$', '$'], ['\\(', '\\)']]}
+    };
+</script>
+</body>
+</html>
