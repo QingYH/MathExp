@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>GeoGebra 空间解析几何 & 多重积分区域 | 曲面库·积分域可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f4fa 0%, #e3eaf2 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 1450px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+            padding: 1.2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.4rem;
+        }
+        .header h1 {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e4663, #2c7a5e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .header p {
+            color: #2c5a6e;
+            font-size: 0.88rem;
+            margin-top: 0.3rem;
+        }
+
+        .mode-tabs {
+            display: flex;
+            gap: 0.9rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .mode-btn {
+            background: #ffffffdd;
+            border: none;
+            padding: 0.65rem 1.6rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #1e4663;
+            transition: all 0.25s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            font-family: inherit;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .mode-btn.active {
+            background: #1e4663;
+            color: white;
+            box-shadow: 0 8px 18px rgba(30,70,99,0.25);
+        }
+        .mode-btn:active { transform: scale(0.96); }
+
+        .ggb-container {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 12px 28px -8px rgba(0,0,0,0.15);
+            overflow: hidden;
+            margin-bottom: 1.8rem;
+        }
+        .ggb-frame {
+            width: 100%;
+            border: none;
+            display: block;
+            background: #fff;
+            min-height: 500px;
+            height: 62vh;
+        }
+
+        .guide-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.4rem;
+            margin-top: 0.6rem;
+        }
+        .card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 1.3rem;
+            padding: 1.2rem;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.2s;
+        }
+        .card:hover { background: #ffffff; transform: translateY(-2px); }
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e4a6e;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid #3c9c7c;
+            padding-left: 12px;
+        }
+        .card h4 {
+            font-size: 1rem;
+            margin: 0.9rem 0 0.4rem;
+            color: #2c7a5e;
+            font-weight: 700;
+        }
+        .card p, .card li {
+            font-size: 0.85rem;
+            line-height: 1.45;
+            color: #2c3e4e;
+        }
+        .card ul {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0;
+        }
+        .card li {
+            margin: 0.45rem 0;
+        }
+        .code-inline {
+            background: #eef2f7;
+            padding: 0.2rem 0.55rem;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #c13a2c;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            display: inline-block;
+            margin: 0.15rem 0.1rem;
+            word-break: break-word;
+        }
+        .code-inline:hover {
+            background: #d4e2ec;
+            transform: scale(1.01);
+        }
+        .badge {
+            background: #e1f0ea;
+            color: #1f6e52;
+            border-radius: 30px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.2rem;
+        }
+        hr {
+            margin: 0.8rem 0;
+            border: 0;
+            height: 1px;
+            background: #d4e0e8;
+        }
+        .tip-box {
+            background: #eef3fa;
+            border-left: 4px solid #3c9c7c;
+            padding: 0.6rem 0.8rem;
+            border-radius: 12px;
+            margin: 0.7rem 0;
+            font-size: 0.8rem;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #4a6f86;
+            margin-top: 1.6rem;
+        }
+        .surface-category {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.5rem 0;
+        }
+        @media (max-width: 680px) {
+            body { padding: 10px; }
+            .mode-btn { padding: 0.45rem 1rem; font-size: 0.85rem; }
+            .header h1 { font-size: 1.35rem; }
+            .ggb-frame { height: 440px; min-height: 440px; }
+            .card h3 { font-size: 1.1rem; }
+            .card { padding: 1rem; }
+        }
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0.8rem 0 0.2rem;
+        }
+        .quick-badge {
+            background: #eef3fc;
+            border-radius: 40px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #1e5a7a;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="header">
+        <h1>📐 空间解析几何 & 多重积分区域实验室</h1>
+        <p>二次曲面 · 参数曲面 · 积分区域可视化 · 体积分演示 | 3D交互教学</p>
+    </div>
+
+    <div class="mode-tabs">
+        <button id="mode2dBtn" class="mode-btn">📈 2D 绘图</button>
+        <button id="mode3dBtn" class="mode-btn active">🧊 3D 空间几何 & 积分域</button>
+    </div>
+
+    <div class="ggb-container">
+        <iframe id="ggbFrame" class="ggb-frame" title="GeoGebra 空间几何与多重积分" allowfullscreen></iframe>
+    </div>
+
+    <!-- 扩充空间解析几何曲面 + 多重积分区域案例 -->
+    <div class="guide-section">
+        <!-- 卡片1: 二次曲面经典案例 (6种标准型) -->
+        <div class="card">
+            <h3>🔷 二次曲面标准库 (空间解析几何)</h3>
+            <p><span class="badge">椭球面</span> <code class="code-inline">x^2/4 + y^2/9 + z^2/16 = 1</code> 三轴不等椭球，输入 <code class="code-inline">x^2 + y^2 + z^2 = 9</code> 球面</p>
+            <p><span class="badge">单叶双曲面</span> <code class="code-inline">x^2/4 + y^2/9 - z^2/16 = 1</code> 冷却塔形状 | <span class="badge">双叶双曲面</span> <code class="code-inline">x^2/4 - y^2/9 - z^2/16 = 1</code></p>
+            <p><span class="badge">椭圆抛物面</span> <code class="code-inline">z = x^2/4 + y^2/9</code> (开口向上) | <span class="badge">双曲抛物面(马鞍面)</span> <code class="code-inline">z = x^2/4 - y^2/9</code></p>
+            <p><span class="badge">椭圆锥面</span> <code class="code-inline">z^2 = x^2/4 + y^2/9</code> 或 <code class="code-inline">x^2/4 + y^2/9 = z^2</code> | <span class="badge">椭圆柱面</span> <code class="code-inline">x^2/4 + y^2/9 = 1</code> (无限延伸柱体)</p>
+            <h4>🎨 参数曲面演示</h4>
+            <ul>
+                <li>环面(Torus): <code class="code-inline">曲面((2+cos(u))cos(v), (2+cos(u))sin(v), sin(u), u, 0, 2π, v, 0, 2π)</code></li>
+                <li>螺旋曲面: <code class="code-inline">曲面(u cos(v), u sin(v), v, u, 0, 2, v, 0, 4π)</code></li>
+                <li>莫比乌斯带: <code class="code-inline">曲面((1+0.5u cos(v/2))cos(v), (1+0.5u cos(v/2))sin(v), 0.5u sin(v/2), u, -0.5, 0.5, v, 0, 2π)</code></li>
+            </ul>
+            <div class="tip-box">
+                💡 <strong>交互技巧</strong>：在3D模式下，右键曲面可修改透明度，便于观察内部结构。使用 <code class="code-inline">平面(z=0)</code> 截取曲面得到交线。
+            </div>
+        </div>
+
+        <!-- 卡片2: 多重积分区域可视化 (二重/三重积分域) -->
+        <div class="card">
+            <h3>📦 多重积分区域 · 体积分域</h3>
+            <p><span class="badge">直角坐标二重积分区域</span> 矩形域: <code class="code-inline">多边形((0,0,0), (2,0,0), (2,3,0), (0,3,0))</code> 投影到xOy平面，再用 <code class="code-inline">棱柱</code> 或 <code class="code-inline">曲面</code> 构建立体。</p>
+            <p><span class="badge">X型/Y型区域</span> 输入 <code class="code-inline">不等式(0 ≤ y ≤ x^2, x, 0, 2)</code> 绘制2D区域，3D中拉伸: <code class="code-inline">曲面((x, y, t), t, 0, f(x,y))</code> 构建立体。</p>
+            <p><span class="badge">柱坐标积分区域</span> 圆柱体: <code class="code-inline">曲面(r cos(θ), r sin(θ), z, r, 0, 2, θ, 0, 2π, z, 0, 3)</code> 圆柱区域。圆锥: <code class="code-inline">曲面(r cos(θ), r sin(θ), r, r, 0, 2, θ, 0, 2π)</code></p>
+            <p><span class="badge">球坐标积分区域</span> 球体: <code class="code-inline">曲面(ρ sin(φ)cos(θ), ρ sin(φ)sin(θ), ρ cos(φ), ρ, 0, 2, φ, 0, π, θ, 0, 2π)</code>；球扇形区域限定φ范围。</p>
+            <h4>🔥 典型三重积分域案例</h4>
+            <ul>
+                <li>抛物面与平面围域: <code class="code-inline">z = x^2 + y^2</code> 和 <code class="code-inline">z = 4</code> 之间的区域 → 使用 <code class="code-inline">相交路径(曲面, 平面)</code> 得到交线圆。</li>
+                <li>圆柱与锥体组合: <code class="code-inline">x^2 + y^2 ≤ 4</code>, <code class="code-inline">|z| ≤ sqrt(x^2+y^2)</code> 双锥区域。</li>
+                <li>球体与圆柱体相交(Viviani区域): <code class="code-inline">x^2+y^2+z^2 ≤ 4</code> 且 <code class="code-inline">x^2+y^2 ≤ 2x</code>，用 <code class="code-inline">相交路径</code> 展示交线。</li>
+            </ul>
+            <div class="tip-box">
+                📌 <strong>积分域绘制命令</strong>：<code class="code-inline">区域(x^2+y^2 ≤ 4, z ≥ 0, z ≤ 4-x^2-y^2)</code> 直接绘制三维立体区域。
+            </div>
+        </div>
+
+        <!-- 卡片3: 旋转曲面与投影区域 (积分限确定) -->
+        <div class="card">
+            <h3>🔄 旋转曲面 & 投影区域可视化</h3>
+            <p><span class="badge">绕x轴旋转曲面</span> <code class="code-inline">曲面(u, f(u)cos(v), f(u)sin(v), u, a, b, v, 0, 2π)</code> 例如 <code class="code-inline">f(u)=u^2</code> 得旋转抛物面。</p>
+            <p><span class="badge">绕y轴旋转曲面</span> <code class="code-inline">曲面(f(u)cos(v), u, f(u)sin(v), u, a, b, v, 0, 2π)</code> 绕y轴。</p>
+            <p><span class="badge">空间曲线投影</span> 输入曲线 <code class="code-inline">c: 曲线(cos(t), sin(t), t, t, 0, 4π)</code>，投影到xOy平面: <code class="code-inline">垂线(c, xOy平面)</code> 得到投影曲线。</p>
+            <p><span class="badge">二重积分投影区域</span> 从立体向坐标平面投影: 使用 <code class="code-inline">相交曲线(曲面, z=0)</code> 得到底面边界，再用 <code class="code-inline">多边形</code> 或 <code class="code-inline">区域</code> 填充。</p>
+            <h4>📐 极坐标积分区域示例</h4>
+            <ul>
+                <li>心形线区域: <code class="code-inline">曲线(2+2cos(θ), θ, 0, 2π)</code> 极坐标曲线，内部区域用 <code class="code-inline">区域(0 ≤ r ≤ 2+2cos(θ))</code></li>
+                <li>圆环区域: <code class="code-inline">区域(1 ≤ r ≤ 2)</code> 极坐标环形。</li>
+                <li>玫瑰线区域: <code class="code-inline">曲线(3cos(2θ), θ, 0, 2π)</code> 四叶玫瑰线包围区域。</li>
+            </ul>
+            <div class="tip-box">
+                🧠 <strong>教学建议</strong>：使用滑动条动态展示旋转体生成过程: <code class="code-inline">v=滑动条(0, 2π, 0.1)</code> 构建部分旋转体。
+            </div>
+        </div>
+
+        <!-- 卡片4: 空间曲线与曲面交线 (积分边界) -->
+        <div class="card">
+            <h3>✂️ 曲面交线 · 积分边界曲线</h3>
+            <p><span class="badge">圆柱与平面交线</span> <code class="code-inline">x^2+y^2=4</code> 与 <code class="code-inline">z=x+2</code> 相交得椭圆曲线: <code class="code-inline">相交曲线(圆柱, 平面)</code></p>
+            <p><span class="badge">球面与锥面交线</span> <code class="code-inline">x^2+y^2+z^2=9</code> 与 <code class="code-inline">z^2=x^2+y^2</code> 相交得两个圆。</p>
+            <p><span class="badge">参数化交线用于线积分</span> 交线可提取为 <code class="code-inline">曲线</code> 对象，计算 <code class="code-inline">长度(曲线)</code> 或线积分。</p>
+            <p><span class="badge">截面切片动画</span> 创建滑动条 <code class="code-inline">c=滑动条(-3,3,0.1)</code>，输入 <code class="code-inline">平面(z=c)</code> 动态观察曲面截面变化，理解二重积分截面法。</p>
+            <h4>🎯 曲面积分投影区域案例</h4>
+            <ul>
+                <li>曲面 <code class="code-inline">z = x^2 + y^2</code> 在xOy投影: 直接观察底面圆域。</li>
+                <li>用 <code class="code-inline">曲面(x, y, f(x,y), x, -2, 2, y, -2, 2)</code> 并设置透明度，投影区域用 <code class="code-inline">区域(x^2+y^2 ≤ 4)</code> 突出显示。</li>
+                <li>向量场通过曲面的通量演示: 使用 <code class="code-inline">向量场( (x, y, z) )</code> 结合曲面。</li>
+            </ul>
+            <div class="tip-box">
+                🌟 <strong>高级应用</strong>：使用 <code class="code-inline">相交路径(球面, 圆柱)</code> 得到维维亚尼曲线，用于线积分教学。
+            </div>
+        </div>
+
+        <!-- 卡片5: 多重积分数值计算与CAS示例 -->
+        <div class="card">
+            <h3>🧮 多重积分数值计算 (CAS)</h3>
+            <p><span class="badge">二重积分计算</span> 在CAS视图输入: <code class="code-inline">积分(积分(x^2+y^2, x, -1, 1), y, -1, 1)</code> 得矩形域积分。</p>
+            <p><span class="badge">极坐标二重积分</span> <code class="code-inline">积分(积分(r^2 * r, r, 0, 2), θ, 0, 2π)</code> 计算圆域上 <code class="code-inline">x^2+y^2</code> 积分。</p>
+            <p><span class="badge">三重积分(直角坐标)</span> <code class="code-inline">积分(积分(积分(x+y+z, z, 0, 1-x-y), y, 0, 1-x), x, 0, 1)</code> 四面体区域。</p>
+            <p><span class="badge">柱坐标三重积分</span> <code class="code-inline">积分(积分(积分(r * r, z, 0, 4-r^2), r, 0, 2), θ, 0, 2π)</code> 计算抛物面体积。</p>
+            <h4>📊 体积计算可视化验证</h4>
+            <ul>
+                <li>球体体积: <code class="code-inline">体积(x^2+y^2+z^2 ≤ 9)</code> 直接计算数值。</li>
+                <li>旋转体体积: <code class="code-inline">体积(曲面(u, f(u)cos(v), f(u)sin(v), u, 0, 2, v, 0, 2π))</code> 得到数值结果。</li>
+                <li>两曲面之间体积: <code class="code-inline">体积(曲面1, 曲面2, 投影区域)</code> 快速计算。</li>
+            </ul>
+            <div class="tip-box">
+                📈 <strong>教学联动</strong>：将CAS计算结果与3D图形对比，验证几何意义。点击代码块复制后粘贴到CAS视图运行。
+            </div>
+        </div>
+
+        <!-- 卡片6: 综合案例 + GeoGebra 通用指南 -->
+        <div class="card">
+            <h3>📚 综合案例 & GeoGebra 操作指南</h3>
+            <p><span class="badge">案例1: 椭球与平面相交求截面面积</span> 输入 <code class="code-inline">椭球: x^2/9+y^2/4+z^2=1</code>，<code class="code-inline">平面: x+y+z=1</code>，<code class="code-inline">相交曲线(椭球, 平面)</code> 得到椭圆，右键测量面积。</p>
+            <p><span class="badge">案例2: 圆柱与抛物面包围区域体积</span> 区域: <code class="code-inline">区域(x^2+y^2 ≤ 4, z ≥ 0, z ≤ 4-x^2-y^2)</code>，右键属性可查看体积近似值。</p>
+            <p><span class="badge">案例3: 参数曲面族的动画演示</span> 创建滑动条 <code class="code-inline">k=滑动条(0,2,0.01)</code>，输入 <code class="code-inline">曲面(k*u*cos(v), k*u*sin(v), u^2, u, 0, 2, v, 0, 2π)</code> 动态生长曲面。</p>
+            <hr>
+            <h4>🎮 GeoGebra 3D 通用操作指南</h4>
+            <ul>
+                <li><strong>视图控制</strong>：鼠标右键拖拽旋转，Shift+右键平移，滚轮缩放。手机双指旋转/缩放。</li>
+                <li><strong>对象样式</strong>：右键曲面 → 设置 → 透明度/颜色，便于观察内部积分区域。</li>
+                <li><strong>代数区编辑</strong>：双击对象修改方程，实时更新3D图形。</li>
+                <li><strong>滑动条动画</strong>：右键滑动条开启“动画”，动态展示参数变化对曲面形状的影响。</li>
+                <li><strong>快捷键</strong>：Ctrl+Z撤销，Ctrl+Shift+Z重做，Ctrl+C/V复制粘贴对象。</li>
+                <li><strong>保存分享</strong>：点击右上角菜单 → 保存为GGB文件或导出图片，生成链接分享给学生。</li>
+            </ul>
+            <div class="tip-box">
+                💎 <strong>高阶技巧</strong>：使用 <code class="code-inline">按钮("重置视图", 赋值(视角, 默认))</code> 创建一键复位按钮，方便教学演示。
+            </div>
+        </div>
+    </div>
+
+    <div class="quick-links">
+        <span class="quick-badge">🔥 曲面库: 椭球面 | 单叶双曲面 | 椭圆抛物面 | 环面 | 莫比乌斯带</span>
+        <span class="quick-badge">📦 积分域: 柱坐标 | 球坐标 | 抛物面区域 | 锥体区域 | 交线边界</span>
+    </div>
+    <div class="footer-note">
+        🧪 所有代码块均可点击复制，粘贴至GeoGebra输入栏即用 | 推荐在3D模式下体验空间曲面与积分区域 | 支持手机触控
+    </div>
+</div>
+
+<script>
+    // 使用官方稳定嵌入地址，默认3D模式
+    const graphingUrl = "https://www.geogebra.org/graphing?lang=zh-CN&embed=true&showToolBar=true&showAlgebraInput=true&showMenuBar=true&showResetIcon=true&showZoomButtons=true&showFullscreenButton=true";
+    const d3Url = "https://www.geogebra.org/3d?lang=zh-CN&embed=true&showToolBar=true&showAlgebraInput=true&showMenuBar=true&showResetIcon=true&showZoomButtons=true&showFullscreenButton=true";
+    
+    const ggbFrame = document.getElementById('ggbFrame');
+    const btn2d = document.getElementById('mode2dBtn');
+    const btn3d = document.getElementById('mode3dBtn');
+    let currentMode = '3d'; // 默认3D模式，因为本页面侧重空间几何
+    
+    function adjustHeight() {
+        const isMobile = window.innerWidth <= 640;
+        ggbFrame.style.height = isMobile ? '450px' : '590px';
+        ggbFrame.style.minHeight = isMobile ? '450px' : '520px';
+    }
+    
+    function setMode(mode) {
+        if (mode === '2d' && currentMode !== '2d') {
+            ggbFrame.src = graphingUrl;
+            currentMode = '2d';
+            btn2d.classList.add('active');
+            btn3d.classList.remove('active');
+            adjustHeight();
+            setTimeout(() => showToast('📈 2D模式: 适合函数曲线与平面微积分'), 600);
+        } else if (mode === '3d' && currentMode !== '3d') {
+            ggbFrame.src = d3Url;
+            currentMode = '3d';
+            btn3d.classList.add('active');
+            btn2d.classList.remove('active');
+            adjustHeight();
+            setTimeout(() => showToast('🧊 3D模式: 输入 x^2+y^2+z^2=9 绘制球体，体验空间几何'), 600);
+        }
+    }
+    
+    // 默认加载3D
+    ggbFrame.src = d3Url;
+    btn3d.classList.add('active');
+    btn2d.classList.remove('active');
+    currentMode = '3d';
+    
+    btn2d.addEventListener('click', () => setMode('2d'));
+    btn3d.addEventListener('click', () => setMode('3d'));
+    window.addEventListener('resize', adjustHeight);
+    adjustHeight();
+    
+    // 复制功能
+    async function copyToClipboard(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            showToast(`📋 已复制: ${text.length > 55 ? text.slice(0,52)+'...' : text}`);
+        } catch (e) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(`📋 命令已复制`);
+        }
+    }
+    
+    function showToast(msg) {
+        let toast = document.createElement('div');
+        toast.innerText = msg;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '80px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.backgroundColor = '#1e4663';
+        toast.style.color = '#fff';
+        toast.style.padding = '8px 16px';
+        toast.style.borderRadius = '32px';
+        toast.style.fontSize = '0.8rem';
+        toast.style.fontWeight = '500';
+        toast.style.zIndex = '10000';
+        toast.style.backdropFilter = 'blur(6px)';
+        toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+        toast.style.maxWidth = '85%';
+        toast.style.textAlign = 'center';
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+    
+    // 绑定所有代码块点击复制
+    document.querySelectorAll('.code-inline').forEach(el => {
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            let raw = el.innerText.trim();
+            copyToClipboard(raw);
+        });
+    });
+    
+    // 卡片标题快速提示 (3D模式导向)
+    const cards = document.querySelectorAll('.card');
+    if (cards[0]) cards[0].querySelector('h3')?.addEventListener('click', () => { if (currentMode !== '3d') setMode('3d'); showToast('🔷 二次曲面库，推荐3D模式旋转观察'); });
+    if (cards[1]) cards[1].querySelector('h3')?.addEventListener('click', () => { if (currentMode !== '3d') setMode('3d'); showToast('📦 多重积分区域，使用区域()命令快速绘制立体'); });
+    if (cards[2]) cards[2].querySelector('h3')?.addEventListener('click', () => { if (currentMode !== '3d') setMode('3d'); showToast('🔄 旋转曲面与投影，试试绕轴旋转命令'); });
+    
+    // 加载完成提示
+    let loadedOnce = false;
+    ggbFrame.addEventListener('load', () => {
+        if (!loadedOnce) {
+            loadedOnce = true;
+            setTimeout(() => {
+                showToast('💡 提示: 点击蓝色代码块复制命令，粘贴到GeoGebra输入栏体验空间曲面');
+            }, 1000);
+        }
+    });
+    
+    // 移动端样式优化
+    const styleMobile = document.createElement('style');
+    styleMobile.textContent = `
+        .code-inline, .mode-btn { touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .ggb-frame { transition: height 0.2s ease; }
+    `;
+    document.head.appendChild(styleMobile);
+</script>
+</body>
+</html>
