@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>数学反例可视化：偏导存在 ⇒/⇏ 连续 | f(x,y) = xy²/(x²+y⁴)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-shibkit=no">
+    <title>几何直观：偏导存在但不连续 | 坐标轴方向连续可导 vs 抛物线方向断裂</title>
     <!-- MathJax 3 核心库，用于标准数学公式渲染 -->
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
     <style>
@@ -12,13 +12,13 @@
             overflow: hidden;
             font-family: 'Segoe UI', 'Times New Roman', 'Georgia', 'Microsoft YaHei', serif;
         }
-        /* 数学公式面板，使用 LaTeX 风格渲染，MathJax 将自动处理 */
+        /* 数学公式面板，使用 LaTeX 风格渲染 */
         #math-panel {
             position: absolute;
             top: 20px;
             left: 20px;
             z-index: 100;
-            background: rgba(10, 15, 30, 0.88);
+            background: rgba(8, 12, 28, 0.92);
             backdrop-filter: blur(12px);
             color: #f0f0f0;
             padding: 18px 24px;
@@ -26,7 +26,7 @@
             border-left: 5px solid #ff7e5e;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             font-size: 16px;
-            max-width: 380px;
+            max-width: 420px;
             pointer-events: none;
             font-family: 'Times New Roman', 'STIXGeneral', 'Cambria Math', serif;
         }
@@ -42,21 +42,29 @@
             background: rgba(0,0,0,0.4);
             padding: 10px 12px;
             border-radius: 16px;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
         }
         .condition {
             font-size: 0.95rem;
             margin-top: 10px;
             border-top: 1px solid rgba(255,255,255,0.25);
             padding-top: 8px;
-            line-height: 1.4;
+            line-height: 1.45;
         }
-        .highlight-red {
+        .highlight-good {
+            color: #8dffcd;
+            font-weight: bold;
+        }
+        .highlight-bad {
             color: #ff8a7a;
             font-weight: bold;
         }
-        .highlight-green {
-            color: #8dffcd;
+        .axis-note {
+            background: rgba(70,130,200,0.3);
+            border-radius: 12px;
+            padding: 4px 8px;
+            margin-top: 6px;
+            font-size: 0.85rem;
         }
         .note {
             font-size: 0.75rem;
@@ -64,15 +72,8 @@
             margin-top: 10px;
             font-family: monospace;
         }
-        kbd {
-            font-family: monospace;
-            background: #2a2a3a;
-            padding: 2px 5px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-        }
         @media (max-width: 650px) {
-            #math-panel { font-size: 12px; padding: 12px 16px; max-width: 280px; top: 10px; left: 10px; }
+            #math-panel { font-size: 12px; padding: 12px 16px; max-width: 290px; top: 10px; left: 10px; }
             .func-def { font-size: 0.95rem; }
         }
         #controls-tip {
@@ -80,9 +81,9 @@
             bottom: 15px;
             left: 15px;
             z-index: 100;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.65);
             backdrop-filter: blur(5px);
-            color: #ccc;
+            color: #ddd;
             padding: 5px 14px;
             border-radius: 24px;
             font-size: 11px;
@@ -102,13 +103,9 @@
             pointer-events: none;
             z-index: 100;
         }
-        /* MathJax 渲染的公式微调 */
         mjx-container {
             display: inline-block;
             margin: 0 2px;
-        }
-        .mjx-chtml {
-            font-size: 105%;
         }
     </style>
     <script type="importmap">
@@ -122,7 +119,7 @@
 </head>
 <body>
     <div id="math-panel">
-        <h2>📐 偏导数存在 \(\not\Rightarrow\) 连续</h2>
+        <h2>📐 偏导存在 \(\not\Rightarrow\) 连续 · 几何直观</h2>
         <div class="func-def">
             \[
             f(x,y) = \begin{cases}
@@ -132,22 +129,23 @@
             \]
         </div>
         <div class="condition">
-            ✅ 在原点处：\( \displaystyle f_x(0,0)=0,\quad f_y(0,0)=0 \) （偏导数存在）<br>
-            ❌ 但函数不连续：沿曲线 \( x = y^{2} \) 有 
-            \[
-            \lim_{(x,y)\to(0,0)} f(x,y) = \frac{1}{2} \neq f(0,0)
-            \]
-            <span style="font-size:0.85rem; display:inline-block; margin-top:5px;">🧠 <strong>几何直观</strong>：曲面在原点处沿抛物线方向突变为 \( \frac{1}{2} \)，形成“悬崖”，但沿坐标轴方向趋于0，故偏导依然存在。</span>
+            <span class="highlight-good">✅ 沿坐标轴方向 (x轴 & y轴) 函数连续且偏导存在</span><br>
+            &nbsp;&nbsp;• 沿x轴: \(f(x,0)=0\) → 连续，\(\partial f/\partial x = 0\)<br>
+            &nbsp;&nbsp;• 沿y轴: \(f(0,y)=0\) → 连续，\(\partial f/\partial y = 0\)<br>
+            <span class="highlight-bad">❌ 沿抛物线 \(x = y^2\) 方向: 极限为 \(\frac{1}{2} \neq f(0,0)\) → 不连续</span>
+            <div class="axis-note">
+                🎯 <strong>几何核心</strong>: 曲面在原点处沿 <span style="color:#88ffaa">绿色坐标轴</span> 光滑贴地 (斜率0)，但沿 <span style="color:#ff8888">红色抛物线脊线</span> 突变为半山腰，形成“断裂悬崖”。
+            </div>
         </div>
         <div class="note">
-            🖱️ 鼠标拖拽旋转 | 右键平移 | 滚动缩放 —— 观察原点附近隆起脊线
+            🖱️ 拖拽旋转 | 右键平移 | 滚动缩放 —— 观察坐标轴方向的平坦脊线与抛物线方向的隆起
         </div>
     </div>
     <div id="controls-tip">
-        ⚡ 红色曲线: \(x = y^2\) 路径 → 极限值 \(\frac{1}{2}\) &nbsp;&nbsp;|&nbsp; 🔴 红球: 原点 \((0,0,0)\)
+        🌿 <span style="color:#88ffaa">绿色曲线: x轴 & y轴方向</span> (连续且可导) &nbsp;|&nbsp; 🔴 <span style="color:#ff8888">红色曲线: x = y² 路径</span> (极限½ → 不连续)
     </div>
     <div class="badge">
-        \(f(x,y) = \frac{xy^2}{x^2+y^4}\) 反例 | 偏导存在但不连续
+        \(f(x,y) = \frac{xy^2}{x^2+y^4}\) | 坐标轴连续可导 vs 抛物线断裂
     </div>
 
     <script type="module">
@@ -158,14 +156,13 @@
         // --- 初始化场景 ---
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x050b1a);
-        scene.fog = new THREE.FogExp2(0x050b1a, 0.006);
+        scene.fog = new THREE.FogExp2(0x050b1a, 0.005);
 
-        // --- 相机: 最佳视角观察原点与隆起---
         const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.05, 1000);
-        camera.position.set(2.3, 1.6, 2.5);
-        camera.lookAt(0, 0.12, 0);
+        camera.position.set(2.4, 1.7, 2.6);
+        camera.lookAt(0, 0.1, 0);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
@@ -178,47 +175,43 @@
         labelRenderer.domElement.style.pointerEvents = 'none';
         document.body.appendChild(labelRenderer.domElement);
 
-        // --- 控制器 ---
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.06;
         controls.rotateSpeed = 1.2;
         controls.zoomSpeed = 1.2;
         controls.panSpeed = 0.9;
-        controls.enableZoom = true;
-        controls.enablePan = true;
         controls.target.set(0, 0.12, 0);
 
-        // --- 灯光系统 (增强曲面质感)---
+        // --- 灯光 ---
         const ambientLight = new THREE.AmbientLight(0x2c2c44);
         scene.add(ambientLight);
         const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        mainLight.position.set(1.2, 2.0, 1.5);
+        mainLight.position.set(1.2, 2.2, 1.5);
         scene.add(mainLight);
-        const fillLight = new THREE.PointLight(0x4466cc, 0.35);
-        fillLight.position.set(-1.0, 0.8, -1.2);
+        const fillLight = new THREE.PointLight(0x4466cc, 0.4);
+        fillLight.position.set(-1.0, 0.9, -1.2);
         scene.add(fillLight);
-        const rimLight = new THREE.PointLight(0xffaa66, 0.4);
-        rimLight.position.set(0.8, 1.0, -1.8);
+        const rimLight = new THREE.PointLight(0xffaa66, 0.45);
+        rimLight.position.set(0.8, 1.1, -1.8);
         scene.add(rimLight);
-        const backLight = new THREE.DirectionalLight(0x88aaff, 0.3);
-        backLight.position.set(-0.5, 0.6, -1.2);
-        scene.add(backLight);
+        const backFill = new THREE.DirectionalLight(0x88aaff, 0.3);
+        backFill.position.set(-0.6, 0.7, -1.3);
+        scene.add(backFill);
 
-        // 辅助元素: 精美网格地面
-        const gridHelper = new THREE.GridHelper(3.6, 28, 0x88aaff, 0x335588);
+        // 辅助网格
+        const gridHelper = new THREE.GridHelper(3.8, 30, 0x88aaff, 0x335588);
         gridHelper.position.y = -0.22;
         gridHelper.material.transparent = true;
         gridHelper.material.opacity = 0.3;
         scene.add(gridHelper);
         
-        // 简易坐标轴 (柔和)
-        const axesHelper = new THREE.AxesHelper(1.6);
+        const axesHelper = new THREE.AxesHelper(1.7);
         axesHelper.material.transparent = true;
         axesHelper.material.opacity = 0.2;
         scene.add(axesHelper);
 
-        // ----- 核心函数定义 (精确)-----
+        // ----- 函数定义 -----
         function f(x, y) {
             if (x === 0 && y === 0) return 0;
             const denom = x * x + Math.pow(y, 4);
@@ -226,38 +219,31 @@
             return (x * y * y) / denom;
         }
 
-        // ----- 高分辨率曲面网格 (精细展现不连续)-----
-        const rangeX = 1.25;
-        const rangeY = 1.0;
-        const segmentsX = 240;   // 高细分，更精细
-        const segmentsY = 240;
+        // ----- 精细曲面网格 (高分辨率) -----
+        const rangeX = 1.28;
+        const rangeY = 1.05;
+        const segmentsX = 260;
+        const segmentsY = 260;
         
         const vertices = [];
         const indices = [];
-        const colors = [];
         
         const stepX = (2 * rangeX) / segmentsX;
         const stepY = (2 * rangeY) / segmentsY;
         const startX = -rangeX;
         const startY = -rangeY;
         
-        // 存储高度值
-        const zValues = [];
-        
         for (let i = 0; i <= segmentsX; i++) {
             const x = startX + i * stepX;
             for (let j = 0; j <= segmentsY; j++) {
                 const y = startY + j * stepY;
                 let z = f(x, y);
-                // 限制极值避免视觉撕裂 (函数值范围大约 -0.45 ~ 0.7)
-                if (z > 0.72) z = 0.72;
-                if (z < -0.52) z = -0.52;
+                if (z > 0.73) z = 0.73;
+                if (z < -0.53) z = -0.53;
                 vertices.push(x, z, y);
-                zValues.push(z);
             }
         }
         
-        // 构建索引
         for (let i = 0; i < segmentsX; i++) {
             for (let j = 0; j < segmentsY; j++) {
                 const a = i * (segmentsY + 1) + j;
@@ -274,20 +260,29 @@
         geometry.setIndex(indices);
         geometry.computeVertexNormals();
         
-        // 高级配色：基于高度和到抛物线 x=y^2 的距离，突出隆起区域
+        // 颜色映射: 增强坐标轴区域的视觉对比 (沿着x轴和y轴区域用冷色调渐变，隆起用暖色)
         const positions = geometry.attributes.position.array;
         const colorArray = [];
         for (let i = 0; i < positions.length / 3; i++) {
             const xVal = positions[i*3];
-            const yVal = positions[i*3+1]; // 高度 z
-            const zVal = positions[i*3+2]; // 原变量 y
-            // 根据高度线性映射范围 -0.45 到 0.65
-            let t = (yVal + 0.45) / 1.1;
-            t = Math.min(0.96, Math.max(0.12, t));
-            // 暖色突出隆起区域: 低处深紫蓝，高处橙红
-            const r = 0.15 + t * 0.85;
-            const g = 0.2 + t * 0.55;
-            const b = 0.68 - t * 0.58;
+            const yVal = positions[i*3+1]; // 高度
+            const zVal = positions[i*3+2]; // 原始y变量
+            // 高度映射
+            let t = (yVal + 0.45) / 1.12;
+            t = Math.min(0.96, Math.max(0.1, t));
+            // 基础暖色映射
+            let r = 0.18 + t * 0.82;
+            let g = 0.22 + t * 0.58;
+            let b = 0.7 - t * 0.62;
+            // 轻微增强坐标轴附近区域的青色光泽，突出轴线连续性
+            const distToXAxis = Math.abs(zVal);      // 到x轴距离 (y=0)
+            const distToYAxis = Math.abs(xVal);      // 到y轴距离 (x=0)
+            if (distToXAxis < 0.12 || distToYAxis < 0.12) {
+                // 坐标轴附近区域增加青色调，视觉强调
+                r = r * 0.85;
+                g = Math.min(1.0, g + 0.25);
+                b = Math.min(1.0, b + 0.2);
+            }
             colorArray.push(r, g, b);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colorArray), 3));
@@ -295,277 +290,311 @@
         const surfaceMaterial = new THREE.MeshStandardMaterial({
             vertexColors: true,
             side: THREE.DoubleSide,
-            roughness: 0.38,
-            metalness: 0.12,
-            emissive: 0x000000,
-            flatShading: false,
+            roughness: 0.35,
+            metalness: 0.1,
             transparent: true,
-            opacity: 0.94
+            opacity: 0.92
         });
-        
         const surfaceMesh = new THREE.Mesh(geometry, surfaceMaterial);
         scene.add(surfaceMesh);
         
-        // --------- 重点路径：x = y^2 曲线 (高亮红线，展示极限 1/2) ---------
-        const curvePointsDetailed = [];
-        for (let t = -0.94; t <= 0.94; t += 0.003) {
+        // ========= 1. 坐标轴方向路径可视化 (强调连续性与可导性) =========
+        // 1.1 x轴方向路径: y=0, 从 -1.1 到 1.1
+        const xAxisPoints = [];
+        for (let x = -1.12; x <= 1.12; x += 0.02) {
+            const z = f(x, 0);
+            xAxisPoints.push(new THREE.Vector3(x, z, 0));
+        }
+        const xAxisGeo = new THREE.BufferGeometry().setFromPoints(xAxisPoints);
+        const xAxisMat = new THREE.LineBasicMaterial({ color: 0x66ffaa, linewidth: 3, linecap: 'round', linejoin: 'round' });
+        const xAxisLine = new THREE.Line(xAxisGeo, xAxisMat);
+        scene.add(xAxisLine);
+        
+        // 1.2 y轴方向路径: x=0, 从 -1.05 到 1.05
+        const yAxisPoints = [];
+        for (let y = -1.05; y <= 1.05; y += 0.02) {
+            const z = f(0, y);
+            yAxisPoints.push(new THREE.Vector3(0, z, y));
+        }
+        const yAxisGeo = new THREE.BufferGeometry().setFromPoints(yAxisPoints);
+        const yAxisMat = new THREE.LineBasicMaterial({ color: 0x88ffcc, linewidth: 3 });
+        const yAxisLine = new THREE.Line(yAxisGeo, yAxisMat);
+        scene.add(yAxisLine);
+        
+        // 添加坐标轴方向的发光小球，强调沿轴趋于原点时函数值为0
+        const axisMarkers = [];
+        for (let t = -0.9; t <= 0.9; t += 0.3) {
+            if (Math.abs(t) < 0.05) continue;
+            // x轴上的点
+            const sphereX = new THREE.Mesh(
+                new THREE.SphereGeometry(0.016, 16, 16),
+                new THREE.MeshStandardMaterial({ color: 0x66ffaa, emissive: 0x226644, emissiveIntensity: 0.5 })
+            );
+            sphereX.position.set(t, f(t, 0), 0);
+            scene.add(sphereX);
+            axisMarkers.push(sphereX);
+            // y轴上的点
+            const sphereY = new THREE.Mesh(
+                new THREE.SphereGeometry(0.016, 16, 16),
+                new THREE.MeshStandardMaterial({ color: 0x88ffcc, emissive: 0x226644, emissiveIntensity: 0.5 })
+            );
+            sphereY.position.set(0, f(0, t), t);
+            scene.add(sphereY);
+            axisMarkers.push(sphereY);
+        }
+        
+        // ========= 2. 抛物线路径 x = y^2 (红色高亮，展示不连续) =========
+        const parabolaPoints = [];
+        for (let t = -0.96; t <= 0.96; t += 0.003) {
             const y = t;
             const x = y * y;
             let z = f(x, y);
             if (z > 0.74) z = 0.74;
-            if (z < -0.5) z = -0.5;
-            curvePointsDetailed.push(new THREE.Vector3(x, z, y));
+            parabolaPoints.push(new THREE.Vector3(x, z, y));
         }
-        const curveGeo = new THREE.BufferGeometry().setFromPoints(curvePointsDetailed);
-        const curveMat = new THREE.LineBasicMaterial({ color: 0xff4d4d, linewidth: 2 });
-        const redCurve = new THREE.Line(curveGeo, curveMat);
-        scene.add(redCurve);
+        const parabolaGeo = new THREE.BufferGeometry().setFromPoints(parabolaPoints);
+        const parabolaMat = new THREE.LineBasicMaterial({ color: 0xff4d6d, linewidth: 3 });
+        const parabolaCurve = new THREE.Line(parabolaGeo, parabolaMat);
+        scene.add(parabolaCurve);
         
-        // 增加曲线上的光晕小球体 (强调路径)
-        const markerPositions = [-0.68, -0.48, -0.28, -0.12, 0.12, 0.28, 0.48, 0.68];
-        const glowSpheres = [];
-        markerPositions.forEach(yVal => {
-            const xVal = yVal * yVal;
-            const zVal = f(xVal, yVal);
-            if (Math.abs(zVal) < 0.82) {
-                const sphereGeo = new THREE.SphereGeometry(0.018, 24, 24);
-                const sphereMat = new THREE.MeshStandardMaterial({ color: 0xffaa66, emissive: 0x442200, emissiveIntensity: 0.5 });
-                const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-                sphere.position.set(xVal, zVal, yVal);
-                scene.add(sphere);
-                glowSpheres.push(sphere);
-            }
+        // 抛物线路径上的光球 (强调突变)
+        const paraMarkers = [];
+        const paraYvals = [-0.7, -0.5, -0.3, -0.15, 0.15, 0.3, 0.5, 0.7];
+        paraYvals.forEach(yv => {
+            const xv = yv * yv;
+            const zv = f(xv, yv);
+            const sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(0.02, 24, 24),
+                new THREE.MeshStandardMaterial({ color: 0xff8866, emissive: 0xaa4422, emissiveIntensity: 0.6 })
+            );
+            sphere.position.set(xv, zv, yv);
+            scene.add(sphere);
+            paraMarkers.push(sphere);
         });
         
-        // 原点醒目标记
+        // 原点特殊标记 (大红球)
         const originSphere = new THREE.Mesh(
-            new THREE.SphereGeometry(0.05, 36, 36),
-            new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0x441122, emissiveIntensity: 0.65, roughness: 0.2 })
+            new THREE.SphereGeometry(0.055, 40, 40),
+            new THREE.MeshStandardMaterial({ color: 0xff3366, emissive: 0x661122, emissiveIntensity: 0.7, roughness: 0.2 })
         );
         originSphere.position.set(0, 0, 0);
         scene.add(originSphere);
         
-        // 半透明辅助光环
-        const auraGeo = new THREE.SphereGeometry(0.14, 28, 28);
+        // 原点光环脉动
+        const auraGeo = new THREE.SphereGeometry(0.15, 32, 32);
         const auraMat = new THREE.MeshBasicMaterial({ color: 0xff6666, transparent: true, opacity: 0.2, wireframe: true });
         const auraRing = new THREE.Mesh(auraGeo, auraMat);
         scene.add(auraRing);
         
-        // 添加从底面到曲面的参考虚线 (抛物线路径附近)
-        const refYvals = [-0.72, -0.52, -0.32, -0.12, 0.12, 0.32, 0.52, 0.72];
-        refYvals.forEach(yv => {
+        // ========= 3. 添加动态箭头指示坐标轴方向导数 =========
+        // 在 x 轴正负方向添加箭头指示光滑连续
+        const arrowColor = 0x66ffaa;
+        const arrowLen = 0.35;
+        const arrowHeadLen = 0.12;
+        const arrowHeadWid = 0.08;
+        
+        const arrowXPos = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0.9, 0.02, 0), arrowLen, arrowColor, arrowHeadLen, arrowHeadWid);
+        const arrowXNeg = new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 0), new THREE.Vector3(-0.9, 0.02, 0), arrowLen, arrowColor, arrowHeadLen, arrowHeadWid);
+        const arrowYPos = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0.02, 0.85), arrowLen, 0x88ffcc, arrowHeadLen, arrowHeadWid);
+        const arrowYNeg = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0.02, -0.85), arrowLen, 0x88ffcc, arrowHeadLen, arrowHeadWid);
+        scene.add(arrowXPos, arrowXNeg, arrowYPos, arrowYNeg);
+        
+        // 添加抛物线方向的警示箭头 (指向隆起)
+        const warnArrow = new THREE.ArrowHelper(new THREE.Vector3(0.5, 0.6, 0.5), new THREE.Vector3(0.35, 0.38, 0.42), 0.4, 0xff6666, 0.13, 0.09);
+        scene.add(warnArrow);
+        
+        // ========= 4. 从底面到曲面的参考虚线 (强调坐标轴及抛物线路径) =========
+        // 沿x轴虚线
+        for (let x = -1.0; x <= 1.0; x += 0.35) {
+            if (Math.abs(x) < 0.05) continue;
+            const zSurf = f(x, 0);
+            const start = new THREE.Vector3(x, -0.22, 0);
+            const end = new THREE.Vector3(x, zSurf, 0);
+            const dashGeo = new THREE.BufferGeometry().setFromPoints([start, end]);
+            const dashMat = new THREE.LineBasicMaterial({ color: 0x66ffaa, transparent: true, opacity: 0.35 });
+            const dashLine = new THREE.Line(dashGeo, dashMat);
+            scene.add(dashLine);
+        }
+        // 沿y轴虚线
+        for (let y = -0.95; y <= 0.95; y += 0.35) {
+            if (Math.abs(y) < 0.05) continue;
+            const zSurf = f(0, y);
+            const start = new THREE.Vector3(0, -0.22, y);
+            const end = new THREE.Vector3(0, zSurf, y);
+            const dashGeo = new THREE.BufferGeometry().setFromPoints([start, end]);
+            const dashMat = new THREE.LineBasicMaterial({ color: 0x88ffcc, transparent: true, opacity: 0.35 });
+            const dashLine = new THREE.Line(dashGeo, dashMat);
+            scene.add(dashLine);
+        }
+        // 沿抛物线路径虚线 (加强不连续视觉)
+        const paraDashY = [-0.65, -0.45, -0.25, 0.25, 0.45, 0.65];
+        paraDashY.forEach(yv => {
             const xv = yv * yv;
-            const zSurface = f(xv, yv);
-            if (Math.abs(zSurface) < 0.9) {
-                const startPt = new THREE.Vector3(xv, -0.22, yv);
-                const endPt = new THREE.Vector3(xv, zSurface, yv);
-                const dashGeo = new THREE.BufferGeometry().setFromPoints([startPt, endPt]);
-                const dashMat = new THREE.LineBasicMaterial({ color: 0x66ccff, transparent: true, opacity: 0.4 });
-                const line = new THREE.Line(dashGeo, dashMat);
-                scene.add(line);
-            }
+            const zSurf = f(xv, yv);
+            const start = new THREE.Vector3(xv, -0.22, yv);
+            const end = new THREE.Vector3(xv, zSurf, yv);
+            const dashGeo = new THREE.BufferGeometry().setFromPoints([start, end]);
+            const dashMat = new THREE.LineBasicMaterial({ color: 0xff8888, transparent: true, opacity: 0.5 });
+            const dashLine = new THREE.Line(dashGeo, dashMat);
+            scene.add(dashLine);
         });
         
-        // 地面抛物线参考线 (半透明白色)
-        const groundParabolaPts = [];
-        for (let y = -0.96; y <= 0.96; y += 0.02) {
-            const x = y * y;
-            groundParabolaPts.push(new THREE.Vector3(x, -0.22, y));
+        // 地面抛物线参考线 (半透明)
+        const groundParaPts = [];
+        for (let y = -0.98; y <= 0.98; y += 0.02) {
+            groundParaPts.push(new THREE.Vector3(y*y, -0.23, y));
         }
-        const parabolaGroundGeo = new THREE.BufferGeometry().setFromPoints(groundParabolaPts);
-        const parabolaGroundMat = new THREE.LineBasicMaterial({ color: 0x77aaff, transparent: true, opacity: 0.5 });
-        const parabolaGuide = new THREE.Line(parabolaGroundGeo, parabolaGroundMat);
-        scene.add(parabolaGuide);
+        const groundParaGeo = new THREE.BufferGeometry().setFromPoints(groundParaPts);
+        const groundParaMat = new THREE.LineBasicMaterial({ color: 0xff88aa, transparent: true, opacity: 0.45 });
+        const groundParaLine = new THREE.Line(groundParaGeo, groundParaMat);
+        scene.add(groundParaLine);
         
-        // --- CSS2D 文字标注，使用标准数学符号 (MathJax 风格内联)---
-        function addMathLabel(htmlContent, color, position, fontSize = '0.85rem', bgOpacity = 0.7) {
+        // ========= 5. CSS2D 文字标注 (数学直观) =========
+        function addLabel(html, color, pos, fontSize = '0.8rem', bgOp = 0.7) {
             const div = document.createElement('div');
-            div.innerHTML = htmlContent;
+            div.innerHTML = html;
             div.style.color = color;
             div.style.fontSize = fontSize;
-            div.style.fontFamily = 'Times New Roman, STIXGeneral, "Cambria Math", monospace';
-            div.style.fontWeight = '500';
-            div.style.backgroundColor = `rgba(10, 10, 25, ${bgOpacity})`;
-            div.style.padding = '4px 12px';
-            div.style.borderRadius = '28px';
-            div.style.borderLeft = `3px solid ${color}`;
-            div.style.backdropFilter = 'blur(8px)';
-            div.style.pointerEvents = 'none';
+            div.style.fontFamily = 'Times New Roman, monospace';
+            div.style.backgroundColor = `rgba(0,0,20,${bgOp})`;
+            div.style.padding = '3px 10px';
+            div.style.borderRadius = '24px';
+            div.style.borderLeft = `2px solid ${color}`;
+            div.style.backdropFilter = 'blur(6px)';
             div.style.whiteSpace = 'nowrap';
             const label = new CSS2DObject(div);
-            label.position.copy(position);
+            label.position.copy(pos);
             scene.add(label);
-            return label;
         }
         
-        // 使用标准数学符号：\( ... \) 或直接 Unicode 配合 MathJax，但 CSS2D 不支持 MathJax 动态渲染，所以用文本 + unicode 数学符号保证可读
-        // 为了保持美观，使用标准数学字体符号
-        addMathLabel('🔴 原点 (0,0) &nbsp; f = 0', '#ffaa99', new THREE.Vector3(0.28, 0.19, 0.25), '0.76rem');
-        addMathLabel('📈 沿路径 x = y² &nbsp; f → 1/2', '#ffaa77', new THREE.Vector3(0.52, 0.60, 0.72), '0.78rem', 0.65);
-        addMathLabel('∂f/∂x = 0 , ∂f/∂y = 0 存在', '#aaffdd', new THREE.Vector3(-1.12, 0.48, -0.92), '0.74rem');
-        addMathLabel('⚠️ 极限 ≠ 函数值 &nbsp; 不连续', '#ff8866', new THREE.Vector3(0.68, 0.34, -1.08), '0.76rem');
-        addMathLabel('沿坐标轴方向 → 0', '#88ccff', new THREE.Vector3(1.02, 0.18, -0.58), '0.7rem');
+        addLabel('✅ 沿x轴: f(x,0)=0 连续且可导 ∂f/∂x=0', '#aaffdd', new THREE.Vector3(1.15, 0.12, 0.35), '0.7rem');
+        addLabel('✅ 沿y轴: f(0,y)=0 连续且可导 ∂f/∂y=0', '#aaffdd', new THREE.Vector3(0.25, 0.1, 1.28), '0.7rem');
+        addLabel('❌ 抛物线路径: 极限 = 1/2 ≠ 0 不连续', '#ffaa88', new THREE.Vector3(0.62, 0.62, 0.78), '0.72rem');
+        addLabel('原点处偏导存在 (差商为0)', '#88ddff', new THREE.Vector3(-0.95, 0.35, -0.88), '0.68rem');
+        addLabel('曲面上沿坐标轴方向平坦贴地', '#88ffaa', new THREE.Vector3(1.05, -0.18, -0.62), '0.68rem');
+        addLabel('隆起脊线 (高度≈0.5)', '#ffaa77', new THREE.Vector3(0.45, 0.58, 0.45), '0.68rem');
         
-        // 在曲线隆起最高点附近加标注极限值 (使用标准数学表示)
-        const limitNoteDiv = document.createElement('div');
-        limitNoteDiv.innerHTML = '沿 \(x = y^2\): \(\lim f = \frac{1}{2} \neq 0\)';
-        limitNoteDiv.style.color = '#ffb56b';
-        limitNoteDiv.style.backgroundColor = 'rgba(0,0,0,0.75)';
-        limitNoteDiv.style.padding = '3px 10px';
-        limitNoteDiv.style.borderRadius = '24px';
-        limitNoteDiv.style.fontSize = '0.72rem';
-        limitNoteDiv.style.fontFamily = 'Times New Roman, monospace';
-        limitNoteDiv.style.border = '1px solid #ffaa66';
-        limitNoteDiv.style.backdropFilter = 'blur(4px)';
-        const limitLabel = new CSS2DObject(limitNoteDiv);
-        limitLabel.position.set(0.32, 0.55, 0.48);
+        // 额外添加数学极限标注
+        const limitDiv = document.createElement('div');
+        limitDiv.innerHTML = '\(\lim_{(x,y)\to(0,0)} f = \frac{1}{2}\) 沿 \(x=y^2\)';
+        limitDiv.style.color = '#ffb56b';
+        limitDiv.style.backgroundColor = 'rgba(0,0,0,0.75)';
+        limitDiv.style.padding = '3px 12px';
+        limitDiv.style.borderRadius = '28px';
+        limitDiv.style.fontSize = '0.7rem';
+        limitDiv.style.border = '1px solid #ffaa77';
+        const limitLabel = new CSS2DObject(limitDiv);
+        limitLabel.position.set(0.48, 0.48, 0.62);
         scene.add(limitLabel);
         
-        // 增加偏导存在的小提示牌
+        // 偏导公式展示牌
         const partialDiv = document.createElement('div');
-        partialDiv.innerHTML = '\(f_x(0,0)=\lim_{h\to0}\frac{f(h,0)-0}{h}=0\)<br>\(f_y(0,0)=\lim_{k\to0}\frac{f(0,k)-0}{k}=0\)';
-        partialDiv.style.color = '#b8f2e2';
-        partialDiv.style.backgroundColor = 'rgba(0,0,0,0.6)';
-        partialDiv.style.padding = '5px 12px';
-        partialDiv.style.borderRadius = '18px';
+        partialDiv.innerHTML = '\(f_x(0,0)=\lim_{h\to0}\frac{f(h,0)}{h}=0\)<br>\(f_y(0,0)=\lim_{k\to0}\frac{f(0,k)}{k}=0\)';
+        partialDiv.style.backgroundColor = 'rgba(20,30,55,0.85)';
+        partialDiv.style.padding = '6px 12px';
+        partialDiv.style.borderRadius = '20px';
         partialDiv.style.fontSize = '0.68rem';
-        partialDiv.style.fontFamily = 'monospace';
-        partialDiv.style.textAlign = 'center';
-        partialDiv.style.border = '1px solid #66ccaa';
+        partialDiv.style.color = '#cceeff';
+        partialDiv.style.border = '1px solid #66aaff';
         const partialLabel = new CSS2DObject(partialDiv);
-        partialLabel.position.set(-1.25, 0.32, -0.95);
+        partialLabel.position.set(-1.35, 0.4, -0.98);
         scene.add(partialLabel);
         
-        // 增加粒子云增强视觉
-        const particleCount = 1800;
-        const particlePositionsArray = [];
+        // ========= 6. 流动粒子强化坐标轴方向与抛物线对比 =========
+        // 沿x轴流动粒子 (绿色)
+        const xFlowPoints = [];
+        for (let x = -1.1; x <= 1.1; x += 0.035) xFlowPoints.push(new THREE.Vector3(x, f(x, 0), 0));
+        const xFlowSpheres = [];
+        for (let i = 0; i < 40; i++) {
+            const s = new THREE.Mesh(new THREE.SphereGeometry(0.008, 12, 12), new THREE.MeshStandardMaterial({ color: 0x66ffaa, emissive: 0x226644 }));
+            scene.add(s);
+            xFlowSpheres.push(s);
+        }
+        // 沿抛物线流动粒子 (红色)
+        const paraFlowPoints = [];
+        for (let t = -0.92; t <= 0.92; t += 0.025) {
+            const y = t;
+            const x = y*y;
+            paraFlowPoints.push(new THREE.Vector3(x, f(x, y), y));
+        }
+        const paraFlowSpheres = [];
+        for (let i = 0; i < 50; i++) {
+            const s = new THREE.Mesh(new THREE.SphereGeometry(0.009, 14, 14), new THREE.MeshStandardMaterial({ color: 0xff6666, emissive: 0x882222 }));
+            scene.add(s);
+            paraFlowSpheres.push(s);
+        }
+        
+        // ========= 7. 粒子云增加视觉丰富度 =========
+        const particleCount = 2000;
+        const particlePos = [];
         for (let i = 0; i < particleCount; i++) {
-            let x = (Math.random() - 0.5) * 2.3;
+            let x = (Math.random() - 0.5) * 2.4;
             let y = (Math.random() - 0.5) * 1.9;
             let z = f(x, y);
             if (isNaN(z)) z = 0;
-            z += (Math.random() - 0.5) * 0.05;
-            particlePositionsArray.push(x, z, y);
+            z += (Math.random() - 0.5) * 0.055;
+            particlePos.push(x, z, y);
         }
-        const particleGeo = new THREE.BufferGeometry();
-        particleGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particlePositionsArray), 3));
-        const particleMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.006, transparent: true, opacity: 0.4 });
-        const particles = new THREE.Points(particleGeo, particleMat);
-        scene.add(particles);
+        const particleGeoAll = new THREE.BufferGeometry();
+        particleGeoAll.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particlePos), 3));
+        const particleMatAll = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.0055, transparent: true, opacity: 0.35 });
+        const particlesSys = new THREE.Points(particleGeoAll, particleMatAll);
+        scene.add(particlesSys);
         
-        // 流动光点沿红线
-        const flowPointsCount = 70;
-        const flowSpheres = [];
-        for (let i = 0; i < flowPointsCount; i++) {
-            const sphere = new THREE.Mesh(
-                new THREE.SphereGeometry(0.011, 16, 16),
-                new THREE.MeshStandardMaterial({ color: 0xff8866, emissive: 0xff4422, emissiveIntensity: 0.75 })
-            );
-            scene.add(sphere);
-            flowSpheres.push(sphere);
-        }
-        
-        // 获取曲线上的点用于流动动画
-        const curveSampled = [];
-        for (let t = -0.92; t <= 0.92; t += 0.025) {
-            const y = t;
-            const x = y * y;
-            const z = f(x, y);
-            if (Math.abs(z) < 0.8) curveSampled.push(new THREE.Vector3(x, z, y));
-        }
-        
-        // 彩色图例 (渐变条)
-        const canvasLegend = document.createElement('canvas');
-        canvasLegend.width = 260;
-        canvasLegend.height = 26;
-        const ctxLeg = canvasLegend.getContext('2d');
-        const grad = ctxLeg.createLinearGradient(0, 0, 260, 0);
+        // 图例
+        const legCanvas = document.createElement('canvas');
+        legCanvas.width = 280;
+        legCanvas.height = 26;
+        const ctx = legCanvas.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 280, 0);
         grad.addColorStop(0, '#2a2c5a');
-        grad.addColorStop(0.3, '#3c7f8f');
+        grad.addColorStop(0.4, '#3c8f8f');
         grad.addColorStop(0.7, '#e6ac44');
         grad.addColorStop(1, '#cc5a4a');
-        ctxLeg.fillStyle = grad;
-        ctxLeg.fillRect(0, 0, 260, 26);
-        ctxLeg.strokeStyle = '#ffffff';
-        ctxLeg.strokeRect(0, 0, 260, 26);
-        ctxLeg.fillStyle = '#fff';
-        ctxLeg.font = '10px "Segoe UI"';
-        ctxLeg.fillText('-0.45', 8, 20);
-        ctxLeg.fillText('0', 122, 20);
-        ctxLeg.fillText('0.68', 225, 20);
-        const legendTexture = new THREE.CanvasTexture(canvasLegend);
-        const legendSpriteMat = new THREE.SpriteMaterial({ map: legendTexture, depthTest: false });
-        const legendSprite = new THREE.Sprite(legendSpriteMat);
-        legendSprite.scale.set(1.4, 0.14, 1);
-        legendSprite.position.set(-1.52, -0.36, -1.25);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 280, 26);
+        ctx.strokeStyle = '#fff';
+        ctx.strokeRect(0, 0, 280, 26);
+        ctx.fillStyle = 'white';
+        ctx.font = '10px monospace';
+        ctx.fillText('-0.5', 8, 20);
+        ctx.fillText('0', 135, 20);
+        ctx.fillText('0.7', 255, 20);
+        const legendTex = new THREE.CanvasTexture(legCanvas);
+        const legendSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: legendTex, depthTest: false }));
+        legendSprite.scale.set(1.45, 0.14, 1);
+        legendSprite.position.set(-1.6, -0.38, -1.3);
         scene.add(legendSprite);
         
-        const legendTextDiv = document.createElement('div');
-        legendTextDiv.textContent = '📊 曲面高度颜色 (低→高)';
-        legendTextDiv.style.color = '#ddd';
-        legendTextDiv.style.fontSize = '9px';
-        legendTextDiv.style.backgroundColor = 'rgba(0,0,0,0.5)';
-        legendTextDiv.style.padding = '1px 6px';
-        legendTextDiv.style.borderRadius = '12px';
-        const legendTextObj = new CSS2DObject(legendTextDiv);
-        legendTextObj.position.set(-1.52, -0.22, -1.25);
-        scene.add(legendTextObj);
-        
-        // 轴线文字
-        const xDiv = document.createElement('div');
-        xDiv.textContent = 'x';
-        xDiv.style.color = '#ffaaaa';
-        xDiv.style.fontSize = '13px';
-        xDiv.style.fontWeight = 'bold';
-        const xTextObj = new CSS2DObject(xDiv);
-        xTextObj.position.set(1.52, -0.08, -0.05);
-        scene.add(xTextObj);
-        
-        const yDiv = document.createElement('div');
-        yDiv.textContent = 'y';
-        yDiv.style.color = '#aaffaa';
-        yDiv.style.fontSize = '13px';
-        yDiv.style.fontWeight = 'bold';
-        const yTextObj = new CSS2DObject(yDiv);
-        yTextObj.position.set(-0.12, -0.12, 1.42);
-        scene.add(yTextObj);
-        
-        const zDiv = document.createElement('div');
-        zDiv.textContent = 'z = f(x,y)';
-        zDiv.style.color = '#cccfff';
-        zDiv.style.fontSize = '11px';
-        const zTextObj = new CSS2DObject(zDiv);
-        zTextObj.position.set(-0.15, 1.32, -0.18);
-        scene.add(zTextObj);
-        
-        // ---- 动画: 脉动光环 + 流动粒子 ----
-        let timeAnim = 0;
-        
+        // 动画
+        let time = 0;
         function animate() {
             requestAnimationFrame(animate);
-            timeAnim += 0.018;
+            time += 0.018;
             
-            // 原点光环缩放
-            const scalePulse = 1 + Math.sin(timeAnim * 3.5) * 0.1;
+            // 原点光环脉动
+            const scalePulse = 1 + Math.sin(time * 3.2) * 0.12;
             auraRing.scale.set(scalePulse, scalePulse, scalePulse);
             
-            // 流动小球体沿红线移动
-            if (curveSampled.length > 0) {
-                for (let k = 0; k < flowSpheres.length; k++) {
-                    const idx = (Math.floor(timeAnim * 22) + k * 9) % curveSampled.length;
-                    const pos = curveSampled[idx];
-                    if (pos) flowSpheres[k].position.copy(pos);
+            // 流动粒子: x轴方向
+            if (xFlowPoints.length) {
+                for (let i = 0; i < xFlowSpheres.length; i++) {
+                    const idx = (Math.floor(time * 18) + i * 5) % xFlowPoints.length;
+                    xFlowSpheres[i].position.copy(xFlowPoints[idx]);
+                }
+            }
+            // 抛物线方向流动粒子
+            if (paraFlowPoints.length) {
+                for (let i = 0; i < paraFlowSpheres.length; i++) {
+                    const idx = (Math.floor(time * 22) + i * 7) % paraFlowPoints.length;
+                    paraFlowSpheres[i].position.copy(paraFlowPoints[idx]);
                 }
             }
             
-            // 粒子轻微旋转
-            particles.rotation.y = Math.sin(timeAnim * 0.12) * 0.06;
-            particles.rotation.x = Math.sin(timeAnim * 0.15) * 0.04;
-            
-            // 高亮小球的呼吸
-            glowSpheres.forEach((s, idx) => {
-                const intens = 0.45 + Math.sin(timeAnim * 4.5 + idx) * 0.25;
-                s.material.emissiveIntensity = intens;
+            // 抛物线标记球体呼吸
+            paraMarkers.forEach((m, idx) => {
+                const intens = 0.5 + Math.sin(time * 4 + idx) * 0.3;
+                m.material.emissiveIntensity = intens;
             });
             
             controls.update();
@@ -575,15 +604,14 @@
         
         animate();
         
-        window.addEventListener('resize', onWindowResize);
-        function onWindowResize() {
+        window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
             labelRenderer.setSize(window.innerWidth, window.innerHeight);
-        }
+        });
         
-        console.log('反例可视化：偏导存在(沿轴方向差商为0)，但沿x=y²路径极限为1/2，不连续。精细曲面展示隆起脊线 | 数学公式已标准化');
+        console.log('几何直观: 坐标轴方向连续可导 (绿线平坦)，抛物线方向断裂 (红线隆起) | 偏导存在性清晰');
     </script>
 </body>
 </html>
