@@ -17,7 +17,6 @@
             color: #1e2a3a;
             overflow-x: hidden;
         }
-        /* 科技感增强的标题区 */
         .hero-title {
             text-align: center;
             padding: 20px 16px 12px;
@@ -38,18 +37,16 @@
         .hero-title p {
             font-size: 1rem;
             color: #aad0ff;
-            margin-top: 8px;
-            opacity: 0.95;
-            font-weight: 500;
+            margin-top: 6px;
         }
         @media (max-width: 680px) {
             .hero-title h1 { font-size: 1.5rem; }
-            .hero-title p { font-size: 0.85rem; }
+            .hero-title p { font-size: 0.8rem; }
         }
         .dashboard {
             display: flex;
             flex-wrap: wrap;
-            min-height: calc(100vh - 110px);
+            min-height: calc(100vh - 100px);
             gap: 1px;
             background: rgba(100, 120, 140, 0.2);
         }
@@ -71,14 +68,13 @@
             border-bottom: 2px solid #ffaa44aa;
         }
         .panel-header h2 {
-            font-size: 1.35rem;
+            font-size: 1.3rem;
             font-weight: 700;
             display: inline-block;
             background: #2c3e66;
-            padding: 6px 18px;
+            padding: 5px 18px;
             border-radius: 40px;
             color: #ffecb3;
-            letter-spacing: 0.5px;
         }
         .formula {
             font-family: 'Courier New', monospace;
@@ -103,14 +99,11 @@
             backdrop-filter: blur(4px);
             font-weight: 500;
         }
-        .legend span {
-            font-weight: 600;
-        }
         .canvas-wrapper {
             position: relative;
             width: 100%;
-            height: calc(100vh - 230px);
-            min-height: 450px;
+            height: calc(100vh - 240px);
+            min-height: 440px;
             overflow: hidden;
             border-radius: 20px;
             margin: 0 0 8px 0;
@@ -120,7 +113,6 @@
             width: 100%;
             height: 100%;
         }
-        /* 控制面板 - 半透明科技感，加大字体 */
         .controls {
             position: absolute;
             bottom: 12px;
@@ -137,29 +129,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
         }
-        .controls .control-group {
-            background: rgba(20, 40, 60, 0.75);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(0, 212, 255, 0.4);
-        }
-        .controls .control-group label {
-            color: #ffdd99;
-            font-weight: 600;
-            font-size: 11px;
-        }
-        .controls .value-display {
-            background: #0a1a2acc;
-            color: #ffdd99;
-            border: 1px solid #ffaa66;
-            font-weight: 600;
-            font-size: 11px;
-        }
-        .controls .info-note {
-            color: #bbddff;
-            opacity: 0.95;
-            font-size: 10px;
-            font-weight: 500;
-        }
         .control-row {
             display: flex;
             flex-wrap: wrap;
@@ -175,6 +144,7 @@
             border-radius: 44px;
             flex: 1;
             min-width: 130px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
         }
         .control-group label {
             font-size: 11px;
@@ -223,10 +193,8 @@
             background: #ffaa44;
             color: #1e2a32;
         }
-        .toggle-panel-btn {
+        .toggle-panel-btn, .hide-left-btn {
             position: absolute;
-            bottom: 12px;
-            right: 12px;
             background: rgba(0, 180, 220, 0.95);
             border: 1px solid rgba(255,255,200,0.7);
             border-radius: 40px;
@@ -238,29 +206,15 @@
             font-family: monospace;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             pointer-events: auto;
-            backdrop-filter: blur(4px);
             color: white;
-        }
-        .toggle-panel-btn:hover {
-            background: #00a0cc;
-            transform: scale(1.02);
         }
         .hide-left-btn {
-            position: absolute;
+            top: 12px;
+            right: 12px;
+        }
+        .toggle-panel-btn {
             bottom: 12px;
-            left: 12px;
-            background: rgba(0, 180, 220, 0.95);
-            border: 1px solid rgba(255,255,200,0.7);
-            border-radius: 40px;
-            padding: 8px 16px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 45;
-            font-family: monospace;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            pointer-events: auto;
-            color: white;
+            right: 12px;
         }
         .info-note {
             font-size: 10px;
@@ -272,58 +226,100 @@
         }
         @media (max-width: 780px) {
             .panel { margin: 6px; min-width: auto; }
-            .canvas-wrapper { height: 420px; min-height: 380px; }
+            .canvas-wrapper { height: 400px; min-height: 360px; }
             .control-group { min-width: 100%; }
-            .panel-header h2 { font-size: 1.2rem; }
             .hide-left-btn, .toggle-panel-btn { font-size: 10px; padding: 6px 12px; }
-            .legend { font-size: 0.7rem; }
         }
-        /* 特色比喻卡片 - 字体加大 */
+        /* 比喻卡片 - 优化排版，字体适中规范 */
         .metaphor-card {
             background: #ffffffdd;
             backdrop-filter: blur(12px);
-            border-radius: 28px;
+            border-radius: 32px;
             margin: 0 12px 12px 12px;
-            padding: 16px 20px;
+            padding: 24px 28px;
             border-left: 6px solid #ffaa44;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
-            font-size: 14px;
-            line-height: 1.5;
-            color: #1e2f3f;
-        }
-        .metaphor-card strong {
-            color: #c97e00;
-            font-size: 15px;
-        }
-        .metaphor-icon {
-            font-size: 22px;
-            margin-right: 8px;
-            vertical-align: middle;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
         .flex-meta {
             display: flex;
-            gap: 20px;
+            gap: 28px;
             flex-wrap: wrap;
-            justify-content: space-between;
+            margin-bottom: 24px;
         }
         .meta-item {
             flex: 1;
             background: #eef3fc;
-            border-radius: 20px;
-            padding: 12px 16px;
-            font-size: 13px;
+            border-radius: 28px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        @media (max-width: 600px) {
-            .flex-meta { flex-direction: column; }
-            .metaphor-card { font-size: 12px; padding: 12px; }
+        .meta-item .meta-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #c97e00;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        /* 二元信息面板 - 独立位置左上角，避免重叠 */
+        .meta-item .meta-title span {
+            font-size: 28px;
+        }
+        .meta-item .meta-content {
+            font-size: 16px;
+            line-height: 1.65;
+            color: #2c3e50;
+        }
+        .meta-item .meta-content strong {
+            color: #c97e00;
+            font-weight: 700;
+        }
+        .unified-view {
+            background: linear-gradient(135deg, #e6f0ff, #fef5e6);
+            border-radius: 28px;
+            padding: 20px 26px;
+            border-left: 6px solid #00d4ff;
+        }
+        .unified-view .unified-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #c97e00;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .unified-view .unified-title span {
+            font-size: 26px;
+        }
+        .unified-view .unified-content {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #2c3e50;
+        }
+        .unified-view .unified-content strong {
+            color: #c97e00;
+            font-weight: 700;
+        }
+        .unified-view .unified-content .check-item {
+            margin: 10px 0;
+            padding-left: 8px;
+        }
+        @media (max-width: 780px) {
+            .metaphor-card { padding: 16px 18px; }
+            .meta-item { padding: 14px 16px; }
+            .meta-item .meta-title { font-size: 18px; margin-bottom: 12px; }
+            .meta-item .meta-content { font-size: 14px; }
+            .unified-view { padding: 14px 18px; }
+            .unified-view .unified-title { font-size: 18px; margin-bottom: 12px; }
+            .unified-view .unified-content { font-size: 14px; }
+        }
         .info-overlay-panel {
             position: absolute;
             top: 12px;
             left: 12px;
             right: auto;
-            width: 280px;
+            width: 320px;
             background: rgba(10, 25, 40, 0.94);
             backdrop-filter: blur(20px);
             border-radius: 20px;
@@ -333,21 +329,9 @@
             z-index: 25;
             border: 1px solid #00d4ff;
             color: #e0f0ff;
-            transition: all 0.2s ease;
             pointer-events: none;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            line-height: 1.5;
         }
-        .info-overlay-panel div {
-            font-size: 11px;
-            font-weight: 500;
-        }
-        .info-overlay-panel .info-note {
-            color: #88ccff;
-            font-size: 10px;
-            margin-top: 6px;
-        }
-        /* 右侧控制面板独立位置底部，与信息面板不重叠 */
         .right-controls-panel {
             position: absolute;
             bottom: 12px;
@@ -360,15 +344,23 @@
             z-index: 30;
             pointer-events: auto;
             border: 1px solid #00d4ff;
-            transition: all 0.3s ease;
+        }
+        .canvas-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            padding: 5px 12px;
+            border-radius: 24px;
+            font-size: 11px;
+            color: #fff;
+            z-index: 20;
+            pointer-events: none;
         }
         @media (max-width: 780px) {
-            .info-overlay-panel { width: 240px; top: 8px; left: 8px; padding: 8px 10px; }
-            .info-overlay-panel div { font-size: 9px; }
+            .info-overlay-panel { width: 250px; font-size: 9px; padding: 8px 10px; }
             .right-controls-panel { padding: 10px; }
-        }
-        .fade-transition {
-            transition: opacity 0.2s ease;
         }
     </style>
 </head>
@@ -379,7 +371,7 @@
 </div>
 <div class="dashboard">
     <!-- 左侧：一元函数微分 -->
-    <div class="panel" id="panel1D">
+    <div class="panel">
         <div class="panel-header">
             <h2>📈 一元微分 · 走山脊的斜率</h2>
             <div class="formula">f(x) = sin(x) + 0.3·x</div>
@@ -391,9 +383,9 @@
                 <span style="color:#1f8cad;">⬌</span> Δx
             </div>
         </div>
-        <div class="canvas-wrapper" style="position:relative; background: #f5f9ff;">
+        <div class="canvas-wrapper" style="position:relative; background: #f9fbfe;">
             <canvas id="canvas1D" style="width:100%; height:100%; display:block;"></canvas>
-            <div style="position:absolute; bottom:12px; left:12px; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); padding:4px 12px; border-radius:24px; font-size:11px; color:#fff; font-weight:500;">🔍 滚轮缩放 | 拖动平移</div>
+            <div class="canvas-hint">🔍 滚轮缩放 | 拖动平移</div>
             <button id="hideLeftControlsBtn" class="hide-left-btn">📋 隐藏控制面板</button>
         </div>
         <div id="leftControlsPanel" class="controls">
@@ -401,33 +393,31 @@
                 <div class="control-group"><label>🏔️ 站位 x₀</label><input type="range" id="x0Slider" min="-2.8" max="2.8" step="0.02" value="1.2"><span id="x0Val" class="value-display">1.20</span></div>
                 <div class="control-group"><label>👣 步幅 Δx</label><input type="range" id="dxSlider" min="-1.2" max="1.2" step="0.01" value="0.65"><span id="dxVal" class="value-display">0.65</span></div>
             </div>
-            <div class="info-note">🧗 比喻：登山时脚下切线斜率预测升高 dy，实际山路起伏Δy。微分是“线性眼光的预判”。</div>
+            <div class="info-note">🧗 比喻：登山时脚下切线斜率预测升高 dy，实际山路起伏Δy。微分是"线性眼光的预判"。</div>
         </div>
     </div>
 
-    <!-- 右侧：二元函数全微分 - 科技感增强版，模块分离不重叠 -->
-    <div class="panel" id="panel2D">
+    <!-- 右侧：二元函数全微分 -->
+    <div class="panel">
         <div class="panel-header">
             <h2>🌌 二元全微分 · 多维场域漫步</h2>
             <div class="formula">z = f(x,y) = 1.5·e^{-0.25(x²+y²)}·(sin x·cos y + 0.3x)</div>
             <div class="legend">
                 <span style="color:#2c7ab1;">━━</span> 曲面山坡 &nbsp;|&nbsp;
-                <span style="color:#ff66cc;">◻</span> 切平面(科技滑板) &nbsp;|&nbsp;
+                <span style="color:#ff66cc;">◻</span> 切平面 &nbsp;|&nbsp;
                 <span style="color:#ffaa66;">⬌</span> Δx, Δy &nbsp;|&nbsp;
                 <span style="color:#ff6b6b;">⬌</span> Δz 全增量 &nbsp;|&nbsp;
                 <span style="color:#6fbf73;">⬌</span> dz 全微分
             </div>
         </div>
-        <div class="canvas-wrapper" id="threeContainer" style="position:relative; background: #03070f;">
+        <div class="canvas-wrapper" id="threeContainer" style="position:relative; background: #050b1a;">
             <canvas id="canvas2D" style="width:100%; height:100%; display:block;"></canvas>
-            <!-- 信息面板：左上角独立区域 -->
             <div id="infoOverlayPanel" class="info-overlay-panel">
                 <div id="infoContent">加载中...</div>
-                <div class="info-note">👆 拖拽旋转 | 霓虹切平面 | 科技感线性逼近</div>
+                <div class="info-note" style="margin-top:6px;">👆 拖拽旋转 | 切平面线性逼近</div>
             </div>
-            <button id="togglePanelBtn" class="toggle-panel-btn" style="bottom: 12px; right: 12px;">📋 隐藏信息面板</button>
+            <button id="togglePanelBtn" class="toggle-panel-btn">📋 隐藏信息面板</button>
         </div>
-        <!-- 控制面板：底部独立，不与信息面板重叠 -->
         <div id="rightControlsPanel" class="right-controls-panel">
             <div class="control-row">
                 <div class="control-group"><label>🌍 x₀ (东)</label><input type="range" id="slider-x" min="-1.6" max="1.6" step="0.01" value="0.85"><span id="x-val" class="value-display">0.85</span></div>
@@ -442,30 +432,42 @@
                 <button id="view-top" class="view-btn">⬇️ 俯视投影</button>
                 <button id="reset-btn" class="view-btn">🔄 重置远足</button>
             </div>
-            <div class="info-note">⚡ 全微分 dz = f_x·Δx + f_y·Δy | 东西+南北梯度叠加预测 | 误差→高阶无穷小</div>
+            <div class="info-note">⚡ 全微分 dz = f_x·Δx + f_y·Δy | 东西+南北梯度叠加预测</div>
         </div>
-        <button id="hideRightControlsBtn" class="toggle-panel-btn" style="bottom: 12px; left: 12px; right: auto; background: rgba(0, 180, 220, 0.95);">📋 隐藏控制面板</button>
+        <button id="hideRightControlsBtn" class="toggle-panel-btn" style="bottom:12px; left:12px; right:auto; background:rgba(0,180,220,0.95);">📋 隐藏控制面板</button>
     </div>
 </div>
 
-<!-- 生动比喻卡片 - 字体加大 -->
+<!-- 比喻卡片 - 优化排版，规范美观 -->
 <div class="metaphor-card">
     <div class="flex-meta">
         <div class="meta-item">
-            <span class="metaphor-icon">🥾</span> <strong>【一元微分 · 走山脊线】</strong><br>
-            沿着固定山脊小径（x轴）行走，脚下坡度（导数）告诉你每步的爬升预测 dy。真实Δy与dy的差距源于路径弯曲——但步子越小，预测越准。
+            <div class="meta-title">
+                <span>🥾</span> 一元微分 · 走山脊线
+            </div>
+            <div class="meta-content">
+                沿着固定山脊小径（<strong>x轴</strong>）行走，脚下坡度（<strong>导数</strong>）告诉你每步的爬升预测 <strong style="color:#2c9a6e;">dy</strong>。真实 <strong style="color:#e67e22;">Δy</strong> 与 dy 的差距源于路径弯曲——<strong>步子越小，预测越准</strong>。切线如同登山杖指出的瞬时方向，微分就是基于当前坡度的“线性远见”。
+            </div>
         </div>
         <div class="meta-item">
-            <span class="metaphor-icon">🏕️</span> <strong>【二元全微分 · 山坡漫游】</strong><br>
-            站在山坡可同时向东Δx、向北Δy，全微分 dz = f_x·Δx + f_y·Δy 是双向坡度叠加的线性预测。切平面如同“悬浮滑板”，完美贴合局部地形。
+            <div class="meta-title">
+                <span>🏕️</span> 二元全微分 · 山坡漫步
+            </div>
+            <div class="meta-content">
+                站在山坡可同时向东 <strong style="color:#ffaa66;">Δx</strong>、向北 <strong style="color:#ffaa66;">Δy</strong>，全微分 <strong style="color:#6fbf73;">dz = f_x·Δx + f_y·Δy</strong> 是双向坡度叠加的线性预测。切平面如同“悬浮滑板”，完美贴合局部地形，让你同时感知东西和南北的倾斜，预判任意方向的高度变化。
+            </div>
         </div>
     </div>
-    <div style="margin-top: 12px; background: #e6f0ff; border-radius: 20px; padding: 12px 16px; font-size: 13px;">
-        <strong>🔗 核心联系 · 线性逼近的统一世界观</strong><br>
-        ✅ 一元微分 = 二元全微分在 Δy=0 时的退化（只走东西方向）。<br>
-        ✅ 本质相同：用直线（切线）代替曲线 / 用平面（切平面）代替曲面。<br>
-        ✅ 误差均为高阶无穷小，步子越小预测越精准。<br>
-        💡 一元是“单变量变化率”，二元是“多方向梯度协同”——多维思维让预测更立体。
+    <div class="unified-view">
+        <div class="unified-title">
+            <span>🔗</span> 核心联系 · 统一世界观 · 线性逼近的哲学
+        </div>
+        <div class="unified-content">
+            <div class="check-item">✅ <strong>一元微分 = 二元全微分在 Δy=0 时的退化</strong>（只走东西方向）</div>
+            <div class="check-item">✅ 本质相同：用<strong>直线（切线）</strong>代替曲线 / 用<strong>平面（切平面）</strong>代替曲面</div>
+            <div class="check-item">✅ 误差均为<strong>高阶无穷小</strong>，步子越小预测越精准。这揭示了微积分的灵魂——<strong>“局部线性化”</strong>，用最简单的线性工具逼近复杂变化</div>
+            <div class="check-item" style="margin-top: 12px;">💡 一元是“单变量变化率”，二元是“多方向梯度协同”——多维思维让预测更立体，而切平面正是高维空间中的“切线”。</div>
+        </div>
     </div>
 </div>
 
@@ -479,10 +481,10 @@
 </script>
 
 <script type="module">
-    // ========= 一元函数 =========
+    // ========= 一元函数微分 =========
     const canvas1 = document.getElementById('canvas1D');
     const ctx1 = canvas1.getContext('2d');
-    let width1 = canvas1.clientWidth, height1 = canvas1.clientHeight;
+    let width1, height1;
     
     function resizeCanvas1() {
         const container = canvas1.parentElement;
@@ -505,38 +507,71 @@
     function toWorldX(px) { return viewXMin + (px / width1) * (viewXMax - viewXMin); }
     function toWorldY(py) { return viewYMin + ((height1 - py) / height1) * (viewYMax - viewYMin); }
     
-    function drawDoubleArrowOutward(x1, y1, x2, y2, color, lineWidth = 2.5, arrowSize = 7, yOffset = 0) {
+    function drawGrid1() {
         ctx1.save();
-        ctx1.strokeStyle = color; ctx1.fillStyle = color; ctx1.lineWidth = lineWidth; ctx1.setLineDash([]);
-        let y1Adj = y1 + yOffset, y2Adj = y2 + yOffset;
-        ctx1.beginPath(); ctx1.moveTo(x1, y1Adj); ctx1.lineTo(x2, y2Adj); ctx1.stroke();
-        const angle = Math.atan2(y2Adj - y1Adj, x2 - x1);
-        ctx1.beginPath(); ctx1.moveTo(x1, y1Adj); ctx1.lineTo(x1 + arrowSize * Math.cos(angle + Math.PI - Math.PI/6), y1Adj + arrowSize * Math.sin(angle + Math.PI - Math.PI/6));
-        ctx1.lineTo(x1 + arrowSize * Math.cos(angle + Math.PI + Math.PI/6), y1Adj + arrowSize * Math.sin(angle + Math.PI + Math.PI/6)); ctx1.fill();
-        ctx1.beginPath(); ctx1.moveTo(x2, y2Adj); ctx1.lineTo(x2 + arrowSize * Math.cos(angle - Math.PI/6), y2Adj + arrowSize * Math.sin(angle - Math.PI/6));
-        ctx1.lineTo(x2 + arrowSize * Math.cos(angle + Math.PI/6), y2Adj + arrowSize * Math.sin(angle + Math.PI/6)); ctx1.fill();
+        ctx1.strokeStyle = "#9aaec0";
+        ctx1.lineWidth = 0.5;
+        for (let x = Math.ceil(viewXMin); x <= viewXMax; x += 1) {
+            let sx = toScreenX1(x);
+            if (sx >= 0 && sx <= width1) {
+                ctx1.beginPath(); ctx1.moveTo(sx, 0); ctx1.lineTo(sx, height1); ctx1.stroke();
+            }
+        }
+        for (let y = Math.ceil(viewYMin); y <= viewYMax; y += 0.5) {
+            let sy = toScreenY1(y);
+            if (sy >= 0 && sy <= height1) {
+                ctx1.beginPath(); ctx1.moveTo(0, sy); ctx1.lineTo(width1, sy); ctx1.stroke();
+            }
+        }
+        ctx1.beginPath();
+        ctx1.lineWidth = 1.5;
+        ctx1.strokeStyle = "#5a6e8a";
+        let axisX = toScreenY1(0);
+        if (axisX >= 0 && axisX <= height1) { ctx1.moveTo(0, axisX); ctx1.lineTo(width1, axisX); }
+        let axisY = toScreenX1(0);
+        if (axisY >= 0 && axisY <= width1) { ctx1.moveTo(axisY, 0); ctx1.lineTo(axisY, height1); }
+        ctx1.stroke();
+        ctx1.fillStyle = "#2c3e50";
+        ctx1.font = "bold 12px monospace";
+        ctx1.fillText("x", width1-12, axisX-6);
+        ctx1.fillText("y", axisY+6, 14);
         ctx1.restore();
     }
     
-    function drawGrid1() {
-        ctx1.save(); ctx1.strokeStyle = "#9aaec0"; ctx1.lineWidth = 0.6;
-        for (let x = Math.ceil(viewXMin); x <= viewXMax; x += 1) { let sx = toScreenX1(x); if (sx >= 0 && sx <= width1) { ctx1.beginPath(); ctx1.moveTo(sx, 0); ctx1.lineTo(sx, height1); ctx1.stroke(); } }
-        for (let y = Math.ceil(viewYMin); y <= viewYMax; y += 0.5) { let sy = toScreenY1(y); if (sy >= 0 && sy <= height1) { ctx1.beginPath(); ctx1.moveTo(0, sy); ctx1.lineTo(width1, sy); ctx1.stroke(); } }
-        ctx1.beginPath(); ctx1.lineWidth = 2; ctx1.strokeStyle = "#5a6e8a";
-        let axisX = toScreenY1(0); if (axisX >= 0 && axisX <= height1) { ctx1.moveTo(0, axisX); ctx1.lineTo(width1, axisX); }
-        let axisY = toScreenX1(0); if (axisY >= 0 && axisY <= width1) { ctx1.moveTo(axisY, 0); ctx1.lineTo(axisY, height1); }
-        ctx1.stroke(); ctx1.fillStyle = "#2c3e50"; ctx1.font = "bold 12px monospace"; ctx1.fillText("x", width1-12, axisX-6); ctx1.fillText("y", axisY+6, 14);
+    function drawDoubleArrow(x1, y1, x2, y2, color, yOffset = 0) {
+        ctx1.save();
+        ctx1.strokeStyle = color;
+        ctx1.fillStyle = color;
+        ctx1.lineWidth = 2.5;
+        let ya = y1 + yOffset, yb = y2 + yOffset;
+        ctx1.beginPath(); ctx1.moveTo(x1, ya); ctx1.lineTo(x2, yb); ctx1.stroke();
+        const angle = Math.atan2(yb - ya, x2 - x1);
+        const arrowSize = 7;
+        ctx1.beginPath();
+        ctx1.moveTo(x1, ya);
+        ctx1.lineTo(x1 + arrowSize * Math.cos(angle + Math.PI - Math.PI/6), ya + arrowSize * Math.sin(angle + Math.PI - Math.PI/6));
+        ctx1.lineTo(x1 + arrowSize * Math.cos(angle + Math.PI + Math.PI/6), ya + arrowSize * Math.sin(angle + Math.PI + Math.PI/6));
+        ctx1.fill();
+        ctx1.beginPath();
+        ctx1.moveTo(x2, yb);
+        ctx1.lineTo(x2 + arrowSize * Math.cos(angle - Math.PI/6), yb + arrowSize * Math.sin(angle - Math.PI/6));
+        ctx1.lineTo(x2 + arrowSize * Math.cos(angle + Math.PI/6), yb + arrowSize * Math.sin(angle + Math.PI/6));
+        ctx1.fill();
         ctx1.restore();
     }
     
     function draw1D() {
-        if (width1 === 0) return;
+        if (!width1) return;
         const x0 = parseFloat(document.getElementById('x0Slider').value);
         const dx = parseFloat(document.getElementById('dxSlider').value);
-        document.getElementById('x0Val').innerText = x0.toFixed(3); document.getElementById('dxVal').innerText = dx.toFixed(3);
+        document.getElementById('x0Val').innerText = x0.toFixed(3);
+        document.getElementById('dxVal').innerText = dx.toFixed(3);
         ctx1.clearRect(0, 0, width1, height1);
         drawGrid1();
-        ctx1.beginPath(); ctx1.lineWidth = 3; ctx1.strokeStyle = "#2b6eb3";
+        
+        ctx1.beginPath();
+        ctx1.lineWidth = 3;
+        ctx1.strokeStyle = "#2b6eb3";
         let step = (viewXMax - viewXMin) / 1500, first = true;
         for (let x = viewXMin; x <= viewXMax; x += step) {
             let y = func1D(x), sx = toScreenX1(x), sy = toScreenY1(y);
@@ -544,39 +579,77 @@
             if (first) { ctx1.moveTo(sx, sy); first = false; } else ctx1.lineTo(sx, sy);
         }
         ctx1.stroke();
-        const y0 = func1D(x0), slope = deriv1D(x0), x_new = x0 + dx, y_new = func1D(x_new), dy_val = slope * dx, y_tan_point = y0 + dy_val;
+        
+        const y0 = func1D(x0), slope = deriv1D(x0), x_new = x0 + dx, y_new = func1D(x_new);
+        const dy_val = slope * dx, y_tan_point = y0 + dy_val;
         const xLeft = Math.max(viewXMin, x0 - 1.8), xRight = Math.min(viewXMax, x0 + 1.8);
-        ctx1.beginPath(); ctx1.moveTo(toScreenX1(xLeft), toScreenY1(y0 + slope * (xLeft - x0))); ctx1.lineTo(toScreenX1(xRight), toScreenY1(y0 + slope * (xRight - x0)));
-        ctx1.strokeStyle = "#d9480f"; ctx1.lineWidth = 2.5; ctx1.setLineDash([8, 6]); ctx1.stroke(); ctx1.setLineDash([]);
-        const xScreen0 = toScreenX1(x0), xScreenNew = toScreenX1(x_new), yScreen0 = toScreenY1(y0), yScreenNew = toScreenY1(y_new), yScreenTan = toScreenY1(y_tan_point);
-        ctx1.save(); ctx1.strokeStyle = "#809ab3"; ctx1.lineWidth = 1.2; ctx1.setLineDash([6, 6]);
-        ctx1.beginPath(); ctx1.moveTo(0, yScreen0); ctx1.lineTo(width1, yScreen0); ctx1.stroke();
-        ctx1.beginPath(); ctx1.moveTo(0, yScreenNew); ctx1.lineTo(width1, yScreenNew); ctx1.stroke();
-        ctx1.beginPath(); ctx1.moveTo(0, yScreenTan); ctx1.lineTo(width1, yScreenTan); ctx1.stroke();
-        ctx1.setLineDash([]); ctx1.beginPath(); ctx1.moveTo(xScreen0, 0); ctx1.lineTo(xScreen0, height1); ctx1.stroke();
-        ctx1.beginPath(); ctx1.moveTo(xScreenNew, 0); ctx1.lineTo(xScreenNew, height1); ctx1.stroke(); ctx1.restore();
-        ctx1.beginPath(); ctx1.arc(xScreen0, yScreen0, 6, 0, 2*Math.PI); ctx1.fillStyle = "#c2410c"; ctx1.fill();
-        ctx1.beginPath(); ctx1.arc(xScreenNew, yScreenNew, 6, 0, 2*Math.PI); ctx1.fillStyle = "#e67e22"; ctx1.fill();
-        ctx1.beginPath(); ctx1.arc(xScreenNew, yScreenTan, 6, 0, 2*Math.PI); ctx1.fillStyle = "#2c9a6e"; ctx1.fill();
-        if (Math.abs(xScreenNew - xScreen0) > 12) drawDoubleArrowOutward(xScreen0, yScreen0, xScreenNew, yScreen0, "#1f8cad", 2.5, 7, -22);
-        if (Math.abs(yScreenNew - yScreen0) > 8) drawDoubleArrowOutward(xScreenNew + 14, yScreen0, xScreenNew + 14, yScreenNew, "#e67e22", 2.5, 7, 0);
-        if (Math.abs(yScreenTan - yScreen0) > 8) drawDoubleArrowOutward(xScreenNew - 14, yScreen0, xScreenNew - 14, yScreenTan, "#2c9a6e", 2.5, 7, 0);
-        ctx1.fillStyle = "#1e466e"; ctx1.font = "bold 11px monospace"; ctx1.fillText(`dy = ${dy_val.toFixed(4)}`, xScreenNew + 8, yScreenTan - 8);
-        const error = Math.abs((y_new - y0) - dy_val); ctx1.fillStyle = "#4a627a"; ctx1.font = "bold 10px monospace"; ctx1.fillText(`误差 = ${error.toFixed(5)}`, width1-140, 32);
+        ctx1.beginPath();
+        ctx1.moveTo(toScreenX1(xLeft), toScreenY1(y0 + slope * (xLeft - x0)));
+        ctx1.lineTo(toScreenX1(xRight), toScreenY1(y0 + slope * (xRight - x0)));
+        ctx1.strokeStyle = "#d9480f";
+        ctx1.lineWidth = 2.5;
+        ctx1.setLineDash([8, 6]);
+        ctx1.stroke();
+        ctx1.setLineDash([]);
+        
+        const xs0 = toScreenX1(x0), xsn = toScreenX1(x_new);
+        const ys0 = toScreenY1(y0), ysn = toScreenY1(y_new), yst = toScreenY1(y_tan_point);
+        
+        ctx1.beginPath(); ctx1.arc(xs0, ys0, 6, 0, 2*Math.PI); ctx1.fillStyle = "#c2410c"; ctx1.fill();
+        ctx1.beginPath(); ctx1.arc(xsn, ysn, 6, 0, 2*Math.PI); ctx1.fillStyle = "#e67e22"; ctx1.fill();
+        ctx1.beginPath(); ctx1.arc(xsn, yst, 6, 0, 2*Math.PI); ctx1.fillStyle = "#2c9a6e"; ctx1.fill();
+        
+        if (Math.abs(xsn - xs0) > 12) drawDoubleArrow(xs0, ys0, xsn, ys0, "#1f8cad", -22);
+        if (Math.abs(ysn - ys0) > 8) drawDoubleArrow(xsn + 14, ys0, xsn + 14, ysn, "#e67e22", 0);
+        if (Math.abs(yst - ys0) > 8) drawDoubleArrow(xsn - 14, ys0, xsn - 14, yst, "#2c9a6e", 0);
+        
+        ctx1.fillStyle = "#1e466e";
+        ctx1.font = "bold 12px monospace";
+        ctx1.fillText(`dy = ${dy_val.toFixed(4)}`, xsn + 10, yst - 8);
+        ctx1.fillStyle = "#4a627a";
+        ctx1.fillText(`误差 = ${Math.abs((y_new - y0) - dy_val).toFixed(5)}`, width1-140, 30);
     }
-    canvas1.addEventListener('wheel', (e) => { e.preventDefault(); const zoom = e.deltaY > 0 ? 1.1 : 0.9; const mx = e.offsetX, my = e.offsetY; const cx = toWorldX(mx), cy = toWorldY(my); let nw = (viewXMax - viewXMin) * zoom, nh = (viewYMax - viewYMin) * zoom; nw = Math.min(Math.max(nw, 0.6), 6); nh = Math.min(Math.max(nh, 0.6), 5); viewXMin = cx - (cx - viewXMin) * zoom; viewXMax = viewXMin + nw; viewYMin = cy - (cy - viewYMin) * zoom; viewYMax = viewYMin + nh; draw1D(); });
+    
+    canvas1.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoom = e.deltaY > 0 ? 1.1 : 0.9;
+        const mx = e.offsetX, my = e.offsetY;
+        const cx = toWorldX(mx), cy = toWorldY(my);
+        let nw = (viewXMax - viewXMin) * zoom, nh = (viewYMax - viewYMin) * zoom;
+        nw = Math.min(Math.max(nw, 0.6), 6);
+        nh = Math.min(Math.max(nh, 0.6), 5);
+        viewXMin = cx - (cx - viewXMin) * zoom;
+        viewXMax = viewXMin + nw;
+        viewYMin = cy - (cy - viewYMin) * zoom;
+        viewYMax = viewYMin + nh;
+        draw1D();
+    });
     canvas1.addEventListener('mousedown', (e) => { panActive1 = true; panStart1 = { x: e.clientX, y: e.clientY }; canvas1.style.cursor = 'grabbing'; });
-    window.addEventListener('mousemove', (e) => { if (!panActive1) return; const dxW = (e.clientX - panStart1.x) / width1 * (viewXMax - viewXMin); const dyW = -(e.clientY - panStart1.y) / height1 * (viewYMax - viewYMin); viewXMin -= dxW; viewXMax -= dxW; viewYMin -= dyW; viewYMax -= dyW; panStart1 = { x: e.clientX, y: e.clientY }; draw1D(); });
+    window.addEventListener('mousemove', (e) => {
+        if (!panActive1) return;
+        const dxW = (e.clientX - panStart1.x) / width1 * (viewXMax - viewXMin);
+        const dyW = -(e.clientY - panStart1.y) / height1 * (viewYMax - viewYMin);
+        viewXMin -= dxW; viewXMax -= dxW; viewYMin -= dyW; viewYMax -= dyW;
+        panStart1 = { x: e.clientX, y: e.clientY };
+        draw1D();
+    });
     window.addEventListener('mouseup', () => { panActive1 = false; canvas1.style.cursor = 'grab'; });
-    document.getElementById('x0Slider').addEventListener('input', draw1D); document.getElementById('dxSlider').addEventListener('input', draw1D);
+    document.getElementById('x0Slider').addEventListener('input', draw1D);
+    document.getElementById('dxSlider').addEventListener('input', draw1D);
     resizeCanvas1();
     
     const leftControls = document.getElementById('leftControlsPanel');
     const hideLeftBtn = document.getElementById('hideLeftControlsBtn');
     let leftHidden = false;
-    if (hideLeftBtn && leftControls) hideLeftBtn.addEventListener('click', (e) => { e.stopPropagation(); leftHidden = !leftHidden; leftControls.style.display = leftHidden ? 'none' : 'block'; hideLeftBtn.textContent = leftHidden ? '📂 显示面板' : '📋 隐藏控制面板'; });
+    if (hideLeftBtn && leftControls) {
+        hideLeftBtn.addEventListener('click', () => {
+            leftHidden = !leftHidden;
+            leftControls.style.display = leftHidden ? 'none' : 'block';
+            hideLeftBtn.textContent = leftHidden ? '📂 显示面板' : '📋 隐藏控制面板';
+        });
+    }
     
-    // ========= 二元函数 Three.js =========
+    // ========= 二元函数全微分 (保持完整功能) =========
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
@@ -584,10 +657,11 @@
     const canvas2d = document.getElementById('canvas2D');
     const container3d = document.getElementById('threeContainer');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x03070f);
-    scene.fog = new THREE.FogExp2(0x03070f, 0.025);
+    scene.background = new THREE.Color(0x050b1a);
+    scene.fog = new THREE.FogExp2(0x050b1a, 0.012);
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-    camera.position.set(5.2, 4.2, 5.5); camera.lookAt(0, 0.2, 0);
+    camera.position.set(5.2, 4.2, 5.5);
+    camera.lookAt(0, 0.2, 0);
     const renderer = new THREE.WebGLRenderer({ canvas: canvas2d, antialias: true });
     const labelRenderer = new CSS2DRenderer();
     labelRenderer.domElement.style.position = 'absolute';
@@ -596,79 +670,358 @@
     labelRenderer.domElement.style.pointerEvents = 'none';
     container3d.appendChild(labelRenderer.domElement);
     
-    function resize3D() { const w = container3d.clientWidth, h = container3d.clientHeight; renderer.setSize(w, h); labelRenderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-    window.addEventListener('resize', resize3D); resize3D();
-    const controls3d = new OrbitControls(camera, renderer.domElement);
-    controls3d.enableDamping = true; controls3d.dampingFactor = 0.06; controls3d.rotateSpeed = 1.0; controls3d.target.set(0, 0.2, 0);
-    
-    const f = (x, y) => { const r2 = x*x+y*y; const envelope = 1.5 * Math.exp(-0.25 * r2); const wave = Math.sin(x)*Math.cos(y) + 0.3*x; return envelope * wave; };
-    const fx = (x, y) => { const r2 = x*x+y*y, expTerm = Math.exp(-0.25*r2), wave = Math.sin(x)*Math.cos(y)+0.3*x, dEnv = 1.5 * expTerm * (-0.5*x), dwave = Math.cos(x)*Math.cos(y)+0.3; return 1.5*expTerm*dwave + dEnv*wave; };
-    const fy = (x, y) => { const r2 = x*x+y*y, expTerm = Math.exp(-0.25*r2), wave = Math.sin(x)*Math.cos(y)+0.3*x, dEnv = 1.5 * expTerm * (-0.5*y), dwave = -Math.sin(x)*Math.sin(y); return 1.5*expTerm*dwave + dEnv*wave; };
-    
-    const size = 4.2, seg = 96; const vertices = [], indices = []; const startX = -size/2, startY = -size/2, stepS = size/seg;
-    for (let i=0; i<=seg; i++) for (let j=0; j<=seg; j++) { const x = startX + i*stepS, y = startY + j*stepS, z = f(x,y); vertices.push(x, z, y); }
-    for (let i=0; i<seg; i++) for (let j=0; j<seg; j++) { const a = i*(seg+1)+j, b = i*(seg+1)+j+1, c = (i+1)*(seg+1)+j, d = (i+1)*(seg+1)+j+1; indices.push(a,b,c); indices.push(b,d,c); }
-    const geom = new THREE.BufferGeometry(); geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3)); geom.setIndex(indices); geom.computeVertexNormals();
-    const surfaceMat = new THREE.MeshStandardMaterial({ color: 0x2c7ab1, side: THREE.DoubleSide, roughness: 0.3, metalness: 0.7, emissive: 0x0a2a4a, emissiveIntensity: 0.35, transparent: true, opacity: 0.92 });
-    const surfaceMesh = new THREE.Mesh(geom, surfaceMat); scene.add(surfaceMesh);
-    const wireframeMat = new THREE.MeshBasicMaterial({ color: 0x44bbff, wireframe: true, transparent: true, opacity: 0.28 }); scene.add(new THREE.Mesh(geom, wireframeMat));
-    const projPlaneY = -1.3; const gridHelper = new THREE.GridHelper(7.2, 28, 0x33aaff, 0x2288aa); gridHelper.position.y = projPlaneY; gridHelper.material.transparent = true; gridHelper.material.opacity = 0.55; scene.add(gridHelper);
-    const axesHelper = new THREE.AxesHelper(3.2); axesHelper.material.transparent = true; axesHelper.material.opacity = 0.3; scene.add(axesHelper);
-    const ambientLight = new THREE.AmbientLight(0x1a3355); scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2); dirLight.position.set(1.5, 2.8, 1.2); scene.add(dirLight);
-    const backLight = new THREE.PointLight(0x44aaff, 0.8); backLight.position.set(-1.5, 1.8, -2); scene.add(backLight);
-    const fillLight = new THREE.PointLight(0xffaa66, 0.5); fillLight.position.set(1.2, 1.2, 1.5); scene.add(fillLight);
-    
-    function createDoubleArrowLine(start,end,color,radius=0.025,arrowLen=0.14,arrowRad=0.06) { const group=new THREE.Group(); const dir=new THREE.Vector3().subVectors(end,start); const len=dir.length(); if(len<0.05) return group; const norm=dir.clone().normalize(); const cyl=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,len,10),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:0.45})); const center=new THREE.Vector3().addVectors(start,end).multiplyScalar(0.5); cyl.position.copy(center); cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),norm); group.add(cyl); const coneGeom=new THREE.ConeGeometry(arrowRad,arrowLen,12); const coneMat=new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:0.55}); const startCone=new THREE.Mesh(coneGeom,coneMat); startCone.position.copy(start.clone().add(norm.clone().multiplyScalar(arrowLen/2))); startCone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),norm); group.add(startCone); const endCone=new THREE.Mesh(coneGeom,coneMat); endCone.position.copy(end.clone().add(norm.clone().multiplyScalar(-arrowLen/2))); endCone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),norm); group.add(endCone); return group; }
-    function createVerticalDoubleArrow(start,end,color,radius=0.026,arrowLen=0.14,arrowRad=0.062) { const group=new THREE.Group(); const dy=end.y-start.y; const len=Math.abs(dy); if(len<0.03) return group; const dir=new THREE.Vector3(0,Math.sign(dy),0); const cyl=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,len,10),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:0.45})); const center=new THREE.Vector3(start.x,(start.y+end.y)/2,start.z); cyl.position.copy(center); cyl.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); group.add(cyl); const coneGeom=new THREE.ConeGeometry(arrowRad,arrowLen,12); const coneMat=new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:0.55}); const startCone=new THREE.Mesh(coneGeom,coneMat); startCone.position.copy(start.clone().add(dir.clone().multiplyScalar(arrowLen/2))); startCone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); group.add(startCone); const endCone=new THREE.Mesh(coneGeom,coneMat); endCone.position.copy(end.clone().add(dir.clone().multiplyScalar(-arrowLen/2))); endCone.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir); group.add(endCone); return group; }
-    function makeLabel(text,pos,colorHex,offX=0,offY=0,offZ=0,fs='12px'){ const div=document.createElement('div'); div.textContent=text; div.style.color=colorHex; div.style.fontSize=fs; div.style.fontWeight='bold'; div.style.backgroundColor='rgba(8,20,35,0.88)'; div.style.padding='3px 12px'; div.style.borderRadius='24px'; div.style.border=`1.5px solid ${colorHex}`; div.style.fontFamily='monospace'; div.style.whiteSpace='nowrap'; const label=new CSS2DObject(div); label.position.copy(pos.clone().add(new THREE.Vector3(offX,offY,offZ))); return label; }
-    
-    let tangentPlaneMesh, deltaXArrow, deltaYArrow, deltaZArrow, dzArrow, projectionLines, pointMarkers={}, labelsArr=[], offsetHelper, referencePlaneGrid;
-    function updateVisualization() {
-        const x0=parseFloat(document.getElementById('slider-x').value), y0=parseFloat(document.getElementById('slider-y').value), dx=parseFloat(document.getElementById('slider-dx').value), dy=parseFloat(document.getElementById('slider-dy').value);
-        document.getElementById('x-val').innerText=x0.toFixed(3); document.getElementById('y-val').innerText=y0.toFixed(3); document.getElementById('dx-val').innerText=dx.toFixed(3); document.getElementById('dy-val').innerText=dy.toFixed(3);
-        const z0=f(x0,y0), P=new THREE.Vector3(x0,z0,y0), x1=x0+dx, y1=y0+dy, z1=f(x1,y1), Q=new THREE.Vector3(x1,z1,y1), fx0=fx(x0,y0), fy0=fy(x0,y0), dz_val=fx0*dx+fy0*dy, z_tan_at_Q=z0+dz_val, tangentPoint=new THREE.Vector3(x1,z_tan_at_Q,y1), deltaZ_actual=z1-z0;
-        if(referencePlaneGrid) scene.remove(referencePlaneGrid); const helperGrid=new THREE.GridHelper(2.4,16,0x88aaff,0x44aacc); helperGrid.position.set(0,z0,0); helperGrid.material.transparent=true; helperGrid.material.opacity=0.55; referencePlaneGrid=helperGrid; scene.add(referencePlaneGrid);
-        if(tangentPlaneMesh) scene.remove(tangentPlaneMesh); const half=0.85; const corners=[new THREE.Vector3(x0-half,0,y0-half),new THREE.Vector3(x0+half,0,y0-half),new THREE.Vector3(x0+half,0,y0+half),new THREE.Vector3(x0-half,0,y0+half)]; const pVerts=[]; corners.forEach(c=>{ const xc=c.x, yc=c.z, zc=z0+fx0*(xc-x0)+fy0*(yc-y0); pVerts.push(xc,zc,yc); }); const pGeom=new THREE.BufferGeometry(); pGeom.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pVerts),3)); pGeom.setIndex([0,1,2,0,2,3]); pGeom.computeVertexNormals(); tangentPlaneMesh=new THREE.Mesh(pGeom,new THREE.MeshPhongMaterial({color:0xff66cc,side:THREE.DoubleSide,transparent:true,opacity:0.68,emissive:0x551133})); scene.add(tangentPlaneMesh);
-        const midX=new THREE.Vector3(x0+dx,z0,y0); if(deltaXArrow) scene.remove(deltaXArrow); deltaXArrow=createDoubleArrowLine(P,midX,0xffaa66); scene.add(deltaXArrow);
-        const endHor=new THREE.Vector3(x0+dx,z0,y0+dy); if(deltaYArrow) scene.remove(deltaYArrow); deltaYArrow=createDoubleArrowLine(midX,endHor,0xffaa66); scene.add(deltaYArrow);
-        if(window._jointSphere) scene.remove(window._jointSphere); window._jointSphere=new THREE.Mesh(new THREE.SphereGeometry(0.05,16,16),new THREE.MeshStandardMaterial({color:0xffaa66,emissive:0xff6600})); window._jointSphere.position.copy(midX); scene.add(window._jointSphere);
-        const baseAtDxDy=new THREE.Vector3(x1,z0,y1); if(deltaZArrow) scene.remove(deltaZArrow); deltaZArrow=createVerticalDoubleArrow(baseAtDxDy,Q,0xff6b6b,0.029,0.15,0.07); scene.add(deltaZArrow);
-        const offsetMag=0.22, deltaDir=new THREE.Vector3(dx,0,dy).normalize(); let perpDir=new THREE.Vector3(-deltaDir.z,0,deltaDir.x); if(Math.abs(perpDir.x)<0.01&&Math.abs(perpDir.z)<0.01) perpDir=new THREE.Vector3(1,0,0); const offsetVec=perpDir.clone().multiplyScalar(offsetMag); const offsetStart=baseAtDxDy.clone().add(offsetVec), offsetEnd=tangentPoint.clone().add(offsetVec); if(dzArrow) scene.remove(dzArrow); dzArrow=createVerticalDoubleArrow(offsetStart,offsetEnd,0x6fbf73,0.026,0.14,0.065); scene.add(dzArrow);
-        if(offsetHelper) scene.remove(offsetHelper); const hGroup=new THREE.Group(); const dashMat=new THREE.LineBasicMaterial({color:0x88ff88,transparent:true,opacity:0.55}); hGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([baseAtDxDy,offsetStart]),dashMat)); hGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([tangentPoint,offsetEnd]),dashMat)); scene.add(hGroup); offsetHelper=hGroup;
-        if(projectionLines) scene.remove(projectionLines); const projGroup=new THREE.Group(); const projMat=new THREE.LineBasicMaterial({color:0x88aaff,transparent:true,opacity:0.55}); const project=(pt)=>new THREE.Vector3(pt.x,projPlaneY,pt.z); const projP=project(P), projQ=project(Q); const addProj=(a,b)=>projGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([a,b]),projMat)); addProj(P,projP); addProj(Q,projQ); addProj(tangentPoint,project(tangentPoint)); const dotMat=new THREE.MeshStandardMaterial({color:0x66ccff}); const dotP=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,8),dotMat); dotP.position.copy(projP); const dotQ=new THREE.Mesh(new THREE.SphereGeometry(0.045,8,8),dotMat); dotQ.position.copy(projQ); projGroup.add(dotP,dotQ); scene.add(projGroup); projectionLines=projGroup;
-        if(pointMarkers.p) scene.remove(pointMarkers.p); if(pointMarkers.q) scene.remove(pointMarkers.q); if(pointMarkers.tan) scene.remove(pointMarkers.tan); pointMarkers.p=new THREE.Mesh(new THREE.SphereGeometry(0.095,32,32),new THREE.MeshStandardMaterial({color:0x44aaff,emissive:0x2266aa})); pointMarkers.p.position.copy(P); pointMarkers.q=new THREE.Mesh(new THREE.SphereGeometry(0.095,32,32),new THREE.MeshStandardMaterial({color:0xff6b6b,emissive:0xaa3333})); pointMarkers.q.position.copy(Q); pointMarkers.tan=new THREE.Mesh(new THREE.SphereGeometry(0.08,28,28),new THREE.MeshStandardMaterial({color:0x88ff88,emissive:0x44aa44})); pointMarkers.tan.position.copy(tangentPoint); scene.add(pointMarkers.p,pointMarkers.q,pointMarkers.tan);
-        if(labelsArr.length) labelsArr.forEach(l=>scene.remove(l)); labelsArr=[];
-        labelsArr.push(makeLabel(`Δx = ${dx.toFixed(3)}`,new THREE.Vector3(x0+dx/2,z0+0.14,y0),'#ffaa66',0,0.25,0.3,'11px'));
-        labelsArr.push(makeLabel(`Δy = ${dy.toFixed(3)}`,new THREE.Vector3(x0+dx+0.12,z0,y0+dy/2),'#ffaa66',0.35,0.22,0,'11px'));
-        labelsArr.push(makeLabel(`Δz = ${deltaZ_actual.toFixed(4)}`,new THREE.Vector3(x1+0.2,(z0+z1)/2,y1),'#ff6b6b',0.45,0,0.12,'11px'));
-        labelsArr.push(makeLabel(`dz = ${dz_val.toFixed(4)}`,new THREE.Vector3(x1+offsetVec.x-0.2,(z0+z_tan_at_Q)/2,y1+offsetVec.z),'#6fbf73',-0.45,0,0,'11px'));
-        labelsArr.push(makeLabel(`🔵 P₀`,P,'#88aaff',0,0.3,0.12,'10px')); labelsArr.push(makeLabel(`🔴 Q`,Q,'#ff8888',0.24,0.3,0.12,'10px'));
-        labelsArr.push(makeLabel(`误差 = ${(deltaZ_actual-dz_val).toFixed(4)}`,new THREE.Vector3(x1,(z1+z_tan_at_Q)/2+0.32,y1),'#ffaa66',0.2,0,0.18,'10px'));
-        labelsArr.forEach(l=>scene.add(l));
-        const infoDiv = document.getElementById('infoContent');
-        if(infoDiv) infoDiv.innerHTML = `<strong>⚡ 基点 P</strong> (${x0.toFixed(3)}, ${y0.toFixed(3)}, ${z0.toFixed(4)})<br><strong style="color:#66ccff;">∂z/∂x</strong> = ${fx0.toFixed(4)} &nbsp;|&nbsp; <strong style="color:#88ff88;">∂z/∂y</strong> = ${fy0.toFixed(4)}<br><strong>📍 真实点 Q</strong> (${x1.toFixed(3)}, ${y1.toFixed(3)}, ${z1.toFixed(4)})<br><strong>🎯 切平面点</strong> (${x1.toFixed(3)}, ${y1.toFixed(3)}, ${z_tan_at_Q.toFixed(4)})<br><strong>⛰️ 全增量 Δz = ${deltaZ_actual.toFixed(5)}</strong> &nbsp; <strong style="color:#6fbf73;">全微分 dz = ${dz_val.toFixed(5)}</strong><br>📐 逼近误差 = ${Math.abs(deltaZ_actual - dz_val).toFixed(6)}<br><span style="color:#ffdd99;">✨ 一元微分是二元全微分退化特例 | 科技感线性主部</span>`;
+    function resize3D() {
+        const w = container3d.clientWidth;
+        const h = container3d.clientHeight;
+        renderer.setSize(w, h);
+        labelRenderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
     }
-    function setView(isTop) { if(isTop){ camera.position.set(0,7.2,0.01); controls3d.target.set(0,0.2,0); } else { camera.position.set(5.2,4.2,5.5); controls3d.target.set(0,0.3,0); } controls3d.update(); }
+    window.addEventListener('resize', resize3D);
+    resize3D();
+    
+    const controls3d = new OrbitControls(camera, renderer.domElement);
+    controls3d.enableDamping = true;
+    controls3d.dampingFactor = 0.06;
+    controls3d.rotateSpeed = 1.0;
+    controls3d.target.set(0, 0.2, 0);
+    
+    const f = (x, y) => {
+        const r2 = x * x + y * y;
+        const envelope = 1.5 * Math.exp(-0.25 * r2);
+        const wave = Math.sin(x) * Math.cos(y) + 0.3 * x;
+        return envelope * wave;
+    };
+    const fx = (x, y) => {
+        const r2 = x * x + y * y;
+        const expTerm = Math.exp(-0.25 * r2);
+        const wave = Math.sin(x) * Math.cos(y) + 0.3 * x;
+        const dEnv = 1.5 * expTerm * (-0.5 * x);
+        const dwave = Math.cos(x) * Math.cos(y) + 0.3;
+        return 1.5 * expTerm * dwave + dEnv * wave;
+    };
+    const fy = (x, y) => {
+        const r2 = x * x + y * y;
+        const expTerm = Math.exp(-0.25 * r2);
+        const wave = Math.sin(x) * Math.cos(y) + 0.3 * x;
+        const dEnv = 1.5 * expTerm * (-0.5 * y);
+        const dwave = -Math.sin(x) * Math.sin(y);
+        return 1.5 * expTerm * dwave + dEnv * wave;
+    };
+    
+    const size = 4.2, seg = 96;
+    const vertices = [], indices = [];
+    const startX = -size / 2, startY = -size / 2;
+    const stepS = size / seg;
+    for (let i = 0; i <= seg; i++) {
+        const x = startX + i * stepS;
+        for (let j = 0; j <= seg; j++) {
+            const y = startY + j * stepS;
+            const z = f(x, y);
+            vertices.push(x, z, y);
+        }
+    }
+    for (let i = 0; i < seg; i++) {
+        for (let j = 0; j < seg; j++) {
+            const a = i * (seg + 1) + j;
+            const b = i * (seg + 1) + j + 1;
+            const c = (i + 1) * (seg + 1) + j;
+            const d = (i + 1) * (seg + 1) + j + 1;
+            indices.push(a, b, c);
+            indices.push(b, d, c);
+        }
+    }
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+    geom.setIndex(indices);
+    geom.computeVertexNormals();
+    const surfaceMat = new THREE.MeshStandardMaterial({ color: 0x3399ff, side: THREE.DoubleSide, roughness: 0.45, metalness: 0.2, transparent: true, opacity: 0.85 });
+    const surfaceMesh = new THREE.Mesh(geom, surfaceMat);
+    scene.add(surfaceMesh);
+    const wireframeMat = new THREE.MeshBasicMaterial({ color: 0x88aaff, wireframe: true, transparent: true, opacity: 0.15 });
+    scene.add(new THREE.Mesh(geom, wireframeMat));
+    
+    const projPlaneY = -1.3;
+    const gridHelper = new THREE.GridHelper(7.2, 28, 0x88aaff, 0x446688);
+    gridHelper.position.y = projPlaneY;
+    gridHelper.material.transparent = true;
+    gridHelper.material.opacity = 0.4;
+    scene.add(gridHelper);
+    
+    const axesHelper = new THREE.AxesHelper(3.2);
+    axesHelper.material.transparent = true;
+    axesHelper.material.opacity = 0.2;
+    scene.add(axesHelper);
+    
+    const ambientLight = new THREE.AmbientLight(0x404060);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(1.5, 2.8, 1.2);
+    scene.add(dirLight);
+    const fillLight = new THREE.PointLight(0x6688cc, 0.5);
+    fillLight.position.set(-1.2, 1.5, 1.8);
+    scene.add(fillLight);
+    
+    function createDoubleArrowLine(start, end, color, radius = 0.022, arrowLen = 0.12, arrowRad = 0.055) {
+        const group = new THREE.Group();
+        const dir = new THREE.Vector3().subVectors(end, start);
+        const len = dir.length();
+        if (len < 0.05) return group;
+        const norm = dir.clone().normalize();
+        const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, len, 10), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.25 }));
+        const center = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+        cylinder.position.copy(center);
+        cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), norm);
+        group.add(cylinder);
+        const coneGeom = new THREE.ConeGeometry(arrowRad, arrowLen, 12);
+        const coneMat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3 });
+        const startCone = new THREE.Mesh(coneGeom, coneMat);
+        startCone.position.copy(start.clone().add(norm.clone().multiplyScalar(arrowLen / 2)));
+        startCone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), norm);
+        group.add(startCone);
+        const endCone = new THREE.Mesh(coneGeom, coneMat);
+        endCone.position.copy(end.clone().add(norm.clone().multiplyScalar(-arrowLen / 2)));
+        endCone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), norm);
+        group.add(endCone);
+        return group;
+    }
+    function createVerticalDoubleArrow(start, end, color, radius = 0.024, arrowLen = 0.12, arrowRad = 0.056) {
+        const group = new THREE.Group();
+        const dy = end.y - start.y;
+        const len = Math.abs(dy);
+        if (len < 0.03) return group;
+        const dir = new THREE.Vector3(0, Math.sign(dy), 0);
+        const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius, len, 10), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.25 }));
+        const center = new THREE.Vector3(start.x, (start.y + end.y) / 2, start.z);
+        cylinder.position.copy(center);
+        cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+        group.add(cylinder);
+        const coneGeom = new THREE.ConeGeometry(arrowRad, arrowLen, 12);
+        const coneMat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3 });
+        const startCone = new THREE.Mesh(coneGeom, coneMat);
+        startCone.position.copy(start.clone().add(dir.clone().multiplyScalar(arrowLen / 2)));
+        startCone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+        group.add(startCone);
+        const endCone = new THREE.Mesh(coneGeom, coneMat);
+        endCone.position.copy(end.clone().add(dir.clone().multiplyScalar(-arrowLen / 2)));
+        endCone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+        group.add(endCone);
+        return group;
+    }
+    function makeLabel(text, pos, colorHex, offX = 0, offY = 0, offZ = 0, fs = '11px') {
+        const div = document.createElement('div');
+        div.textContent = text;
+        div.style.color = colorHex;
+        div.style.fontSize = fs;
+        div.style.fontWeight = 'bold';
+        div.style.backgroundColor = 'rgba(0,0,0,0.7)';
+        div.style.padding = '2px 10px';
+        div.style.borderRadius = '20px';
+        div.style.border = `1px solid ${colorHex}`;
+        div.style.fontFamily = 'monospace';
+        div.style.whiteSpace = 'nowrap';
+        const label = new CSS2DObject(div);
+        label.position.copy(pos.clone().add(new THREE.Vector3(offX, offY, offZ)));
+        return label;
+    }
+    
+    let tangentPlaneMesh, deltaXArrow, deltaYArrow, deltaZArrow, dzArrow, projectionLines, pointMarkers = {}, labelsArr = [], offsetHelper, referencePlaneGrid;
+    
+    function updateVisualization() {
+        const x0 = parseFloat(document.getElementById('slider-x').value);
+        const y0 = parseFloat(document.getElementById('slider-y').value);
+        const dx = parseFloat(document.getElementById('slider-dx').value);
+        const dy = parseFloat(document.getElementById('slider-dy').value);
+        document.getElementById('x-val').innerText = x0.toFixed(3);
+        document.getElementById('y-val').innerText = y0.toFixed(3);
+        document.getElementById('dx-val').innerText = dx.toFixed(3);
+        document.getElementById('dy-val').innerText = dy.toFixed(3);
+        
+        const z0 = f(x0, y0);
+        const P = new THREE.Vector3(x0, z0, y0);
+        const x1 = x0 + dx, y1 = y0 + dy;
+        const z1 = f(x1, y1);
+        const Q = new THREE.Vector3(x1, z1, y1);
+        const fx0 = fx(x0, y0), fy0 = fy(x0, y0);
+        const dz_val = fx0 * dx + fy0 * dy;
+        const z_tan_at_Q = z0 + dz_val;
+        const tangentPoint = new THREE.Vector3(x1, z_tan_at_Q, y1);
+        const deltaZ_actual = z1 - z0;
+        
+        if (referencePlaneGrid) scene.remove(referencePlaneGrid);
+        const helperGrid = new THREE.GridHelper(2.4, 16, 0xccccff, 0x99aaff);
+        helperGrid.position.set(0, z0, 0);
+        helperGrid.material.transparent = true;
+        helperGrid.material.opacity = 0.45;
+        referencePlaneGrid = helperGrid;
+        scene.add(referencePlaneGrid);
+        
+        if (tangentPlaneMesh) scene.remove(tangentPlaneMesh);
+        const half = 0.85;
+        const corners = [
+            new THREE.Vector3(x0 - half, 0, y0 - half),
+            new THREE.Vector3(x0 + half, 0, y0 - half),
+            new THREE.Vector3(x0 + half, 0, y0 + half),
+            new THREE.Vector3(x0 - half, 0, y0 + half)
+        ];
+        const pVerts = [];
+        corners.forEach(c => {
+            const xc = c.x, yc = c.z;
+            const zc = z0 + fx0 * (xc - x0) + fy0 * (yc - y0);
+            pVerts.push(xc, zc, yc);
+        });
+        const pGeom = new THREE.BufferGeometry();
+        pGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(pVerts), 3));
+        pGeom.setIndex([0, 1, 2, 0, 2, 3]);
+        pGeom.computeVertexNormals();
+        tangentPlaneMesh = new THREE.Mesh(pGeom, new THREE.MeshPhongMaterial({ color: 0xff66cc, side: THREE.DoubleSide, transparent: true, opacity: 0.6 }));
+        scene.add(tangentPlaneMesh);
+        
+        const midX = new THREE.Vector3(x0 + dx, z0, y0);
+        if (deltaXArrow) scene.remove(deltaXArrow);
+        deltaXArrow = createDoubleArrowLine(P, midX, 0xffaa66);
+        scene.add(deltaXArrow);
+        
+        const endHor = new THREE.Vector3(x0 + dx, z0, y0 + dy);
+        if (deltaYArrow) scene.remove(deltaYArrow);
+        deltaYArrow = createDoubleArrowLine(midX, endHor, 0xffaa66);
+        scene.add(deltaYArrow);
+        
+        if (window._jointSphere) scene.remove(window._jointSphere);
+        window._jointSphere = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 12), new THREE.MeshStandardMaterial({ color: 0xffaa66 }));
+        window._jointSphere.position.copy(midX);
+        scene.add(window._jointSphere);
+        
+        const baseAtDxDy = new THREE.Vector3(x1, z0, y1);
+        if (deltaZArrow) scene.remove(deltaZArrow);
+        deltaZArrow = createVerticalDoubleArrow(baseAtDxDy, Q, 0xff6b6b);
+        scene.add(deltaZArrow);
+        
+        const offsetMag = 0.2;
+        const deltaDir = new THREE.Vector3(dx, 0, dy).normalize();
+        let perpDir = new THREE.Vector3(-deltaDir.z, 0, deltaDir.x);
+        if (Math.abs(perpDir.x) < 0.01 && Math.abs(perpDir.z) < 0.01) perpDir = new THREE.Vector3(1, 0, 0);
+        const offsetVec = perpDir.clone().multiplyScalar(offsetMag);
+        const offsetStart = baseAtDxDy.clone().add(offsetVec);
+        const offsetEnd = tangentPoint.clone().add(offsetVec);
+        if (dzArrow) scene.remove(dzArrow);
+        dzArrow = createVerticalDoubleArrow(offsetStart, offsetEnd, 0x6fbf73);
+        scene.add(dzArrow);
+        
+        if (offsetHelper) scene.remove(offsetHelper);
+        const hGroup = new THREE.Group();
+        const dashMat = new THREE.LineBasicMaterial({ color: 0x88ff88, transparent: true, opacity: 0.4 });
+        hGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([baseAtDxDy, offsetStart]), dashMat));
+        hGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([tangentPoint, offsetEnd]), dashMat));
+        scene.add(hGroup);
+        offsetHelper = hGroup;
+        
+        if (projectionLines) scene.remove(projectionLines);
+        const projGroup = new THREE.Group();
+        const projMat = new THREE.LineBasicMaterial({ color: 0xaaaaff, transparent: true, opacity: 0.4 });
+        const project = (pt) => new THREE.Vector3(pt.x, projPlaneY, pt.z);
+        const projP = project(P), projQ = project(Q);
+        projGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([P, projP]), projMat));
+        projGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([Q, projQ]), projMat));
+        projGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([tangentPoint, project(tangentPoint)]), projMat));
+        const dotMat = new THREE.MeshStandardMaterial({ color: 0xaaaaff });
+        const dotP = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), dotMat);
+        dotP.position.copy(projP);
+        const dotQ = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), dotMat);
+        dotQ.position.copy(projQ);
+        projGroup.add(dotP, dotQ);
+        scene.add(projGroup);
+        projectionLines = projGroup;
+        
+        if (pointMarkers.p) scene.remove(pointMarkers.p);
+        if (pointMarkers.q) scene.remove(pointMarkers.q);
+        if (pointMarkers.tan) scene.remove(pointMarkers.tan);
+        pointMarkers.p = new THREE.Mesh(new THREE.SphereGeometry(0.08, 28, 28), new THREE.MeshStandardMaterial({ color: 0x44aaff }));
+        pointMarkers.p.position.copy(P);
+        pointMarkers.q = new THREE.Mesh(new THREE.SphereGeometry(0.08, 28, 28), new THREE.MeshStandardMaterial({ color: 0xff6666 }));
+        pointMarkers.q.position.copy(Q);
+        pointMarkers.tan = new THREE.Mesh(new THREE.SphereGeometry(0.065, 24, 24), new THREE.MeshStandardMaterial({ color: 0x88ffaa }));
+        pointMarkers.tan.position.copy(tangentPoint);
+        scene.add(pointMarkers.p, pointMarkers.q, pointMarkers.tan);
+        
+        if (labelsArr.length) labelsArr.forEach(l => scene.remove(l));
+        labelsArr = [];
+        labelsArr.push(makeLabel(`Δx = ${dx.toFixed(3)}`, new THREE.Vector3(x0 + dx/2, z0 + 0.12, y0), '#ffaa66', 0, 0.2, 0.25, '11px'));
+        labelsArr.push(makeLabel(`Δy = ${dy.toFixed(3)}`, new THREE.Vector3(x0 + dx + 0.1, z0, y0 + dy/2), '#ffaa66', 0.3, 0.2, 0, '11px'));
+        labelsArr.push(makeLabel(`Δz = ${deltaZ_actual.toFixed(4)}`, new THREE.Vector3(x1 + 0.18, (z0 + z1)/2, y1), '#ff6b6b', 0.4, 0, 0.1, '11px'));
+        labelsArr.push(makeLabel(`dz = ${dz_val.toFixed(4)}`, new THREE.Vector3(x1 + offsetVec.x - 0.18, (z0 + z_tan_at_Q)/2, y1 + offsetVec.z), '#6fbf73', -0.4, 0, 0, '11px'));
+        labelsArr.push(makeLabel(`P₀`, P, '#88ccff', 0, 0.28, 0.1, '10px'));
+        labelsArr.push(makeLabel(`Q`, Q, '#ff8888', 0.22, 0.28, 0.1, '10px'));
+        labelsArr.push(makeLabel(`误差 = ${(deltaZ_actual - dz_val).toFixed(4)}`, new THREE.Vector3(x1, (z1 + z_tan_at_Q)/2 + 0.28, y1), '#ffaa66', 0.2, 0, 0.15, '10px'));
+        labelsArr.forEach(l => scene.add(l));
+        
+        document.getElementById('infoContent').innerHTML = `
+            <strong>⚡ 基点 P</strong> (${x0.toFixed(3)}, ${y0.toFixed(3)}, ${z0.toFixed(4)})<br>
+            <strong style="color:#66ccff;">∂z/∂x</strong> = ${fx0.toFixed(4)} &nbsp;|&nbsp; <strong style="color:#88ff88;">∂z/∂y</strong> = ${fy0.toFixed(4)}<br>
+            <strong>📍 真实点 Q</strong> (${x1.toFixed(3)}, ${y1.toFixed(3)}, ${z1.toFixed(4)})<br>
+            <strong>🎯 切平面点</strong> (${x1.toFixed(3)}, ${y1.toFixed(3)}, ${z_tan_at_Q.toFixed(4)})<br>
+            <strong>⛰️ 全增量 Δz = ${deltaZ_actual.toFixed(5)}</strong> &nbsp; <strong style="color:#6fbf73;">全微分 dz = ${dz_val.toFixed(5)}</strong><br>
+            📐 逼近误差 = ${Math.abs(deltaZ_actual - dz_val).toFixed(6)}<br>
+            <span style="color:#ffdd99;">✨ 一元微分是二元全微分退化特例 | 线性主部逼近</span>
+        `;
+    }
+    
+    function setView(isTop) {
+        if (isTop) { camera.position.set(0, 7.2, 0.01); controls3d.target.set(0, 0.2, 0); }
+        else { camera.position.set(5.2, 4.2, 5.5); controls3d.target.set(0, 0.3, 0); }
+        controls3d.update();
+    }
+    
     document.getElementById('slider-x').addEventListener('input', updateVisualization);
     document.getElementById('slider-y').addEventListener('input', updateVisualization);
     document.getElementById('slider-dx').addEventListener('input', updateVisualization);
     document.getElementById('slider-dy').addEventListener('input', updateVisualization);
-    document.getElementById('reset-btn').addEventListener('click',()=>{ document.getElementById('slider-x').value='0.85'; document.getElementById('slider-y').value='0.65'; document.getElementById('slider-dx').value='0.7'; document.getElementById('slider-dy').value='0.5'; updateVisualization(); setView(false); document.getElementById('view-default').classList.add('active'); document.getElementById('view-top').classList.remove('active'); });
-    document.getElementById('view-top').addEventListener('click',()=>{ setView(true); document.getElementById('view-top').classList.add('active'); document.getElementById('view-default').classList.remove('active'); });
-    document.getElementById('view-default').addEventListener('click',()=>{ setView(false); document.getElementById('view-default').classList.add('active'); document.getElementById('view-top').classList.remove('active'); });
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        document.getElementById('slider-x').value = '0.85';
+        document.getElementById('slider-y').value = '0.65';
+        document.getElementById('slider-dx').value = '0.7';
+        document.getElementById('slider-dy').value = '0.5';
+        updateVisualization();
+        setView(false);
+        document.getElementById('view-default').classList.add('active');
+        document.getElementById('view-top').classList.remove('active');
+    });
+    document.getElementById('view-top').addEventListener('click', () => { setView(true); document.getElementById('view-top').classList.add('active'); document.getElementById('view-default').classList.remove('active'); });
+    document.getElementById('view-default').addEventListener('click', () => { setView(false); document.getElementById('view-default').classList.add('active'); document.getElementById('view-top').classList.remove('active'); });
     
     const infoPanelDiv = document.getElementById('infoOverlayPanel');
     const toggleInfoBtn = document.getElementById('togglePanelBtn');
     let infoHidden = false;
-    if(toggleInfoBtn && infoPanelDiv) toggleInfoBtn.addEventListener('click', (e) => { e.stopPropagation(); infoHidden = !infoHidden; infoPanelDiv.style.display = infoHidden ? 'none' : 'block'; toggleInfoBtn.textContent = infoHidden ? '📂 显示信息' : '📋 隐藏面板'; });
+    if (toggleInfoBtn && infoPanelDiv) {
+        toggleInfoBtn.addEventListener('click', () => {
+            infoHidden = !infoHidden;
+            infoPanelDiv.style.display = infoHidden ? 'none' : 'block';
+            toggleInfoBtn.textContent = infoHidden ? '📂 显示信息' : '📋 隐藏面板';
+        });
+    }
+    
     const rightControls = document.getElementById('rightControlsPanel');
     const hideRightBtn = document.getElementById('hideRightControlsBtn');
     let rightHidden = false;
-    if (hideRightBtn && rightControls) hideRightBtn.addEventListener('click', (e) => { e.stopPropagation(); rightHidden = !rightHidden; rightControls.style.display = rightHidden ? 'none' : 'block'; hideRightBtn.textContent = rightHidden ? '📂 显示面板' : '📋 隐藏控制面板'; });
+    if (hideRightBtn && rightControls) {
+        hideRightBtn.addEventListener('click', () => {
+            rightHidden = !rightHidden;
+            rightControls.style.display = rightHidden ? 'none' : 'block';
+            hideRightBtn.textContent = rightHidden ? '📂 显示面板' : '📋 隐藏控制面板';
+        });
+    }
+    
     updateVisualization();
-    function animate() { requestAnimationFrame(animate); controls3d.update(); renderer.render(scene, camera); labelRenderer.render(scene, camera); }
-    animate(); setTimeout(()=>resize3D(), 100);
+    
+    function animate() {
+        requestAnimationFrame(animate);
+        controls3d.update();
+        renderer.render(scene, camera);
+        labelRenderer.render(scene, camera);
+    }
+    animate();
+    setTimeout(() => resize3D(), 100);
 </script>
 </body>
 </html>
