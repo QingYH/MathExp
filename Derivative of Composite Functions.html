@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>链式法则 · 高铁枢纽完全匹配 | 标准数学题库 | 动车飞驰</title>
+    <!-- 使用 MathJax 渲染标准数学公式 -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0ede8 0%, #e3dbcf 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans', system-ui, -apple-system, 'Times New Roman', serif;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .master-container {
+            max-width: 1500px;
+            margin: 0 auto;
+            background: rgba(255, 250, 240, 0.94);
+            backdrop-filter: blur(2px);
+            border-radius: 2.2rem;
+            box-shadow: 0 25px 45px -12px rgba(40, 30, 20, 0.3);
+            overflow: hidden;
+            padding: 1.2rem 1.5rem 1.8rem;
+            border: 1px solid rgba(200, 160, 110, 0.6);
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(125deg, #8b5a2b, #c77d4a, #2f6b62, #b56736);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .sub {
+            border-left: 6px solid #f5a97f;
+            padding-left: 1rem;
+            margin: 0.5rem 0 1.2rem;
+            color: #5a3e2e;
+            font-weight: 500;
+            background: #fff4e8aa;
+            border-radius: 1rem;
+        }
+
+        .core-principle {
+            background: linear-gradient(135deg, #d4e8ff, #b0d4ff);
+            border-radius: 1.5rem;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ffffffaa;
+        }
+        .core-principle p {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #003366;
+            text-shadow: 0 1px 0 rgba(255,255,240,0.6);
+        }
+        .core-principle .principle-detail {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #004080;
+            background: rgba(255, 255, 245, 0.9);
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            border-radius: 2rem;
+            margin-top: 0.3rem;
+            box-shadow: inset 0 0 0 1px #ffffff, 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .flex-dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 280px;
+            background: rgba(255, 248, 235, 0.85);
+            border-radius: 1.6rem;
+            padding: 1rem;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+            border: 1px solid #ffe6ce;
+        }
+
+        @media (max-width: 780px) {
+            .master-container { padding: 0.8rem; }
+            .col { min-width: 100%; }
+            h1 { font-size: 1.5rem; }
+            .core-principle p { font-size: 0.85rem; }
+        }
+
+        .section-title {
+            font-weight: 800;
+            font-size: 1.2rem;
+            border-bottom: 4px solid #f7bc6c;
+            display: inline-block;
+            margin-bottom: 0.8rem;
+            color: #a55d34;
+            background: linear-gradient(135deg, #f7dbb5, #ffe2c4);
+            padding: 0.2rem 0.8rem;
+            border-radius: 2rem;
+        }
+
+        .case-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 0.8rem 0 1rem;
+        }
+
+        .case-btn {
+            background: #ffe0c0;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #6b3f21;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .case-btn.active {
+            background: #e68a4e;
+            color: white;
+            box-shadow: 0 4px 10px rgba(210, 100, 30, 0.4);
+            transform: scale(1.02);
+        }
+
+        .case-btn:hover {
+            background: #f0a06b;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .viz-box {
+            background: #fffaf0;
+            border-radius: 1.4rem;
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            box-shadow: inset 0 0 0 1px #fff0dd, 0 6px 12px rgba(0,0,0,0.03);
+        }
+
+        canvas {
+            background: #fffef7;
+            border-radius: 1.2rem;
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .chain-card {
+            background: linear-gradient(145deg, #2f5b52, #1f443d);
+            color: #fff7e8;
+            border-radius: 1.4rem;
+            padding: 0.8rem;
+            margin-top: 0.8rem;
+            font-size: 1rem;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+        }
+        .chain-card mjx-container { color: #fff7e8; }
+
+        .formula-badge {
+            background: #fcecd8;
+            border-radius: 1.2rem;
+            padding: 0.5rem;
+            margin: 0.6rem 0;
+            text-align: center;
+            font-weight: 500;
+            color: #8b4b26;
+            font-size: 1rem;
+        }
+        .formula-badge mjx-container { color: #8b4b26; }
+
+        .quiz-area {
+            background: #fff5ea;
+            border-radius: 1.4rem;
+            padding: 0.8rem;
+            border: 1px solid #fadabc;
+        }
+
+        .quiz-question {
+            background: #fdf0e2;
+            padding: 0.7rem;
+            border-radius: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+            color: #4b3621;
+            font-size: 1rem;
+            word-break: break-word;
+        }
+        .quiz-question mjx-container { font-size: 1.05em; }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin: 0.8rem 0;
+        }
+
+        .quiz-option {
+            background: #fffaf2;
+            border-radius: 2rem;
+            padding: 0.4rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #ffe1c2;
+        }
+
+        button {
+            background: #cd8d5f;
+            border: none;
+            color: white;
+            padding: 0.45rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-right: 0.5rem;
+            margin-top: 0.3rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        .hidden-answer {
+            background: #eedfcb;
+            border-radius: 1.2rem;
+            padding: 0.7rem;
+            margin-top: 0.8rem;
+            display: none;
+            font-size: 0.85rem;
+            border-left: 6px solid #e68a4e;
+        }
+        .hidden-answer mjx-container { font-size: 0.95em; }
+
+        .revealed {
+            display: block;
+        }
+
+        .feedback {
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .footnote {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 1rem;
+            color: #a17757;
+        }
+
+        .dynamic-hint {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 0.4rem;
+            color: #bd7f51;
+            font-weight: 500;
+        }
+
+        .metaphor {
+            background: #ffe2c7;
+            border-radius: 1rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            color: #a5511d;
+            display: inline-block;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="master-container">
+    <h1>🚄 链式法则 · 高铁枢纽完全匹配</h1>
+    <div class="sub">🎯 因变量=唯一起点站，中间变量=中转站，自变量=终点站 | 动车组严格对应依赖树且持续运动</div>
+
+    <div class="core-principle">
+        <p>✨ <strong style="color: #003399;">链式法则核心思想</strong> ✨</p>
+        <p style="color: #0044aa;">📌 复合函数对某个自变量求导 = 对所有与这个自变量有关的中间变量求偏导，再乘以中间变量对该自变量的导数，最后将所有路径贡献相加。</p>
+        <div class="principle-detail">
+            🧠 一句话：<strong>“分段用乘，分叉用加；沿路求导，全部汇总”</strong>
+        </div>
+    </div>
+
+    <div class="flex-dashboard">
+        <div class="col">
+            <div class="section-title">🧩 复合情形库 (九种完整对应)</div>
+            <div class="case-buttons" id="caseButtonsContainer"></div>
+            <div class="viz-box">
+                <canvas id="treeCanvas" width="450" height="280" style="width:100%; aspect-ratio:450/280"></canvas>
+                <div class="dynamic-hint">🌳 变量依赖树 | 箭头 = 高铁路线 (起点→中转→终点)</div>
+            </div>
+            <div class="chain-card" id="chainRuleCard">
+                <div>📐 <strong>链式法则公式</strong></div>
+                <div id="chainFormulaDisplay" style="font-size:1rem;"></div>
+                <div id="chainRuleDesc" style="font-size:0.75rem; margin-top:5px;">单路相乘 · 高铁直达</div>
+            </div>
+            <div class="formula-badge" id="currentFuncDesc"></div>
+            <div class="metaphor" id="metaphorText">🚄 比喻: 起点站(z) → 中转站(u) → 终点站(x)，车速相乘得总效应</div>
+        </div>
+
+        <div class="col">
+            <div class="section-title">🚅 高铁路线图 · 动车组模拟</div>
+            <div class="viz-box">
+                <canvas id="dynamicTrainCanvas" width="450" height="340" style="width:100%; background:#fffcf5; border-radius:1.2rem;"></canvas>
+                <div class="dynamic-hint">🚆 动车(蓝色) | 同层中转站纵向排列，不同层水平排列 | 同终点路线同色</div>
+            </div>
+            <div class="formula-badge" id="samplePointMessage">
+                ✨ 当前结构 + 高铁枢纽解读
+            </div>
+            <div class="chain-card" style="background: linear-gradient(135deg, #886e4e, #b38053);">
+                🧠 口诀: <span id="rhymeText" style="font-weight:bold;">分段用乘，分叉用加；单路直达，叉路换乘相加</span>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="section-title">✍️ 法则擂台 · 标准数学判断题</div>
+            <div class="quiz-area" id="quizPanel">
+                <div class="quiz-question" id="quizQuestion">加载题目中...</div>
+                <div class="quiz-options" id="quizOptions"></div>
+                <div>
+                    <button id="submitQuizBtn">✓ 提交判断</button>
+                    <button id="revealAnswerBtn">🔎 显示推导</button>
+                    <button id="nextQuizBtn">⟳ 下一题 (同情形)</button>
+                </div>
+                <div id="quizFeedback" class="feedback"></div>
+                <div id="hiddenAnswerBox" class="hidden-answer">
+                    <strong>📖 链式解析 (标准推导)</strong><br>
+                    <span id="answerExplanation"></span>
+                </div>
+            </div>
+            <div class="footnote">
+                ✅ 所有公式均采用标准数学符号 (分式、根式、偏导等) ，完全符合教科书习惯。
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function renderMathInline(element, content) {
+        if (!element) return;
+        if (content && (content.includes('\\frac') || content.includes('\\partial') || content.includes('\\sqrt') || content.includes('\\sum'))) {
+            element.innerHTML = `\\(${content}\\)`;
+        } else {
+            element.innerHTML = content;
+        }
+        if (window.MathJax) {
+            MathJax.typesetPromise([element]).catch(err => console.log(err));
+        }
+    }
+
+    const CASES = [
+        { id:0, name:"① 一中介·单变量", desc:"z = f(u) , u = g(x)", 
+          chain:"\\frac{dz}{dx} = \\frac{df}{du} \\cdot \\frac{du}{dx}", explain:"单路串联，导数相乘",
+          metaphor:"🚄 起点(z) → 中转站(u) → 终点(x)，速度相乘",
+          tree:{ root:"z", children:{ z:["u"], u:["x"] } }, 
+          intermediates:["u"], terminals:["x"] },
+        { id:1, name:"② 一中介·双自变量", desc:"z = f(u) , u = g(x,y)", 
+          chain:"\\frac{\\partial z}{\\partial x} = \\frac{df}{du}\\cdot\\frac{\\partial u}{\\partial x},\\quad \\frac{\\partial z}{\\partial y} = \\frac{df}{du}\\cdot\\frac{\\partial u}{\\partial y}", explain:"单路传递至偏导",
+          metaphor:"🚉 起点站到两个不同终点，分别计算路段速度",
+          tree:{ root:"z", children:{ z:["u"], u:["x","y"] } }, 
+          intermediates:["u"], terminals:["x","y"] },
+        { id:2, name:"③ 二中介·单自变量", desc:"z = f(u,v) , u=g(t), v=h(t)", 
+          chain:"\\frac{dz}{dt} = \\frac{\\partial f}{\\partial u}\\frac{du}{dt} + \\frac{\\partial f}{\\partial v}\\frac{dv}{dt}", explain:"分叉用加，两条铁路线汇合",
+          metaphor:"🚆 两条支线在中转站合并",
+          tree:{ root:"z", children:{ z:["u","v"], u:["t"], v:["t"] } }, 
+          intermediates:["u","v"], terminals:["t"] },
+        { id:3, name:"④ 二中介·双自变量", desc:"z = f(u,v) , u=g(x,y), v=h(x,y)", 
+          chain:"\\frac{\\partial z}{\\partial x} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial x}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial x},\\quad \\frac{\\partial z}{\\partial y} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial y}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial y}", explain:"每个自变量有两路相加",
+          metaphor:"🎫 每个终点通过不同中转站到达",
+          tree:{ root:"z", children:{ z:["u","v"], u:["x","y"], v:["x","y"] } }, 
+          intermediates:["u","v"], terminals:["x","y"] },
+        { id:4, name:"⑤ 三中介·单自变量", desc:"z = f(u,v,w) , u=u(t), v=v(t), w=w(t)", 
+          chain:"\\frac{dz}{dt} = \\frac{\\partial f}{\\partial u}\\frac{du}{dt}+\\frac{\\partial f}{\\partial v}\\frac{dv}{dt}+\\frac{\\partial f}{\\partial w}\\frac{dw}{dt}", explain:"三条路径相加",
+          metaphor:"🚄 三条高铁线并联",
+          tree:{ root:"z", children:{ z:["u","v","w"], u:["t"], v:["t"], w:["t"] } }, 
+          intermediates:["u","v","w"], terminals:["t"] },
+        { id:5, name:"⑥ 二中介·三自变量", desc:"z = f(u,v) , u=g(x,y,s), v=h(x,y,s)", 
+          chain:"\\frac{\\partial z}{\\partial x} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial x}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial x},\\; \\frac{\\partial z}{\\partial y} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial y}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial y},\\; \\frac{\\partial z}{\\partial s} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial s}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial s}", explain:"每个自变量对应两路相加",
+          metaphor:"🌐 多维度高铁网络，每个终点站有两条路径",
+          tree:{ root:"z", children:{ z:["u","v"], u:["x","y","s"], v:["x","y","s"] } }, 
+          intermediates:["u","v"], terminals:["x","y","s"] },
+        { id:6, name:"⑦ 两次复合·单变量", desc:"z = f(u) , u = g(v) , v = h(x)", 
+          chain:"\\frac{dz}{dx} = \\frac{df}{du}\\cdot\\frac{dg}{dv}\\cdot\\frac{dh}{dx}", explain:"长链串联，三段相乘",
+          metaphor:"⛓️ 三站串联高铁",
+          tree:{ root:"z", children:{ z:["u"], u:["v"], v:["x"] } }, 
+          intermediates:["u","v"], terminals:["x"] },
+        { id:7, name:"⑧ 两次复合·分叉", desc:"z = f(u,v) , u=g(w), v=h(w), w=k(x)", 
+          chain:"\\frac{dz}{dx} = \\left(\\frac{\\partial f}{\\partial u}\\frac{dg}{dw}+\\frac{\\partial f}{\\partial v}\\frac{dh}{dw}\\right)\\cdot\\frac{dk}{dx}", explain:"先分叉相加再串联",
+          metaphor:"🌿 先分两条支线，后汇合",
+          tree:{ root:"z", children:{ z:["u","v"], u:["w"], v:["w"], w:["x"] } }, 
+          intermediates:["u","v","w"], terminals:["x"] },
+        { id:8, name:"⑨ 三中介·双自变量", desc:"z = f(u,v,w) , u=u(x,y), v=v(x,y), w=w(x,y)", 
+          chain:"\\frac{\\partial z}{\\partial x} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial x}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial x}+\\frac{\\partial f}{\\partial w}\\frac{\\partial w}{\\partial x},\\quad \\frac{\\partial z}{\\partial y} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial y}+\\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial y}+\\frac{\\partial f}{\\partial w}\\frac{\\partial w}{\\partial y}", explain:"三路分叉相加",
+          metaphor:"🌀 三条并行的铁路线",
+          tree:{ root:"z", children:{ z:["u","v","w"], u:["x","y"], v:["x","y"], w:["x","y"] } }, 
+          intermediates:["u","v","w"], terminals:["x","y"] }
+    ];
+
+    let currentCaseIdx = 0;
+    let currentQuestionObj = null;
+    let trainAnimationId = null;
+    let trainPositions = [];
+
+    const treeCanvas = document.getElementById('treeCanvas');
+    const ctxTree = treeCanvas.getContext('2d');
+    const trainCanvas = document.getElementById('dynamicTrainCanvas');
+    const trainCtx = trainCanvas.getContext('2d');
+    const chainFormulaDisplay = document.getElementById('chainFormulaDisplay');
+    const chainRuleDescSpan = document.getElementById('chainRuleDesc');
+    const currentFuncDescSpan = document.getElementById('currentFuncDesc');
+    const sampleMessageSpan = document.getElementById('samplePointMessage');
+    const rhymeTextSpan = document.getElementById('rhymeText');
+    const metaphorTextSpan = document.getElementById('metaphorText');
+    const caseButtonsDiv = document.getElementById('caseButtonsContainer');
+    const quizQuestionSpan = document.getElementById('quizQuestion');
+    const quizOptionsDiv = document.getElementById('quizOptions');
+    const quizFeedbackSpan = document.getElementById('quizFeedback');
+    const hiddenAnswerBox = document.getElementById('hiddenAnswerBox');
+    const answerExplanationSpan = document.getElementById('answerExplanation');
+
+    function updateFormulaDisplay() {
+        const c = CASES[currentCaseIdx];
+        renderMathInline(chainFormulaDisplay, c.chain);
+        renderMathInline(currentFuncDescSpan, `📐 复合结构: ${c.desc}`);
+        sampleMessageSpan.innerHTML = `✨ ${c.name} · ${c.explain}`;
+        chainRuleDescSpan.innerText = c.explain;
+        rhymeTextSpan.innerText = c.explain.includes("相加") ? "分叉用加，分段用乘" : "分段用乘，单路直达";
+        metaphorTextSpan.innerHTML = `🚄 比喻: ${c.metaphor}`;
+    }
+
+    function drawTreeDiagram() {
+        const c = CASES[currentCaseIdx];
+        const w = treeCanvas.width, h = treeCanvas.height;
+        ctxTree.clearRect(0, 0, w, h);
+        if(!c) return;
+        const childrenMap = c.tree.children;
+        const nodesSet = new Set([c.tree.root]);
+        for(let p in childrenMap) { nodesSet.add(p); childrenMap[p].forEach(ch => nodesSet.add(ch)); }
+        const nodes = Array.from(nodesSet);
+        const depths = {};
+        nodes.forEach(n => depths[n]=0);
+        let queue = [c.tree.root], visited = new Set([c.tree.root]);
+        while(queue.length){
+            let node = queue.shift();
+            (childrenMap[node]||[]).forEach(ch => {
+                if(!visited.has(ch)) { depths[ch]=depths[node]+1; visited.add(ch); queue.push(ch); }
+            });
+        }
+        const maxDepth = Math.max(...Object.values(depths));
+        const depthNodes = {};
+        for(let i=0;i<=maxDepth;i++) depthNodes[i]=[];
+        nodes.forEach(n => depthNodes[depths[n]].push(n));
+        const posY = d => 25 + d * (h-55)/Math.max(1,maxDepth);
+        const nodePos = {};
+        for(let d=0;d<=maxDepth;d++){
+            let arr = depthNodes[d];
+            let step = w/(arr.length+1);
+            arr.forEach((node,idx) => { nodePos[node] = { x: step*(idx+1), y: posY(d) }; });
+        }
+        const colors = ["#f39c12","#e67e22","#e84342","#16a085","#2980b9","#8e44ad"];
+        let edgeIdx=0;
+        for(let parent in childrenMap){
+            let from = nodePos[parent];
+            if(!from) continue;
+            childrenMap[parent].forEach(child => {
+                let to = nodePos[child];
+                if(to){
+                    ctxTree.beginPath();
+                    ctxTree.moveTo(from.x, from.y);
+                    ctxTree.lineTo(to.x, to.y);
+                    ctxTree.strokeStyle = colors[edgeIdx%colors.length];
+                    ctxTree.lineWidth = 2.5;
+                    ctxTree.stroke();
+                    let angle = Math.atan2(to.y-from.y, to.x-from.x);
+                    let arrowX = to.x - 12*Math.cos(angle);
+                    let arrowY = to.y - 12*Math.sin(angle);
+                    ctxTree.fillStyle = colors[edgeIdx%colors.length];
+                    ctxTree.beginPath();
+                    ctxTree.moveTo(arrowX, arrowY);
+                    ctxTree.lineTo(arrowX-6*Math.sin(angle), arrowY+6*Math.cos(angle));
+                    ctxTree.lineTo(arrowX+6*Math.sin(angle), arrowY-6*Math.cos(angle));
+                    ctxTree.fill();
+                    edgeIdx++;
+                }
+            });
+        }
+        for(let node in nodePos){
+            let {x,y}=nodePos[node];
+            ctxTree.beginPath();
+            ctxTree.arc(x, y, 18, 0, 2*Math.PI);
+            ctxTree.fillStyle = "#fff3e0";
+            ctxTree.fill();
+            ctxTree.strokeStyle = "#cf9f72";
+            ctxTree.lineWidth = 2;
+            ctxTree.stroke();
+            ctxTree.fillStyle = "#734c2c";
+            ctxTree.font = "bold 13px 'Segoe UI'";
+            ctxTree.fillText(node, x-9, y+5);
+        }
+    }
+
+    function getAllPaths(c) {
+        const childrenMap = c.tree.children;
+        const terminals = c.terminals;
+        const allPaths = [];
+        function dfs(node, currentPath) {
+            if(terminals.includes(node)) {
+                allPaths.push([...currentPath, node]);
+                return;
+            }
+            if(childrenMap[node]) {
+                for(let child of childrenMap[node]) {
+                    dfs(child, [...currentPath, child]);
+                }
+            }
+        }
+        dfs("z", ["z"]);
+        return allPaths;
+    }
+
+    function getPathColor(terminal, index) {
+        const colors = ["#e74c3c", "#e67e22", "#f1c40f", "#2ecc71", "#3498db", "#9b59b6", "#1abc9c", "#e84393", "#00cec9"];
+        let hash = 0;
+        for (let i = 0; i < terminal.length; i++) {
+            hash = ((hash << 5) - hash) + terminal.charCodeAt(i);
+            hash |= 0;
+        }
+        return colors[Math.abs(hash) % colors.length];
+    }
+
+    // 核心布局：同层节点纵向排列，不同层水平排列
+    function drawTrainMap() {
+        const c = CASES[currentCaseIdx];
+        const w = trainCanvas.width, h = trainCanvas.height;
+        trainCtx.clearRect(0, 0, w, h);
+        trainCtx.fillStyle = "#fffaf5";
+        trainCtx.fillRect(0, 0, w, h);
+        
+        const startX = 45;
+        const endX = w - 55;
+        const startY = h/2;
+        
+        // 计算每个节点的深度 (层级)
+        const depths = {};
+        const computeDepth = (node, d) => {
+            depths[node] = d;
+            const kids = c.tree.children[node] || [];
+            kids.forEach(kid => computeDepth(kid, d + 1));
+        };
+        computeDepth("z", 0);
+        
+        // 按深度分组
+        const nodesByDepth = {};
+        for (let node in depths) {
+            const d = depths[node];
+            if (!nodesByDepth[d]) nodesByDepth[d] = [];
+            nodesByDepth[d].push(node);
+        }
+        const maxDepth = Math.max(...Object.keys(nodesByDepth).map(Number));
+        
+        // 为每个深度分配水平位置 (X坐标)
+        const depthX = {};
+        const depthCount = maxDepth + 1;
+        for (let d = 0; d <= maxDepth; d++) {
+            // 起点深度0在左侧，终点所在最大深度在右侧，中间均匀分布
+            const t = d / maxDepth;
+            depthX[d] = startX + t * (endX - startX);
+        }
+        
+        // 为每个节点计算位置：同一深度内纵向排列
+        const nodePositions = {};
+        for (let d = 0; d <= maxDepth; d++) {
+            const nodesAtDepth = nodesByDepth[d] || [];
+            const count = nodesAtDepth.length;
+            if (count === 0) continue;
+            const startYdepth = h/2 - (count - 1) * 32;
+            nodesAtDepth.forEach((node, idx) => {
+                const y = startYdepth + idx * 58;
+                nodePositions[node] = { x: depthX[d], y: y };
+            });
+        }
+        
+        // 绘制所有节点 (起点、中转站、终点)
+        for (let node in nodePositions) {
+            const pos = nodePositions[node];
+            if (node === "z") {
+                trainCtx.fillStyle = "#e74c3c";
+                trainCtx.beginPath();
+                trainCtx.arc(pos.x, pos.y, 18, 0, 2*Math.PI);
+                trainCtx.fill();
+                trainCtx.fillStyle = "#ffffff";
+                trainCtx.font = "bold 13px 'Segoe UI'";
+                trainCtx.fillText("z", pos.x-5, pos.y+5);
+                trainCtx.fillStyle = "#c0392b";
+                trainCtx.font = "bold 9px sans-serif";
+                trainCtx.fillText("起点", pos.x-15, pos.y-14);
+            } else if (c.intermediates.includes(node)) {
+                trainCtx.fillStyle = "#f39c12";
+                trainCtx.beginPath();
+                trainCtx.arc(pos.x, pos.y, 15, 0, 2*Math.PI);
+                trainCtx.fill();
+                trainCtx.fillStyle = "#ffffff";
+                trainCtx.font = "bold 11px monospace";
+                trainCtx.fillText(node, pos.x-6, pos.y+4);
+                trainCtx.fillStyle = "#d35400";
+                trainCtx.font = "bold 8px sans-serif";
+                trainCtx.fillText("中转", pos.x-10, pos.y-12);
+            } else if (c.terminals.includes(node)) {
+                trainCtx.fillStyle = "#2ecc71";
+                trainCtx.beginPath();
+                trainCtx.arc(pos.x, pos.y, 15, 0, 2*Math.PI);
+                trainCtx.fill();
+                trainCtx.fillStyle = "white";
+                trainCtx.font = "bold 10px monospace";
+                trainCtx.fillText(node, pos.x-6, pos.y+4);
+                trainCtx.fillStyle = "#1e8449";
+                trainCtx.font = "bold 8px sans-serif";
+                trainCtx.fillText("终点", pos.x-12, pos.y-12);
+            }
+        }
+        
+        // 绘制所有边 (路线)
+        let allPaths = getAllPaths(c);
+        let pathColors = allPaths.map(p => getPathColor(p[p.length-1], 0));
+        
+        for (let parent in c.tree.children) {
+            let fromPos = nodePositions[parent];
+            if (!fromPos) continue;
+            for (let child of c.tree.children[parent]) {
+                let toPos = nodePositions[child];
+                if (!toPos) continue;
+                let edgeColor = "#f1c40f";
+                for (let i = 0; i < allPaths.length; i++) {
+                    let path = allPaths[i];
+                    if (path.includes(parent) && path.includes(child)) {
+                        edgeColor = pathColors[i];
+                        break;
+                    }
+                }
+                trainCtx.beginPath();
+                trainCtx.moveTo(fromPos.x + (parent === "z" ? 14 : 10), fromPos.y);
+                trainCtx.lineTo(toPos.x - (c.terminals.includes(child) ? 12 : 12), toPos.y);
+                trainCtx.strokeStyle = edgeColor;
+                trainCtx.lineWidth = 3;
+                trainCtx.stroke();
+                let angle = Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
+                let arrowX = toPos.x - 15 * Math.cos(angle);
+                let arrowY = toPos.y - 15 * Math.sin(angle);
+                trainCtx.fillStyle = edgeColor;
+                trainCtx.beginPath();
+                trainCtx.moveTo(arrowX, arrowY);
+                trainCtx.lineTo(arrowX - 5 * Math.sin(angle), arrowY + 5 * Math.cos(angle));
+                trainCtx.lineTo(arrowX + 5 * Math.sin(angle), arrowY - 5 * Math.cos(angle));
+                trainCtx.fill();
+            }
+        }
+        
+        if(trainPositions.length !== allPaths.length) trainPositions = new Array(allPaths.length).fill(0);
+        
+        for(let i=0; i<allPaths.length; i++){
+            trainPositions[i] += 0.003;
+            if(trainPositions[i] > 1) trainPositions[i] = 0;
+            let t = trainPositions[i];
+            let pathNodes = allPaths[i];
+            if(pathNodes.length < 2) continue;
+            let segCount = pathNodes.length - 1;
+            let segLen = 1.0 / segCount;
+            let segIdx = Math.min(Math.floor(t / segLen), segCount-1);
+            let segT = (t - segIdx*segLen) / segLen;
+            let fromNode = pathNodes[segIdx];
+            let toNode = pathNodes[segIdx+1];
+            let fromPos = nodePositions[fromNode];
+            let toPos = nodePositions[toNode];
+            if(!fromPos || !toPos) continue;
+            let currX = fromPos.x + (toPos.x - fromPos.x)*segT;
+            let currY = fromPos.y + (toPos.y - fromPos.y)*segT;
+            trainCtx.fillStyle = "#3498db";
+            trainCtx.beginPath();
+            trainCtx.rect(currX-12, currY-8, 24, 16);
+            trainCtx.fill();
+            trainCtx.fillStyle = "#ffffff";
+            trainCtx.font = "14px sans-serif";
+            trainCtx.fillText("🚄", currX-6, currY+5);
+            trainCtx.fillStyle = "#2c3e50";
+            trainCtx.font = "bold 7px monospace";
+            trainCtx.fillText("导数流", currX-12, currY-9);
+        }
+        trainCtx.fillStyle = "#6f4c2e";
+        trainCtx.font = "italic 10px";
+        trainCtx.fillText(`完整路线 ${allPaths.length} 条 | 同层纵向 | 不同层水平 | 同终点同色`, 20, h-12);
+        trainAnimationId = requestAnimationFrame(() => drawTrainMap());
+    }
+
+    function updateCaseUI() {
+        updateFormulaDisplay();
+        drawTreeDiagram();
+        generateQuizBankForCase(currentCaseIdx);
+        loadRandomQuestion();
+        let allPaths = getAllPaths(CASES[currentCaseIdx]);
+        trainPositions = new Array(allPaths.length).fill(0);
+    }
+
+    function generateQuizBankForCase(idx) {
+        const bank = [];
+        const add = (text, correct, expl) => bank.push({ text, correct, explanation: expl });
+        if(idx===0){
+            add("z = f(u), u = g(x) 则 \\(\\frac{dz}{dx} = f'(u) \\cdot g'(x)\\)", true, "链式法则：外层导数乘以内层导数。");
+            add("\\(\\frac{dz}{dx} = f'(g(x))\\) 忽略 \\(g'(x)\\) 是正确的", false, "必须乘以 \\(g'(x)\\) 才是完整导数。");
+            add("具体: \\(z = \\sin(u), u = e^{x}\\), 则 \\(\\frac{dz}{dx} = e^{x}\\cos(e^{x})\\)", true, "正确。");
+            add("具体: \\(z = u^{3}, u = \\ln x\\), 则 \\(\\frac{dz}{dx} = 3(\\ln x)^{2} \\cdot \\frac{1}{x}\\)", true, "正确。");
+            add("具体: \\(z = \\sqrt{u}, u = x^{2}+1\\), 则 \\(\\frac{dz}{dx} = \\frac{x}{\\sqrt{x^{2}+1}}\\)", true, "正确。");
+        }
+        else if(idx===2){
+            add("z = f(u,v), u=g(t), v=h(t) 则 \\(\\frac{dz}{dt} = \\frac{\\partial f}{\\partial u}\\frac{du}{dt} + \\frac{\\partial f}{\\partial v}\\frac{dv}{dt}\\)", true, "分叉用加，两条路径贡献相加。");
+            add("具体: \\(z = u\\cdot v, u=t^{2}, v=\\sin t\\), 则 \\(\\frac{dz}{dt} = 2t\\sin t + t^{2}\\cos t\\)", true, "正确。");
+            add("分叉路径只取一条即可", false, "必须将所有路径贡献相加。");
+        }
+        else if(idx===5){
+            add("对于 \\(z = f(u,v), u=g(x,y,s), v=h(x,y,s)\\), 则 \\(\\frac{\\partial z}{\\partial x} = \\frac{\\partial f}{\\partial u}\\frac{\\partial u}{\\partial x} + \\frac{\\partial f}{\\partial v}\\frac{\\partial v}{\\partial x}\\)", true, "每个自变量有两条路径，分叉相加。");
+            add("具体: \\(z = u\\cdot v, u=x+y+s, v=x-y\\), 则 \\(\\frac{\\partial z}{\\partial x} = (x-y)+(x+y+s)\\)", true, "正确。");
+            add("对于三自变量情形，\\(\\partial z/\\partial y\\) 只考虑一条路径", false, "必须考虑所有路径。");
+        }
+        else if(idx===7){
+            add("z = f(u,v), u=g(w), v=h(w), w=k(x) 则 \\(\\frac{dz}{dx} = \\left(\\frac{\\partial f}{\\partial u}\\frac{dg}{dw}+\\frac{\\partial f}{\\partial v}\\frac{dh}{dw}\\right)\\cdot\\frac{dk}{dx}\\)", true, "先分叉相加再串联。");
+        }
+        else{
+            add(`对于 ${CASES[idx].name}，链式法则核心为“分段乘，分叉加”。`, true, "普适原则。");
+            add(`具体: \\(z = (x+y)^{2}\\) 则 \\(\\frac{\\partial z}{\\partial x} = 2(x+y)\\)`, true, "正确。");
+            add(`具体: \\(z = \\sqrt{x^{2}+y^{2}}\\) 则 \\(\\frac{\\partial z}{\\partial x} = \\frac{x}{\\sqrt{x^{2}+y^{2}}}\\)`, true, "正确。");
+        }
+        while(bank.length<5) bank.push({ text: `链式法则在 ${CASES[idx].name} 中普遍适用`, correct: true, explanation: "链式法则普适。" });
+        window.currentBank = bank.slice(0,6);
+        return window.currentBank;
+    }
+    
+    function loadRandomQuestion(){
+        const bank = window.currentBank || generateQuizBankForCase(currentCaseIdx);
+        const rand = Math.floor(Math.random() * bank.length);
+        currentQuestionObj = bank[rand];
+        quizQuestionSpan.innerHTML = currentQuestionObj.text;
+        if (window.MathJax) MathJax.typesetPromise([quizQuestionSpan]).catch(e=>console.log(e));
+        quizOptionsDiv.innerHTML = "";
+        ["✅ 正确", "❌ 错误"].forEach((opt, i) => {
+            const isTrue = (i===0);
+            const div = document.createElement("div");
+            div.className = "quiz-option";
+            div.innerHTML = `<input type="radio" name="quizOpt" value="${isTrue}"> <span style="font-family:monospace;">${opt}</span>`;
+            quizOptionsDiv.appendChild(div);
+        });
+        quizFeedbackSpan.innerText = "";
+        hiddenAnswerBox.classList.remove("revealed");
+        answerExplanationSpan.innerHTML = currentQuestionObj.explanation;
+        if (window.MathJax) MathJax.typesetPromise([answerExplanationSpan]).catch(e=>console.log(e));
+    }
+    
+    function checkQuiz(){
+        const selected = document.querySelector('input[name="quizOpt"]:checked');
+        if(!selected) { quizFeedbackSpan.innerText = "⚠️ 请选择一个选项"; return; }
+        const userCorrect = selected.value === "true";
+        if(userCorrect === currentQuestionObj.correct) quizFeedbackSpan.innerText = "🎉 正确！链式法则掌握到位。";
+        else quizFeedbackSpan.innerText = `❌ 错误。正确答案: ${currentQuestionObj.correct ? "正确" : "错误"}。`;
+    }
+    
+    function revealAnswer(){
+        if(currentQuestionObj) hiddenAnswerBox.classList.add("revealed");
+    }
+    
+    function initCaseButtons(){
+        caseButtonsDiv.innerHTML = "";
+        CASES.forEach((c,idx) => {
+            const btn = document.createElement("button");
+            btn.innerText = c.name;
+            btn.classList.add("case-btn");
+            if(idx===currentCaseIdx) btn.classList.add("active");
+            btn.addEventListener("click",()=>{
+                currentCaseIdx = idx;
+                document.querySelectorAll(".case-btn").forEach(b=>b.classList.remove("active"));
+                btn.classList.add("active");
+                updateCaseUI();
+            });
+            caseButtonsDiv.appendChild(btn);
+        });
+    }
+    
+    function resizeCanvases(){
+        const container = treeCanvas.parentElement;
+        if(container) {
+            treeCanvas.width = Math.min(450, container.clientWidth-20);
+            treeCanvas.height = 280;
+            trainCanvas.width = Math.min(450, trainCanvas.parentElement.clientWidth-20);
+            trainCanvas.height = 340;
+            drawTreeDiagram();
+        }
+    }
+    
+    window.addEventListener('resize',()=>resizeCanvases());
+    document.getElementById("submitQuizBtn").addEventListener("click",checkQuiz);
+    document.getElementById("revealAnswerBtn").addEventListener("click",revealAnswer);
+    document.getElementById("nextQuizBtn").addEventListener("click",()=>loadRandomQuestion());
+    
+    initCaseButtons();
+    resizeCanvases();
+    updateCaseUI();
+    drawTrainMap();
+</script>
+</body>
+</html>
