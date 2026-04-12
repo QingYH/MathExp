@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>高数可视化：方向导数·梯度·可微与偏导关系 | 方向导数存在但偏导不存在反例</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+            background: linear-gradient(145deg, #eef2f9 0%, #dce5f0 100%);
+            color: #1e2a3a;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card {
+            background: rgba(255,255,255,0.88);
+            backdrop-filter: blur(3px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.25);
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #1e3c72, #2b5f8a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        h2 { font-size: 1.4rem; font-weight: 600; border-left: 6px solid #e67e22; padding-left: 15px; margin: 0.8rem 0 0.6rem 0; color: #2c5282; }
+        h3 { font-size: 1.1rem; font-weight: 600; margin: 0.5rem 0 0.2rem; color: #2c3e66; }
+        .def-box { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: 1rem 0; }
+        .def-item { flex: 1; background: #fffbf0; padding: 1rem; border-radius: 1.2rem; box-shadow: 0 5px 12px rgba(0,0,0,0.05); }
+        .math { font-size: 1rem; background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 10px; display: inline-block; }
+        .geo-desc { background: #e0f2fe; border-radius: 1rem; padding: 0.7rem 1rem; margin: 0.5rem 0; font-weight: 500; }
+        .examples-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0 0.8rem; }
+        .ex-card {
+            flex: 1; min-width: 140px; background: #fff6e5; border-radius: 1.5rem; padding: 0.7rem 0.5rem;
+            text-align: center; cursor: pointer; transition: all 0.25s ease; border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .ex-card.active { border-color: #f39c12; background: #ffefd0; transform: scale(1.02); }
+        .ex-icon { font-size: 2.2rem; }
+        .play-btn {
+            background: #2c7da0; border: none; color: white; padding: 6px 18px; border-radius: 40px;
+            font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 8px; font-size: 0.85rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .play-btn:hover { background: #1f5e7e; transform: scale(0.97); }
+        #canvas-container {
+            position: relative; width: 100%; height: 560px; border-radius: 1.8rem; overflow: hidden;
+            background: radial-gradient(circle at 30% 20%, #cbdbe9, #a0b9ce); box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            margin: 0.8rem 0;
+        }
+        .info-panel {
+            background: rgba(10, 20, 30, 0.75); backdrop-filter: blur(12px); color: white; padding: 8px 18px;
+            border-radius: 40px; position: absolute; bottom: 18px; left: 18px; font-size: 0.85rem;
+            font-weight: 500; pointer-events: none; z-index: 20; border-left: 3px solid #ffaa44;
+        }
+        .controls-note { font-size: 0.72rem; text-align: right; margin-top: 8px; opacity: 0.65; }
+        .legend {
+            display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center; margin: 0.6rem 0;
+            background: rgba(255,255,240,0.6); padding: 6px 12px; border-radius: 50px;
+        }
+        @media (max-width: 700px) { .def-box { flex-direction: column; } #canvas-container { height: 400px; } h1 { font-size: 1.4rem; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 定义与关系卡片：方向导数等价定义调整为ρ形式 -->
+    <div class="card">
+        <h1>📐 方向导数 & 梯度 · 完整定义与核心关系</h1>
+        <div class="def-box">
+            <div class="def-item">
+                <h3>📈 方向导数</h3>
+                <p>函数 \( f(x,y) \) 在点 \( P_0(x_0,y_0) \) 沿单位向量 \( \mathbf{u}=(\cos\alpha,\sin\alpha) \) 的<strong>方向导数</strong>：</p>
+                <p class="math">\[ D_{\mathbf{u}} f(P_0) = \lim_{t \to 0^+} \frac{f(P_0 + t\mathbf{u}) - f(P_0)}{t} \]</p>
+                <p><strong>等价定义（用两个自变量增量，分母为 \(\rho = \sqrt{(\Delta x)^2+(\Delta y)^2}\)）：</strong></p>
+                <p class="math">\[ D_{\mathbf{u}} f(P_0) = \lim_{\rho \to 0} \frac{f(x_0 + \Delta x, y_0 + \Delta y) - f(x_0,y_0)}{\rho}, \quad \rho = \sqrt{(\Delta x)^2+(\Delta y)^2} \]</p>
+                <p>几何意义：曲面在 \( P_0 \) 处沿 \( \mathbf{u} \) 方向的切线斜率。</p>
+            </div>
+            <div class="def-item">
+                <h3>🌀 梯度向量</h3>
+                <p><strong>梯度</strong>定义为偏导组成的向量：</p>
+                <p class="math">\[ \nabla f = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) \]</p>
+                <p>几何意义：梯度方向是函数值增加最快的方向，其模长为最大方向导数。<br>
+                梯度垂直于等高线，指向函数增长侧。</p>
+            </div>
+        </div>
+        <div class="geo-desc">
+            💡 <strong>核心关系</strong>：方向导数 = \( \nabla f \cdot \mathbf{u} \) → 当 \( \mathbf{u} \) 与梯度同向时取最大值（梯度模），反向时取最小值。<br>
+            📌 <strong>偏导与可微</strong>：可微 ⟹ 方向导数存在且由梯度给出；偏导存在 ⇏ 方向导数存在；方向导数存在 ⇏ 偏导存在。
+        </div>
+    </div>
+
+    <!-- 反例动态演示区：三个经典反例 -->
+    <div class="card">
+        <h2>⚠️ 经典反例：偏导与方向导数的互推关系</h2>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            <div style="flex:1; background:#fff2e0; border-radius: 1.2rem; padding: 0.8rem;">
+                <p><strong>① 偏导存在但方向导数不存在：</strong> \( f(x,y) = \frac{x^2 y}{x^4 + y^2} \)<br>
+                沿抛物线 \( y=x^2 \) 极限为0.5 → 方向导数不存在。<br>
+                <span id="partial-status" style="color:#b33;">🔍 原点附近奇异行为</span></p>
+            </div>
+            <div style="flex:1; background:#e6f7ff; border-radius: 1.2rem; padding: 0.8rem;">
+                <p><strong>② 方向导数存在但不可微：</strong> 圆锥 \( g(x,y) = \sqrt{x^2+y^2} \) 在原点<br>
+                所有方向导数=1，但不可微（曲面有尖点）。</p>
+                <p><span id="diff-status" style="color:#2c7da0;">📐 圆锥曲面：沿任何方向导数均为1，但不可微</span></p>
+            </div>
+            <div style="flex:1; background:#ffe6e6; border-radius: 1.2rem; padding: 0.8rem;">
+                <p><strong>③ 方向导数存在但偏导不存在：</strong> \( h(x,y) = \sqrt[3]{x^3 + y^3} \) 在原点<br>
+                沿任何方向方向导数存在且为 \( \sqrt[3]{\cos^3\alpha+\sin^3\alpha} \)，但偏导数 \( \frac{\partial h}{\partial x}, \frac{\partial h}{\partial y} \) 均不存在（曲面在原点处有“棱脊”）。</p>
+                <p><span id="dir-exist-status" style="color:#c0392b;">⚠️ 原点处沿任意方向方向导数存在，但偏导不存在</span></p>
+            </div>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div style="flex:1; text-align:center;"><button id="toggle-partial-example" class="play-btn" style="background:#8b5a2b;">▶ 旋转反例曲面1</button></div>
+            <div style="flex:1; text-align:center;"><button id="toggle-cone-example" class="play-btn" style="background:#2c7da0;">▶ 旋转圆锥曲面2</button></div>
+            <div style="flex:1; text-align:center;"><button id="toggle-dir-exist-example" class="play-btn" style="background:#c0392b;">▶ 旋转反例曲面3</button></div>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 12px;">
+            <div id="partial-canvas-container" style="flex:1; height:250px; border-radius:1.2rem; overflow:hidden; background:#cbdbe9;"></div>
+            <div id="cone-canvas-container" style="flex:1; height:250px; border-radius:1.2rem; overflow:hidden; background:#cbdbe9;"></div>
+            <div id="dir-exist-canvas-container" style="flex:1; height:250px; border-radius:1.2rem; overflow:hidden; background:#cbdbe9;"></div>
+        </div>
+    </div>
+
+    <!-- 真实场景实例区 -->
+    <div class="card">
+        <h2>🌍 真实场景实例 · 梯度驱动动画 (带播放控制)</h2>
+        <div class="examples-grid" id="scene-cards">
+            <div class="ex-card" data-mode="ant"><div class="ex-icon">🐜🌿</div><div><strong>蚂蚁觅食</strong><br><small>气味浓度梯度</small></div><button class="play-btn scene-play" data-mode="ant">▶ 播放动画</button></div>
+            <div class="ex-card" data-mode="roof"><div class="ex-icon">🏠💧</div><div><strong>屋顶排水</strong><br><small>高度梯度→水流</small></div><button class="play-btn scene-play" data-mode="roof">▶ 播放动画</button></div>
+            <div class="ex-card active" data-mode="weather"><div class="ex-icon">🌦️🌡️</div><div><strong>气象等温线</strong><br><small>温度梯度→热浪</small></div><button class="play-btn scene-play" data-mode="weather">▶ 播放动画</button></div>
+            <div class="ex-card" data-mode="erosion"><div class="ex-icon">⛰️🌧️</div><div><strong>土壤侵蚀</strong><br><small>海拔梯度→径流</small></div><button class="play-btn scene-play" data-mode="erosion">▶ 播放动画</button></div>
+            <div class="ex-card" data-mode="emag"><div class="ex-icon">🧲⚡</div><div><strong>电磁势场</strong><br><small>电势梯度→电场</small></div><button class="play-btn scene-play" data-mode="emag">▶ 播放动画</button></div>
+        </div>
+        <div id="canvas-container">
+            <canvas id="three-canvas" style="width:100%; height:100%; display:block;"></canvas>
+            <div class="info-panel" id="info-text">🌡️ 气象等温线 | 红色箭头:梯度 | 金色粒子沿梯度运动 | 白色投影:等值线投影至地面</div>
+        </div>
+        <div class="legend"><span>🔴 梯度向量</span><span>✨ 动态粒子</span><span>📊 曲面等值线 + 地面投影(白色)</span><span>🟢 辅助地面</span></div>
+        <div class="controls-note">🖱️ 拖拽旋转 | 右键平移 | 滚动缩放 | 新增反例3：方向导数存在但偏导不存在 (函数 \( \sqrt[3]{x^3+y^3} \))</div>
+    </div>
+</div>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    
+    // ================== 真实场景函数库 ==================
+    const funcAnt = (x, y) => 2.2 * Math.exp(-((x-1.8)**2 + (y-1.5)**2)/7) + 2.0 * Math.exp(-((x+1.5)**2 + (y+1.2)**2)/6) + 0.8 * Math.exp(-((x+0.5)**2 + (y-2)**2)/5) - 0.025*(x*x+y*y) + 1.2;
+    const gradAnt = (x, y, d=0.18) => [(funcAnt(x+d,y)-funcAnt(x-d,y))/(2*d), (funcAnt(x,y+d)-funcAnt(x,y-d))/(2*d)];
+    
+    const funcRoof = (x, y) => Math.max(0.1, 2.4 - 0.28*x - 0.22*y + 0.06*x*y - 0.045*(x*x+y*y)/3 - 0.5*Math.exp(-((x-2.2)**2+(y+1.5)**2)/5) + 0.3*Math.exp(-((x+2)**2+(y-1.2)**2)/4));
+    const gradRoof = (x, y, d=0.18) => [(funcRoof(x+d,y)-funcRoof(x-d,y))/(2*d), (funcRoof(x,y+d)-funcRoof(x,y-d))/(2*d)];
+    
+    const funcWeather = (x, y) => {
+        let t = 18 + 4.5 * Math.sin(x/2.0) * Math.cos(y/2.2) - 0.035*(x*x + y*y);
+        t += 2.2 * Math.exp(-((x-1.5)**2 + (y-1.2)**2)/6);
+        t -= 2.0 * Math.exp(-((x+1.8)**2 + (y+1.5)**2)/5.5);
+        t += 1.2 * Math.sin(x*1.1) * Math.sin(y*1.3);
+        return Math.max(13, Math.min(29, t));
+    };
+    const gradWeather = (x, y, d=0.18) => [(funcWeather(x+d,y)-funcWeather(x-d,y))/(2*d), (funcWeather(x,y+d)-funcWeather(x,y-d))/(2*d)];
+    
+    const funcErosion = (x, y) => Math.max(0.2, 1.2*Math.exp(-((x-1)**2+(y-0.5)**2)/6) - 0.9*Math.exp(-((x+1.2)**2+(y+1)**2)/5) + 0.4*Math.sin(x*1.2)*Math.cos(y*1.3) - 0.07*(x*x+y*y)/3 + 1.5 + 0.3*Math.sin(x*1.8)*0.5);
+    const gradErosion = (x, y, d=0.18) => [(funcErosion(x+d,y)-funcErosion(x-d,y))/(2*d), (funcErosion(x,y+d)-funcErosion(x,y-d))/(2*d)];
+    
+    const funcEmag = (x, y) => 2.5*Math.exp(-((x-1.2)**2+(y-1)**2)/5) + 1.8*Math.exp(-((x+1.5)**2+(y+1)**2)/4) - 1.2*Math.exp(-((x+0.5)**2+(y-1.8)**2)/6) + 0.2*Math.cos(x*1.5)*Math.sin(y*1.5);
+    const gradEmag = (x, y, d=0.18) => [(funcEmag(x+d,y)-funcEmag(x-d,y))/(2*d), (funcEmag(x,y+d)-funcEmag(x,y-d))/(2*d)];
+    
+    // 反例函数
+    const funcPartialOnly = (x, y) => { if(Math.abs(x)<1e-8 && Math.abs(y)<1e-8) return 0; return (x*x * y) / (x*x*x*x + y*y); };
+    const funcCone = (x, y) => Math.sqrt(x*x + y*y);
+    // 新反例：方向导数存在但偏导不存在
+    const funcDirExistNoPartial = (x, y) => Math.cbrt(x*x*x + y*y*y);
+    
+    let currentMode = 'weather';
+    let funcCurrent = funcWeather;
+    let gradCurrent = gradWeather;
+    let animationEnabled = true;
+    
+    // ================== 主场景 ==================
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xaac9e8);
+    scene.fog = new THREE.FogExp2(0xaac9e8, 0.0028);
+    
+    const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 200);
+    camera.position.set(0, 22, 38);
+    camera.lookAt(0, 18, 0);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('three-canvas') });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.shadowMap.enabled = true;
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.target.set(0, 18, 0);
+    controls.zoomSpeed = 1.2;
+    controls.minDistance = 0;
+    controls.maxDistance = 120;
+    
+    let groundPlane = null;
+    let helperGrid = null;
+    let groundY = -5;
+    
+    function updateGroundPosition() {
+        let minZ = Infinity;
+        for(let x = -5; x <= 5; x += 0.5) {
+            for(let y = -5; y <= 5; y += 0.5) {
+                let z = funcCurrent(x, y);
+                if(z < minZ) minZ = z;
+            }
+        }
+        groundY = minZ - 1.2;
+        if(groundPlane) groundPlane.position.y = groundY;
+        if(helperGrid) helperGrid.position.y = groundY + 0.15;
+        return groundY;
+    }
+    
+    function createGround() {
+        if(groundPlane) scene.remove(groundPlane);
+        if(helperGrid) scene.remove(helperGrid);
+        
+        groundPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(28, 28),
+            new THREE.MeshStandardMaterial({ color: 0x6c9e4f, roughness: 0.85, metalness: 0.05, side: THREE.DoubleSide })
+        );
+        groundPlane.rotation.x = -Math.PI/2;
+        groundPlane.receiveShadow = true;
+        scene.add(groundPlane);
+        
+        helperGrid = new THREE.GridHelper(30, 30, 0x88aacc, 0xaaccff);
+        helperGrid.material.transparent = true;
+        helperGrid.material.opacity = 0.4;
+        scene.add(helperGrid);
+        
+        updateGroundPosition();
+    }
+    
+    const ambient = new THREE.AmbientLight(0x5c6e82);
+    const sunLight = new THREE.DirectionalLight(0xfff5d1, 1.5); 
+    sunLight.position.set(8, 20, 8); 
+    sunLight.castShadow = true;
+    scene.add(ambient, sunLight);
+    scene.add(new THREE.PointLight(0x88aaff, 0.65).position.set(-6, 12, 7));
+    scene.add(new THREE.PointLight(0xffaa77, 0.55).position.set(5, 13, -6));
+    
+    let surfaceMesh = null, contourLines = null, contourProjection = null, gradientArrows = [], particles = [];
+    
+    function generateSurfaceGeometry(res=90) {
+        const vert=[], idx=[], col=[];
+        const step=11/res;
+        for(let i=0;i<=res;i++) {
+            const x = -5.5 + i*step;
+            for(let j=0;j<=res;j++) {
+                const y = -5.5 + j*step;
+                const z = funcCurrent(x,y);
+                vert.push(x, z, y);
+                let t = (z - 13) / 16;
+                t = Math.min(0.95, Math.max(0.2, t));
+                col.push(0.2 + t*0.7, 0.3 + t*0.5, 0.5 + t*0.5);
+            }
+        }
+        for(let i=0;i<res;i++) {
+            for(let j=0;j<res;j++) {
+                const a = i*(res+1)+j, b = i*(res+1)+j+1, c = (i+1)*(res+1)+j, d = (i+1)*(res+1)+j+1;
+                idx.push(a,b,c, b,d,c);
+            }
+        }
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vert), 3));
+        geom.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col), 3));
+        geom.setIndex(idx);
+        geom.computeVertexNormals();
+        return geom;
+    }
+    
+    function generateContourLinesWithProjection(lvCount=14) {
+        const groupSurface = new THREE.Group();
+        const groupProjection = new THREE.Group();
+        
+        let minZ=Infinity, maxZ=-Infinity;
+        for(let x=-5;x<=5;x+=0.25) for(let y=-5;y<=5;y+=0.25) { let v=funcCurrent(x,y); minZ=Math.min(minZ,v); maxZ=Math.max(maxZ,v); }
+        const levels = Array.from({length:lvCount+1}, (_,i)=>minZ + (i/lvCount)*(maxZ-minZ));
+        const step = 0.14;
+        const surfaceMaterial = new THREE.LineBasicMaterial({ color: 0x3a7caa });
+        const projectionMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+        
+        for(let lv of levels) {
+            const segSurface = [];
+            const segProjection = [];
+            for(let i=0;i<85;i++) for(let j=0;j<85;j++) {
+                const x = -5.2 + i*step, y = -5.2 + j*step, x2 = x+step, y2 = y+step;
+                const v00 = funcCurrent(x,y), v10 = funcCurrent(x2,y), v01 = funcCurrent(x,y2), v11 = funcCurrent(x2,y2);
+                const edges = [];
+                if((v00-lv)*(v10-lv)<0) edges.push([x + (lv-v00)/(v10-v00)*step, y, lv]);
+                if((v00-lv)*(v01-lv)<0) edges.push([x, y + (lv-v00)/(v01-v00)*step, lv]);
+                if((v10-lv)*(v11-lv)<0) edges.push([x2, y + (lv-v10)/(v11-v10)*step, lv]);
+                if((v01-lv)*(v11-lv)<0) edges.push([x + (lv-v01)/(v11-v01)*step, y2, lv]);
+                if(edges.length===2) {
+                    segSurface.push(edges[0], edges[1]);
+                    const proj1 = [edges[0][0], groundY, edges[0][1]];
+                    const proj2 = [edges[1][0], groundY, edges[1][1]];
+                    segProjection.push(proj1, proj2);
+                }
+            }
+            if(segSurface.length) {
+                const geomSurface = new THREE.BufferGeometry();
+                const vertsSurface = segSurface.flatMap(p=>[p[0], p[2], p[1]]);
+                geomSurface.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertsSurface), 3));
+                groupSurface.add(new THREE.LineSegments(geomSurface, surfaceMaterial));
+            }
+            if(segProjection.length) {
+                const geomProj = new THREE.BufferGeometry();
+                const vertsProj = segProjection.flatMap(p=>[p[0], p[1], p[2]]);
+                geomProj.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertsProj), 3));
+                groupProjection.add(new THREE.LineSegments(geomProj, projectionMaterial));
+            }
+        }
+        return { surface: groupSurface, projection: groupProjection };
+    }
+    
+    function updateGradientArrows() {
+        gradientArrows.forEach(a=>scene.remove(a)); gradientArrows=[];
+        for(let x=-4.5;x<=4.5;x+=1.5) for(let y=-4.5;y<=4.5;y+=1.5) {
+            const z = funcCurrent(x,y);
+            const [gx,gy] = gradCurrent(x,y);
+            if(Math.hypot(gx,gy)<0.01) continue;
+            const dir = new THREE.Vector3(gx,0,gy).normalize();
+            const len = Math.min(0.9, Math.hypot(gx,gy)*0.8);
+            const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(x, z+0.15, y), len, 0xff4d6d, 0.5, 0.35);
+            gradientArrows.push(arrow); scene.add(arrow);
+        }
+    }
+    
+    function initParticles(cnt=70) {
+        particles.forEach(p=>scene.remove(p.mesh)); particles=[];
+        let behavior = (currentMode==='roof'||currentMode==='erosion') ? 'down' : 'up';
+        for(let i=0;i<cnt;i++) {
+            let x = (Math.random()-0.5)*9.5, y = (Math.random()-0.5)*9.5, z = funcCurrent(x,y);
+            let color = currentMode==='ant' ? 0x8b5a2b : (currentMode==='roof'||currentMode==='erosion' ? 0x3a86ff : 0xffaa55);
+            const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.12, 20,20), new THREE.MeshStandardMaterial({ color, emissive:0x442200, emissiveIntensity:0.4 }));
+            sphere.position.set(x,z,y); sphere.castShadow=true;
+            scene.add(sphere);
+            particles.push({ mesh:sphere, x, y, behavior, speed:0.022 + Math.random()*0.018 });
+        }
+    }
+    
+    function updateParticles() {
+        if(!animationEnabled) return;
+        for(let p of particles) {
+            let [gx,gy] = gradCurrent(p.x,p.y);
+            let dx = gx, dy = gy;
+            if(p.behavior==='down') { dx = -gx; dy = -gy; }
+            const len = Math.hypot(dx,dy);
+            if(len>0.02) {
+                dx/=len; dy/=len;
+                p.x += dx*p.speed; p.y += dy*p.speed;
+                p.x = Math.min(5.3, Math.max(-5.3, p.x));
+                p.y = Math.min(5.3, Math.max(-5.3, p.y));
+                p.mesh.position.set(p.x, funcCurrent(p.x,p.y), p.y);
+                if(p.mesh.material) p.mesh.material.emissiveIntensity = 0.4 + Math.sin(Date.now()*0.004)*0.2;
+            }
+        }
+    }
+    
+    function rebuildScene() {
+        if(surfaceMesh) scene.remove(surfaceMesh);
+        if(contourLines) scene.remove(contourLines);
+        if(contourProjection) scene.remove(contourProjection);
+        
+        surfaceMesh = new THREE.Mesh(generateSurfaceGeometry(88), new THREE.MeshStandardMaterial({ vertexColors:true, side:THREE.DoubleSide, roughness:0.45, metalness:0.1 }));
+        scene.add(surfaceMesh);
+        
+        const contours = generateContourLinesWithProjection(12);
+        contourLines = contours.surface;
+        contourProjection = contours.projection;
+        scene.add(contourLines);
+        scene.add(contourProjection);
+        
+        updateGroundPosition();
+        updateGradientArrows();
+        initParticles(70);
+        
+        let infoText = '';
+        if(currentMode==='ant') infoText='🐜 蚂蚁觅食 | 梯度指向浓度高处 | 棕色粒子沿梯度上升';
+        else if(currentMode==='roof') infoText='🏠 屋顶排水 | 蓝色粒子沿负梯度(水流方向)';
+        else if(currentMode==='erosion') infoText='⛰️ 土壤侵蚀 | 径流沿负梯度方向';
+        else if(currentMode==='emag') infoText='🧲 电磁势场 | 金色粒子沿梯度运动';
+        else infoText='🌡️ 气象等温线 | 红色箭头梯度方向 | 金色粒子沿梯度运动 | 白色投影:等温线投影至地面';
+        document.getElementById('info-text').innerHTML = infoText;
+    }
+    
+    function setMode(mode) {
+        currentMode = mode;
+        if(mode==='ant'){ funcCurrent=funcAnt; gradCurrent=gradAnt; }
+        else if(mode==='roof'){ funcCurrent=funcRoof; gradCurrent=gradRoof; }
+        else if(mode==='erosion'){ funcCurrent=funcErosion; gradCurrent=gradErosion; }
+        else if(mode==='emag'){ funcCurrent=funcEmag; gradCurrent=gradEmag; }
+        else { funcCurrent=funcWeather; gradCurrent=gradWeather; }
+        
+        if(mode === 'weather') {
+            controls.minDistance = 0;
+            controls.maxDistance = 120;
+            camera.fov = 40;
+            camera.position.set(0, 22, 38);
+            controls.target.set(0, 18, 0);
+        } else {
+            controls.minDistance = 5;
+            controls.maxDistance = 50;
+            if(mode === 'ant') {
+                camera.fov = 42;
+                camera.position.set(10, 8, 12);
+                controls.target.set(0, 1.8, 0);
+            } else if(mode === 'roof') {
+                camera.fov = 42;
+                camera.position.set(9, 7.5, 11);
+                controls.target.set(0, 1.5, 0);
+            } else if(mode === 'emag') {
+                camera.fov = 42;
+                camera.position.set(9.5, 7.5, 12);
+                controls.target.set(0, 1.8, 0);
+            } else {
+                camera.fov = 42;
+                camera.position.set(9, 7, 12);
+                controls.target.set(0, 1.5, 0);
+            }
+        }
+        camera.updateProjectionMatrix();
+        controls.update();
+        rebuildScene();
+        animationEnabled = true;
+    }
+    
+    function resetAnimation() { initParticles(70); animationEnabled = true; }
+    
+    // ================== 反例1: 偏导存在但方向导数不存在 ==================
+    const partialContainer = document.getElementById('partial-canvas-container');
+    const partialScene = new THREE.Scene();
+    partialScene.background = new THREE.Color(0xcbdbe9);
+    const partialCamera = new THREE.PerspectiveCamera(40, partialContainer.clientWidth/partialContainer.clientHeight, 0.1, 1000);
+    partialCamera.position.set(3.5, 3.2, 4.5);
+    const partialRenderer = new THREE.WebGLRenderer({ antialias: true });
+    partialRenderer.setSize(partialContainer.clientWidth, partialContainer.clientHeight);
+    partialContainer.appendChild(partialRenderer.domElement);
+    const partialControls = new OrbitControls(partialCamera, partialRenderer.domElement);
+    partialControls.enableDamping = true;
+    const partialGeom = (function() {
+        const vert=[], idx=[], col=[]; const res=90;
+        for(let i=0;i<=res;i++) for(let j=0;j<=res;j++) {
+            const x=-1.5+i*3/res, y=-1.5+j*3/res, z=funcPartialOnly(x,y);
+            vert.push(x,z,y);
+            col.push(0.4+Math.min(0.6, Math.abs(z)*0.8), 0.2+Math.abs(z)*0.5, 0.6);
+        }
+        for(let i=0;i<res;i++) for(let j=0;j<res;j++) {
+            const a=i*(res+1)+j, b=i*(res+1)+j+1, c=(i+1)*(res+1)+j, d=(i+1)*(res+1)+j+1;
+            idx.push(a,b,c, b,d,c);
+        }
+        const geom=new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vert),3));
+        geom.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col),3));
+        geom.setIndex(idx); geom.computeVertexNormals();
+        return geom;
+    })();
+    const partialMesh = new THREE.Mesh(partialGeom, new THREE.MeshStandardMaterial({ vertexColors:true, side:THREE.DoubleSide, roughness:0.4 }));
+    partialScene.add(partialMesh);
+    partialScene.add(new THREE.AmbientLight(0x5c6e82));
+    const pLight = new THREE.DirectionalLight(0xffffff,1); pLight.position.set(2,5,3); partialScene.add(pLight);
+    const pGrid = new THREE.GridHelper(4,20,0x88aaff,0x99bbee); pGrid.position.y=-0.6; partialScene.add(pGrid);
+    let partialRotating = false;
+    document.getElementById('toggle-partial-example').addEventListener('click',()=>{
+        partialRotating = !partialRotating;
+        document.getElementById('toggle-partial-example').textContent = partialRotating ? '⏸ 暂停旋转' : '▶ 旋转反例曲面1';
+    });
+    function animatePartial() { requestAnimationFrame(animatePartial); if(partialRotating) partialMesh.rotation.y += 0.008; partialControls.update(); partialRenderer.render(partialScene, partialCamera); }
+    animatePartial();
+    
+    // ================== 反例2: 圆锥（方向导数存在但不可微） ==================
+    const coneContainer = document.getElementById('cone-canvas-container');
+    const coneScene = new THREE.Scene();
+    coneScene.background = new THREE.Color(0xcbdbe9);
+    const coneCamera = new THREE.PerspectiveCamera(40, coneContainer.clientWidth/coneContainer.clientHeight, 0.1, 1000);
+    coneCamera.position.set(3.8, 3.5, 4.8);
+    const coneRenderer = new THREE.WebGLRenderer({ antialias: true });
+    coneRenderer.setSize(coneContainer.clientWidth, coneContainer.clientHeight);
+    coneContainer.appendChild(coneRenderer.domElement);
+    const coneControls = new OrbitControls(coneCamera, coneRenderer.domElement);
+    coneControls.enableDamping = true;
+    const coneGeom = (function() {
+        const vert=[], idx=[], col=[]; const res=80;
+        for(let i=0;i<=res;i++) for(let j=0;j<=res;j++) {
+            const x=-2.2+i*4.4/res, y=-2.2+j*4.4/res, z=funcCone(x,y);
+            vert.push(x,z,y);
+            col.push(0.3+Math.min(0.7, z/3), 0.4+Math.min(0.5, z/3), 0.5);
+        }
+        for(let i=0;i<res;i++) for(let j=0;j<res;j++) {
+            const a=i*(res+1)+j, b=i*(res+1)+j+1, c=(i+1)*(res+1)+j, d=(i+1)*(res+1)+j+1;
+            idx.push(a,b,c, b,d,c);
+        }
+        const geom=new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vert),3));
+        geom.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col),3));
+        geom.setIndex(idx); geom.computeVertexNormals();
+        return geom;
+    })();
+    const coneMesh = new THREE.Mesh(coneGeom, new THREE.MeshStandardMaterial({ vertexColors:true, side:THREE.DoubleSide, roughness:0.5 }));
+    coneScene.add(coneMesh);
+    coneScene.add(new THREE.AmbientLight(0x5c6e82));
+    const cLight = new THREE.DirectionalLight(0xffffff,1); cLight.position.set(3,5,2); coneScene.add(cLight);
+    const cGrid = new THREE.GridHelper(5,20,0x88aaff,0x99bbee); cGrid.position.y=-0.8; coneScene.add(cGrid);
+    let coneRotating = false;
+    document.getElementById('toggle-cone-example').addEventListener('click',()=>{
+        coneRotating = !coneRotating;
+        document.getElementById('toggle-cone-example').textContent = coneRotating ? '⏸ 暂停旋转' : '▶ 旋转圆锥曲面2';
+    });
+    function animateCone() { requestAnimationFrame(animateCone); if(coneRotating) coneMesh.rotation.y += 0.008; coneControls.update(); coneRenderer.render(coneScene, coneCamera); }
+    animateCone();
+    
+    // ================== 反例3: 方向导数存在但偏导不存在 (函数 h(x,y)=cbrt(x^3+y^3)) ==================
+    const dirExistContainer = document.getElementById('dir-exist-canvas-container');
+    const dirExistScene = new THREE.Scene();
+    dirExistScene.background = new THREE.Color(0xcbdbe9);
+    const dirExistCamera = new THREE.PerspectiveCamera(40, dirExistContainer.clientWidth/dirExistContainer.clientHeight, 0.1, 1000);
+    dirExistCamera.position.set(3.5, 3.2, 4.5);
+    const dirExistRenderer = new THREE.WebGLRenderer({ antialias: true });
+    dirExistRenderer.setSize(dirExistContainer.clientWidth, dirExistContainer.clientHeight);
+    dirExistContainer.appendChild(dirExistRenderer.domElement);
+    const dirExistControls = new OrbitControls(dirExistCamera, dirExistRenderer.domElement);
+    dirExistControls.enableDamping = true;
+    
+    const dirExistGeom = (function() {
+        const vert=[], idx=[], col=[]; const res=90;
+        for(let i=0;i<=res;i++) for(let j=0;j<=res;j++) {
+            const x=-1.8+i*3.6/res, y=-1.8+j*3.6/res, z=funcDirExistNoPartial(x,y);
+            vert.push(x,z,y);
+            // 根据z值着色，范围约 -1.8 到 1.8
+            let t = (z + 1.5) / 3.0;
+            t = Math.min(0.9, Math.max(0.2, t));
+            col.push(0.3 + t*0.6, 0.2 + t*0.5, 0.5 + t*0.4);
+        }
+        for(let i=0;i<res;i++) for(let j=0;j<res;j++) {
+            const a=i*(res+1)+j, b=i*(res+1)+j+1, c=(i+1)*(res+1)+j, d=(i+1)*(res+1)+j+1;
+            idx.push(a,b,c, b,d,c);
+        }
+        const geom=new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vert),3));
+        geom.setAttribute('color', new THREE.BufferAttribute(new Float32Array(col),3));
+        geom.setIndex(idx); geom.computeVertexNormals();
+        return geom;
+    })();
+    const dirExistMesh = new THREE.Mesh(dirExistGeom, new THREE.MeshStandardMaterial({ vertexColors:true, side:THREE.DoubleSide, roughness:0.4 }));
+    dirExistScene.add(dirExistMesh);
+    dirExistScene.add(new THREE.AmbientLight(0x5c6e82));
+    const dLight = new THREE.DirectionalLight(0xffffff,1); dLight.position.set(2,5,3); dirExistScene.add(dLight);
+    const dGrid = new THREE.GridHelper(4.5,20,0x88aaff,0x99bbee); dGrid.position.y=-0.8; dirExistScene.add(dGrid);
+    let dirExistRotating = false;
+    document.getElementById('toggle-dir-exist-example').addEventListener('click',()=>{
+        dirExistRotating = !dirExistRotating;
+        document.getElementById('toggle-dir-exist-example').textContent = dirExistRotating ? '⏸ 暂停旋转' : '▶ 旋转反例曲面3';
+    });
+    function animateDirExist() { requestAnimationFrame(animateDirExist); if(dirExistRotating) dirExistMesh.rotation.y += 0.008; dirExistControls.update(); dirExistRenderer.render(dirExistScene, dirExistCamera); }
+    animateDirExist();
+    
+    // ================== 主场景动画 ==================
+    function animateMain() {
+        requestAnimationFrame(animateMain);
+        controls.update();
+        updateParticles();
+        renderer.render(scene, camera);
+    }
+    animateMain();
+    
+    window.addEventListener('resize',()=>{
+        const w=container.clientWidth, h=container.clientHeight;
+        camera.aspect=w/h; camera.updateProjectionMatrix();
+        renderer.setSize(w,h);
+        if(partialContainer) { partialCamera.aspect=partialContainer.clientWidth/partialContainer.clientHeight; partialCamera.updateProjectionMatrix(); partialRenderer.setSize(partialContainer.clientWidth, partialContainer.clientHeight); }
+        if(coneContainer) { coneCamera.aspect=coneContainer.clientWidth/coneContainer.clientHeight; coneCamera.updateProjectionMatrix(); coneRenderer.setSize(coneContainer.clientWidth, coneContainer.clientHeight); }
+        if(dirExistContainer) { dirExistCamera.aspect=dirExistContainer.clientWidth/dirExistContainer.clientHeight; dirExistCamera.updateProjectionMatrix(); dirExistRenderer.setSize(dirExistContainer.clientWidth, dirExistContainer.clientHeight); }
+    });
+    
+    document.querySelectorAll('.ex-card').forEach(card=>{
+        card.addEventListener('click',(e)=>{
+            if(e.target.classList.contains('play-btn')) return;
+            document.querySelectorAll('.ex-card').forEach(c=>c.classList.remove('active'));
+            card.classList.add('active');
+            setMode(card.getAttribute('data-mode'));
+        });
+        const btn = card.querySelector('.scene-play');
+        if(btn){
+            btn.addEventListener('click',(e)=>{
+                e.stopPropagation();
+                const mode = btn.getAttribute('data-mode');
+                setMode(mode);
+                document.querySelectorAll('.ex-card').forEach(c=>c.classList.remove('active'));
+                document.querySelector(`.ex-card[data-mode="${mode}"]`).classList.add('active');
+                resetAnimation();
+            });
+        }
+    });
+    
+    createGround();
+    rebuildScene();
+    setMode('weather');
+    setTimeout(()=>{
+        controls.minDistance = 0;
+        controls.update();
+    }, 100);
+    
+    setInterval(()=>{
+        document.getElementById('partial-status').innerHTML = `⚠️ 原点处偏导 f_x=0,f_y=0，但沿曲线 y=x² 极限为0.5 → 方向导数不存在。`;
+        document.getElementById('diff-status').innerHTML = `📐 圆锥曲面 g(x,y)=√(x²+y²) 在原点：沿任何方向方向导数=1，但曲面有尖点 → 不可微。`;
+        document.getElementById('dir-exist-status').innerHTML = `⚠️ h(x,y)=∛(x³+y³) 在原点：沿任何方向方向导数=∛(cos³α+sin³α) 存在，但 ∂h/∂x, ∂h/∂y 不存在（原点处有棱脊）。`;
+    }, 4000);
+</script>
+</body>
+</html>
