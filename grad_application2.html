@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>高等数学 · 梯度可视化课堂 | 实际应用案例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f5f7fc 0%, #eef2f8 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 2rem 1.5rem 3rem;
+            min-height: 100vh;
+            color: #1a2c3e;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* 头部区域 —— 数学风格 + 梯度抽象图形 */
+        .hero {
+            text-align: center;
+            margin-bottom: 2.8rem;
+            position: relative;
+        }
+
+        .math-badge {
+            display: inline-block;
+            background: rgba(30, 60, 90, 0.08);
+            backdrop-filter: blur(2px);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid rgba(50, 80, 110, 0.2);
+            color: #1e4a6e;
+            margin-bottom: 1rem;
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 7vw, 3.5rem);
+            font-weight: 800;
+            background: linear-gradient(120deg, #0b3550, #2c6e9e, #1f6392, #0f4c6b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .sub {
+            font-size: 1.1rem;
+            color: #2c5270;
+            max-width: 700px;
+            margin: 0.5rem auto 0;
+            background: linear-gradient(135deg, #2c5a7a, #2f6b8f);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-weight: 500;
+        }
+
+        .gradient-math-def {
+            background: #eef3fc;
+            padding: 0.8rem 1.2rem;
+            border-radius: 2rem;
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            font-family: 'SF Mono', monospace;
+            color: #15507b;
+            border: 1px solid #cbdde9;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .gradient-math-def span {
+            font-weight: 700;
+            background: linear-gradient(135deg, #136b9c, #2a86b3);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* 网格布局：适应手机/平板/桌面 */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0 2rem;
+        }
+
+        /* 卡片设计 —— 柔和数学感 + 梯度边框动效 */
+        .video-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(0px);
+            border-radius: 1.8rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 12px 28px -8px rgba(0, 20, 40, 0.12);
+            border: 1px solid rgba(100, 148, 180, 0.25);
+            position: relative;
+        }
+
+        /* 梯度强调线: 悬停时渐变下划线效果 */
+        .video-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2b7aa2, #5fa7cf, #8fc9f0, #2b7aa2);
+            background-size: 200% auto;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+            border-radius: 0 0 1.8rem 1.8rem;
+        }
+
+        .video-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 32px -12px rgba(18, 65, 92, 0.2);
+            border-color: rgba(70, 140, 180, 0.5);
+            background: white;
+        }
+
+        /* 视频容器 */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            background: #0b2a38;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 1.5rem 1.5rem 1rem 1rem;
+        }
+
+        .demo-video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background: #071e2a;
+            transition: transform 0.2s ease;
+        }
+
+        .video-card:hover .demo-video {
+            transform: scale(1.01);
+        }
+
+        /* 卡片内容区 */
+        .card-info {
+            padding: 1.2rem 1.2rem 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            background: linear-gradient(135deg, #144d6e, #216e97);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.2px;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: #2a5779;
+            line-height: 1.45;
+            margin-top: 0.5rem;
+        }
+
+        .gradient-tag {
+            display: inline-block;
+            background: linear-gradient(110deg, #d9ebf7, #ecf5fa);
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #176087;
+            margin-right: 0.5rem;
+            margin-top: 0.4rem;
+            border: 0.5px solid #b9d4e8;
+        }
+
+        .math-formula {
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            background: #f0f6fd;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+            color: #005c8a;
+        }
+
+        .play-hint {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(20, 50, 70, 0.75);
+            backdrop-filter: blur(6px);
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+            border: 1px solid rgba(255,255,240,0.35);
+            pointer-events: none;
+            font-family: monospace;
+        }
+
+        .info-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.8rem;
+            border-top: 1px solid rgba(110, 150, 180, 0.2);
+            padding-top: 0.6rem;
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(90deg, transparent, rgba(43, 122, 162, 0.08), transparent);
+            border-radius: 60px;
+            font-size: 0.8rem;
+            color: #2c6f94;
+        }
+
+        .footer-note a {
+            color: #1c6f9b;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem 1rem 2rem;
+            }
+            .card-info {
+                padding: 1rem;
+            }
+            .card-title {
+                font-size: 1.2rem;
+            }
+            .play-hint {
+                bottom: 8px;
+                right: 8px;
+                padding: 3px 8px;
+                font-size: 0.6rem;
+            }
+            .showcase-grid {
+                gap: 1.3rem;
+            }
+        }
+
+        video:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="hero">
+        <div class="math-badge">∇ 梯度 · 方向导数与最速下降 ∇</div>
+        <h1>梯度的实际应用<br>高等数学可视化课堂</h1>
+        <div class="sub">从偏导数到现实优化 — 四个核心案例，直观理解梯度向量与负梯度方向</div>
+        <div class="gradient-math-def">
+            <span>▽f = ( ∂f/∂x , ∂f/∂y , ∂f/∂z )</span> &nbsp; 梯度指向函数增长最快的方向，负梯度指向下降最快的方向
+        </div>
+    </div>
+
+    <div class="showcase-grid">
+        <!-- 视频卡片 1：温度梯度逃生（蚂蚁逃生案例）符合原始要求 -->
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="demo-video" poster="https://placehold.co/600x338/1c3f54/white?text=Temperature+Gradient" controls preload="metadata" playsinline>
+                    <!-- 请替换为您的GitHub视频原始链接（第一个应用视频：蚂蚁在加热铁板上沿负梯度逃生） -->
+                    <source src="https://raw.githubusercontent.com/pointcloud-ai/examples/main/assets/gradient_descent_demo.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放。请将视频源替换为正确的 GitHub raw 地址。
+                </video>
+                <div class="play-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    点击观看
+                </div>
+            </div>
+            <div class="card-info">
+                <div class="card-title">温度梯度逃生 · 最速下降方向</div>
+                <div class="card-desc">
+                    蚂蚁在加热的铁板上按照温度梯度负方向逃生最快。沿 −∇T 方向移动，温度下降最剧烈，从而快速逃离高温区域。生动展示负梯度在避障/热感导航中的应用。
+                    <div style="margin-top: 8px;">
+                        <span class="gradient-tag">热传导</span>
+                        <span class="gradient-tag">负梯度</span>
+                        <span class="math-formula">−∇T 指向降温最快</span>
+                    </div>
+                </div>
+                <div class="info-footer">
+                    <span>🐜 应用 #1 · 生物热感导航</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视频卡片 2：调整为与视频3完全一致的文本（雨水沿高度梯度负方向） -->
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="demo-video" poster="https://placehold.co/600x338/245f73/white?text=Rainfall+Flow+on+Hillslope" controls preload="metadata" playsinline>
+                    <source src="https://raw.githubusercontent.com/opengeospatial/geospatial/master/examples/terrain_gradient.mp4" type="video/mp4">
+                </video>
+                <div class="play-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    点击观看
+                </div>
+            </div>
+            <div class="card-info">
+                <div class="card-title">地表径流 · 高度梯度负方向</div>
+                <div class="card-desc">
+                    雨水沿着山的高度梯度的负方向流向山下，即雨水沿着山的高度下降最快方向流动。基于地形梯度场模拟汇流路径，直观展示最速下降曲线与流域划分。
+                    <div style="margin-top: 8px;">
+                        <span class="gradient-tag">水文分析</span>
+                        <span class="gradient-tag">最速下降曲线</span>
+                        <span class="math-formula">流路 ∝ −∇h</span>
+                    </div>
+                </div>
+                <div class="info-footer">
+                    <span>🌧️ 应用 #2 · 水文/地貌学</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视频卡片 3：雨水沿高度梯度负方向流动（原始要求，文本保持不变） -->
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="demo-video" poster="https://placehold.co/600x338/173e4c/white?text=Rainfall+Flow" controls preload="metadata" playsinline>
+                    <source src="https://raw.githubusercontent.com/opencv/opencv/master/doc/tutorials/imgproc/imgtrans/sobel_derivatives/images/sobel.jpg" type="video/mp4">
+                </video>
+                <div class="play-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    点击观看
+                </div>
+            </div>
+            <div class="card-info">
+                <div class="card-title">地表径流 · 高度梯度负方向</div>
+                <div class="card-desc">
+                    雨水沿着山的高度梯度的负方向流向山下，即雨水沿着山的高度下降最快方向流动。基于地形梯度场模拟汇流路径，直观展示最速下降曲线与流域划分。
+                    <div style="margin-top: 8px;">
+                        <span class="gradient-tag">水文分析</span>
+                        <span class="gradient-tag">最速下降曲线</span>
+                        <span class="math-formula">流路 ∝ −∇h</span>
+                    </div>
+                </div>
+                <div class="info-footer">
+                    <span>🌧️ 应用 #3 · 水文/地貌学</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 视频卡片 4：调整为与视频3完全一致的文本（雨水沿高度梯度负方向），原物理场替换为负梯度经典案例 -->
+        <div class="video-card">
+            <div class="video-wrapper">
+                <video class="demo-video" poster="https://placehold.co/600x338/1b5366/white?text=Gradient+Flow+Analogy" controls preload="metadata" playsinline>
+                    <source src="https://raw.githubusercontent.com/phys-sim/fluid-demo/main/assets/gradient_flow.mp4" type="video/mp4">
+                </video>
+                <div class="play-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                    点击观看
+                </div>
+            </div>
+            <div class="card-info">
+                <div class="card-title">地表径流 · 高度梯度负方向</div>
+                <div class="card-desc">
+                    雨水沿着山的高度梯度的负方向流向山下，即雨水沿着山的高度下降最快方向流动。基于地形梯度场模拟汇流路径，直观展示最速下降曲线与流域划分。
+                    <div style="margin-top: 8px;">
+                        <span class="gradient-tag">水文分析</span>
+                        <span class="gradient-tag">最速下降曲线</span>
+                        <span class="math-formula">流路 ∝ −∇h</span>
+                    </div>
+                </div>
+                <div class="info-footer">
+                    <span>🌧️ 应用 #4 · 负梯度统一示例</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        🎓 四个梯度应用视频已通过 GitHub 托管 | 点击任意视频即可播放，适配手机 / 平板 / 电脑<br>
+        📌 <strong>教学核心：</strong> 梯度 ∇f 指向函数增长最快的方向；负梯度 −∇f 指向下降最快的方向。案例#1（蚂蚁沿温度负梯度逃生）、案例#2/3/4（雨水沿高度梯度负方向流动）统一展示“最速下降”这一几何本质。
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 强化教学辅助功能: 确保所有视频在移动端内联播放，并且点击视频区域可播放/暂停（提升体验）
+        const videos = document.querySelectorAll('.demo-video');
+        videos.forEach(video => {
+            // 移动端内联播放，避免自动全屏
+            video.setAttribute('playsinline', 'true');
+            video.setAttribute('webkit-playsinline', 'true');
+            
+            // 添加单击视频切换播放/暂停（方便课堂教学触摸）
+            video.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (video.paused) {
+                    video.play().catch(err => {
+                        // 自动播放策略限制时，静默失败，用户仍可点击播放按钮
+                        console.log("需要手动点击播放按钮 (浏览器策略)");
+                    });
+                } else {
+                    video.pause();
+                }
+            });
+            
+            // 可选：显示加载状态，保证体验
+            video.addEventListener('error', (e) => {
+                // 友好提示控制台，方便教师替换正确的 github 视频链接
+                console.warn("视频加载失败，请确认GitHub raw链接是否有效，并将四个应用视频的源地址替换到 <source src> 中。");
+                // 在卡片内增加一个优雅的fallback文字（不破坏布局）
+                const parentWrapper = video.closest('.video-wrapper');
+                if (parentWrapper && !parentWrapper.querySelector('.fallback-note')) {
+                    const hintSpan = document.createElement('div');
+                    hintSpan.className = 'fallback-note';
+                    hintSpan.innerText = '⚠️ 视频链接待更新，请替换为实际GitHub视频地址';
+                    hintSpan.style.position = 'absolute';
+                    hintSpan.style.bottom = '40px';
+                    hintSpan.style.left = '12px';
+                    hintSpan.style.backgroundColor = '#ffeedd';
+                    hintSpan.style.color = '#a53f00';
+                    hintSpan.style.fontSize = '11px';
+                    hintSpan.style.padding = '2px 10px';
+                    hintSpan.style.borderRadius = '20px';
+                    hintSpan.style.backdropFilter = 'blur(4px)';
+                    hintSpan.style.zIndex = '3';
+                    parentWrapper.appendChild(hintSpan);
+                    setTimeout(() => {
+                        if(hintSpan) hintSpan.style.opacity = '0.7';
+                    }, 100);
+                }
+            });
+        });
+        
+        // 教学辅助: 控制台输出提示，让教师了解如何替换四个视频的真实GitHub链接
+        console.log("%c🧑‍🏫 高等数学梯度教学工具已启动 | 请将四个视频的源地址(src)替换为您在GitHub上托管的实际视频文件（.mp4等）", "color: #1d6f9c; font-size: 14px; font-weight: bold");
+        console.log("%c📹 四个应用视频分别对应: ①蚂蚁逃生(温度负梯度) ②雨水径流(高度负梯度) ③雨水径流(高度负梯度) ④雨水径流(高度负梯度) — 替换src即可在课堂使用，后三卡片文本已统一为'雨水沿着山的高度梯度的负方向流向山下'。", "color: #2c6f94");
+        console.log("%c💡 提示: 建议使用 GitHub raw 链接，确保视频格式为 H.264/MP4 以获得最佳移动端兼容性。", "color: #4b8cac");
+        
+        // 为每个卡片增加梯度概念悬浮说明/视觉标识（重点突出负梯度）
+        const cards = document.querySelectorAll('.video-card');
+        const gradientConcepts = [
+            '负梯度逃生 · −∇T', 
+            '负梯度汇流 · −∇h', 
+            '负梯度汇流 · −∇h', 
+            '负梯度汇流 · −∇h'
+        ];
+        cards.forEach((card, idx) => {
+            const titleEl = card.querySelector('.card-title');
+            if (titleEl && idx < gradientConcepts.length) {
+                // 清除原有的附加span，避免重复
+                const oldSpan = titleEl.querySelector('.concept-badge');
+                if(oldSpan) oldSpan.remove();
+                const conceptSpan = document.createElement('span');
+                conceptSpan.className = 'concept-badge';
+                conceptSpan.innerText = ` ∇ ${gradientConcepts[idx]}`;
+                conceptSpan.style.fontSize = '0.65rem';
+                conceptSpan.style.opacity = '0.85';
+                conceptSpan.style.marginLeft = '8px';
+                conceptSpan.style.fontWeight = 'normal';
+                conceptSpan.style.background = '#eef3fc';
+                conceptSpan.style.padding = '2px 8px';
+                conceptSpan.style.borderRadius = '30px';
+                conceptSpan.style.display = 'inline-block';
+                conceptSpan.style.verticalAlign = 'middle';
+                titleEl.appendChild(conceptSpan);
+            }
+        });
+        
+        // 二次确认确保卡片2、卡片3、卡片4的文本与视频3完全一致（与用户要求严格对齐）
+        const requiredText = "雨水沿着山的高度梯度的负方向流向山下，即雨水沿着山的高度下降最快方向流动。基于地形梯度场模拟汇流路径，直观展示最速下降曲线与流域划分。";
+        const tagHtml = `<div style="margin-top: 8px;">
+                        <span class="gradient-tag">水文分析</span>
+                        <span class="gradient-tag">最速下降曲线</span>
+                        <span class="math-formula">流路 ∝ −∇h</span>
+                    </div>`;
+        const fullDesc = requiredText + tagHtml;
+        
+        // 获取第2、3、4个卡片（索引1,2,3）
+        const secondCardDesc = document.querySelectorAll('.video-card')[1]?.querySelector('.card-desc');
+        const thirdCardDesc = document.querySelectorAll('.video-card')[2]?.querySelector('.card-desc');
+        const fourthCardDesc = document.querySelectorAll('.video-card')[3]?.querySelector('.card-desc');
+        
+        if(secondCardDesc && !secondCardDesc.innerText.includes("雨水沿着山的高度梯度的负方向")) {
+            secondCardDesc.innerHTML = fullDesc;
+        }
+        if(thirdCardDesc && !thirdCardDesc.innerText.includes("雨水沿着山的高度梯度的负方向")) {
+            thirdCardDesc.innerHTML = fullDesc;
+        }
+        if(fourthCardDesc && !fourthCardDesc.innerText.includes("雨水沿着山的高度梯度的负方向")) {
+            fourthCardDesc.innerHTML = fullDesc;
+        }
+        
+        // 统一修改卡片标题使其更有连贯性，但不影响核心语义（可选，让教学更清晰）
+        if(document.querySelectorAll('.video-card')[1]) {
+            const title2 = document.querySelectorAll('.video-card')[1].querySelector('.card-title');
+            if(title2) title2.innerHTML = `地表径流 · 高度梯度负方向`;
+        }
+        if(document.querySelectorAll('.video-card')[3]) {
+            const title4 = document.querySelectorAll('.video-card')[3].querySelector('.card-title');
+            if(title4) title4.innerHTML = `地表径流 · 高度梯度负方向`;
+        }
+        
+        // 增加额外的样式确保手机端下概念标签显示美观
+        const styleTag = document.createElement('style');
+        styleTag.textContent = `
+            @media (max-width: 500px) {
+                .card-title .concept-badge {
+                    font-size: 0.5rem;
+                    margin-left: 4px;
+                    padding: 1px 5px;
+                }
+                .card-desc {
+                    font-size: 0.8rem;
+                }
+            }
+        `;
+        document.head.appendChild(styleTag);
+    })();
+</script>
+
+<!-- 
+    使用说明：
+    1. 本页面为高等数学课程设计，通过四个实际案例演示梯度的应用。
+    2. 您已经制作了四个应用视频，请将每个 <video> 内部 <source src="..."> 替换为您的 GitHub 原始视频链接（.mp4等）。
+       推荐使用 raw.githubusercontent.com 的链接，确保视频可公开访问。
+    3. 视频替换位置：
+       - 第一个卡片：蚂蚁在加热铁板上按温度梯度负方向逃生（文案保持“蚂蚁在加热的铁板上按照温度梯度负方向逃生最快”）
+       - 第二个卡片：雨水沿着山的高度梯度的负方向流向山下（文本已与视频3完全一致）
+       - 第三个卡片：雨水沿着山的高度梯度的负方向流向山下（原始要求文本）
+       - 第四个卡片：雨水沿着山的高度梯度的负方向流向山下（文本已与视频3完全一致）
+    4. 完全适配手机端，点击视频即可观看，并保留了原生播放控件。
+    5. 页面风格清爽、突出数学概念，包含梯度定义公式及应用标签，适合课堂教学及学生课后自学。
+    6. 文案严格按照最终要求：视频2和视频4下方的文本调整为和视频3一样的文本表述，现已全部统一为“雨水沿着山的高度梯度的负方向流向山下，即雨水沿着山的高度下降最快方向流动。”
+-->
+</body>
+</html>
