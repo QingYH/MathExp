@@ -147,13 +147,30 @@
             border-radius: 1.5rem 1.5rem 1rem 1rem;
         }
 
+        /* 关键修改：视频宽度保持不变（默认100%），高度增大一倍 
+           原aspect-ratio: 16/9 (即高度为宽度的9/16 ≈ 0.5625)
+           现在高度增大一倍 => 高度为宽度的 (9/16)*2 = 18/16 = 1.125，即宽高比 16:18 = 8:9
+           为了保持视频内容不被拉伸，使用height: auto + 固定宽高比容器，同时保证视频填充区域高度翻倍。
+           更稳健做法：设置 .demo-video 宽100%，高度自动，但父级 .video-wrapper 设定一个比例翻倍的padding-bottom。
+           但为了确保所有视频元素比例自然且不裁剪，使用aspect-ratio: 16/18 (即8:9) 实现高度翻倍，宽度仍为100%。
+           这样视频播放区域视觉高度正好是原始高度的两倍，且不会变形（视频内容本身可能留黑边，但宽高比变化自由）。
+           或者直接设置 .demo-video 的 height 为 calc(2 * (9 / 16 * 宽度相关))？利用aspect-ratio是最干净的。
+        */
         .demo-video {
             width: 100%;
             display: block;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
+            /* 原高度为宽度的9/16，增大一倍后高度应为宽度的18/16 = 1.125，即 aspect-ratio: 16 / 18 */
+            aspect-ratio: 16 / 18;
+            object-fit: cover;      /* 保持视频比例填充，可能会有裁剪，但保持视觉区域扩大一倍；如果希望完全展示内容可使用contain，但cover更沉浸 */
             background: #071e2a;
             transition: transform 0.2s ease;
+        }
+
+        /* 对于手机端，确保高度增大一倍同样生效，并且卡片内其他内容自适应 */
+        @media (max-width: 640px) {
+            .demo-video {
+                aspect-ratio: 16 / 18;  /* 统一高度翻倍效果 */
+            }
         }
 
         .video-card:hover .demo-video {
@@ -289,12 +306,12 @@
     </div>
 
     <div class="showcase-grid">
-        <!-- 视频卡片 1：温度梯度逃生（蚂蚁逃生案例）符合原始要求 -->
+        <!-- 视频卡片 1：温度梯度逃生（蚂蚁逃生案例） -->
         <div class="video-card">
             <div class="video-wrapper">
                 <video class="demo-video" poster="https://placehold.co/600x338/1c3f54/white?text=Temperature+Gradient" controls preload="metadata" playsinline>
                     <!-- 请替换为您的GitHub视频原始链接（第一个应用视频：蚂蚁在加热铁板上沿负梯度逃生） -->
-                    <source src="ant.mp4">
+                    <source src="ant.mp4" type="video/mp4">
                     您的浏览器不支持视频播放。请将视频源替换为正确的 GitHub raw 地址。
                 </video>
                 <div class="play-hint">
@@ -318,7 +335,7 @@
             </div>
         </div>
 
-        <!-- 视频卡片 2：调整为与视频3完全一致的文本（雨水沿高度梯度负方向） -->
+        <!-- 视频卡片 2：雨水沿高度梯度负方向 (文本统一) -->
         <div class="video-card">
             <div class="video-wrapper">
                 <video class="demo-video" poster="https://placehold.co/600x338/245f73/white?text=Rainfall+Flow+on+Hillslope" controls preload="metadata" playsinline>
@@ -345,11 +362,11 @@
             </div>
         </div>
 
-        <!-- 视频卡片 3：雨水沿高度梯度负方向流动（原始要求，文本保持不变） -->
+        <!-- 视频卡片 3：雨水沿高度梯度负方向流动（同样文本） -->
         <div class="video-card">
             <div class="video-wrapper">
                 <video class="demo-video" poster="https://placehold.co/600x338/173e4c/white?text=Rainfall+Flow" controls preload="metadata" playsinline>
-                    <source src="rain2.mp4">
+                    <source src="rain2.mp4" type="video/mp4">
                 </video>
                 <div class="play-hint">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M8 5v14l11-7z"/></svg>
@@ -372,11 +389,11 @@
             </div>
         </div>
 
-        <!-- 视频卡片 4：调整为与视频3完全一致的文本（雨水沿高度梯度负方向），原物理场替换为负梯度经典案例 -->
+        <!-- 视频卡片 4：雨水沿高度梯度负方向 (文本统一) -->
         <div class="video-card">
             <div class="video-wrapper">
                 <video class="demo-video" poster="https://placehold.co/600x338/1b5366/white?text=Gradient+Flow+Analogy" controls preload="metadata" playsinline>
-                    <source src="rain3.mp4">
+                    <source src="rain3.mp4" type="video/mp4">
                 </video>
                 <div class="play-hint">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="white"><path d="M8 5v14l11-7z"/></svg>
@@ -402,7 +419,8 @@
 
     <div class="footer-note">
         🎓 四个梯度应用视频已通过 GitHub 托管 | 点击任意视频即可播放，适配手机 / 平板 / 电脑<br>
-        📌 <strong>教学核心：</strong> 梯度 ∇f 指向函数增长最快的方向；负梯度 −∇f 指向下降最快的方向。案例#1（蚂蚁沿温度负梯度逃生）、案例#2/3/4（雨水沿高度梯度负方向流动）统一展示“最速下降”这一几何本质。
+        📌 <strong>教学核心：</strong> 梯度 ∇f 指向函数增长最快的方向；负梯度 −∇f 指向下降最快的方向。案例#1（蚂蚁沿温度负梯度逃生）、案例#2/3/4（雨水沿高度梯度负方向流动）统一展示“最速下降”这一几何本质。<br>
+        🎥 <strong>视图说明：</strong> 视频播放窗口宽度保持原有比例不变，高度已增大一倍 (aspect-ratio 16:18)，让画面内容展示更清晰。
     </div>
 </div>
 
@@ -459,7 +477,7 @@
         // 教学辅助: 控制台输出提示，让教师了解如何替换四个视频的真实GitHub链接
         console.log("%c🧑‍🏫 高等数学梯度教学工具已启动 | 请将四个视频的源地址(src)替换为您在GitHub上托管的实际视频文件（.mp4等）", "color: #1d6f9c; font-size: 14px; font-weight: bold");
         console.log("%c📹 四个应用视频分别对应: ①蚂蚁逃生(温度负梯度) ②雨水径流(高度负梯度) ③雨水径流(高度负梯度) ④雨水径流(高度负梯度) — 替换src即可在课堂使用，后三卡片文本已统一为'雨水沿着山的高度梯度的负方向流向山下'。", "color: #2c6f94");
-        console.log("%c💡 提示: 建议使用 GitHub raw 链接，确保视频格式为 H.264/MP4 以获得最佳移动端兼容性。", "color: #4b8cac");
+        console.log("%c🎬 视频窗口样式更新：宽度保持100%不变，高度通过 aspect-ratio: 16/18 增大为原来的两倍（原16/9增高至16/18，高度翻倍）。", "color: #4b8cac");
         
         // 为每个卡片增加梯度概念悬浮说明/视觉标识（重点突出负梯度）
         const cards = document.querySelectorAll('.video-card');
@@ -515,7 +533,7 @@
             fourthCardDesc.innerHTML = fullDesc;
         }
         
-        // 统一修改卡片标题使其更有连贯性，但不影响核心语义（可选，让教学更清晰）
+        // 统一修改卡片标题使其更有连贯性
         if(document.querySelectorAll('.video-card')[1]) {
             const title2 = document.querySelectorAll('.video-card')[1].querySelector('.card-title');
             if(title2) title2.innerHTML = `地表径流 · 高度梯度负方向`;
@@ -525,7 +543,7 @@
             if(title4) title4.innerHTML = `地表径流 · 高度梯度负方向`;
         }
         
-        // 增加额外的样式确保手机端下概念标签显示美观
+        // 额外检查视频宽高比样式，确保在所有浏览器中高度翻倍效果有效 (无需额外动作，CSS已保证)
         const styleTag = document.createElement('style');
         styleTag.textContent = `
             @media (max-width: 500px) {
@@ -537,6 +555,11 @@
                 .card-desc {
                     font-size: 0.8rem;
                 }
+            }
+            /* 确保视频区域没有任何额外限制影响高度翻倍 */
+            .video-wrapper {
+                display: block;
+                line-height: 0;
             }
         `;
         document.head.appendChild(styleTag);
@@ -550,12 +573,12 @@
        推荐使用 raw.githubusercontent.com 的链接，确保视频可公开访问。
     3. 视频替换位置：
        - 第一个卡片：蚂蚁在加热铁板上按温度梯度负方向逃生（文案保持“蚂蚁在加热的铁板上按照温度梯度负方向逃生最快”）
-       - 第二个卡片：雨水沿着山的高度梯度的负方向流向山下（文本已与视频3完全一致）
+       - 第二个卡片：雨水沿着山的高度梯度的负方向流向山下（文本与视频3完全一致）
        - 第三个卡片：雨水沿着山的高度梯度的负方向流向山下（原始要求文本）
-       - 第四个卡片：雨水沿着山的高度梯度的负方向流向山下（文本已与视频3完全一致）
+       - 第四个卡片：雨水沿着山的高度梯度的负方向流向山下（文本与视频3完全一致）
     4. 完全适配手机端，点击视频即可观看，并保留了原生播放控件。
-    5. 页面风格清爽、突出数学概念，包含梯度定义公式及应用标签，适合课堂教学及学生课后自学。
-    6. 文案严格按照最终要求：视频2和视频4下方的文本调整为和视频3一样的文本表述，现已全部统一为“雨水沿着山的高度梯度的负方向流向山下，即雨水沿着山的高度下降最快方向流动。”
+    5. 🎯 关键视觉调整：视频播放窗口宽度保持不变（占满卡片宽度），高度通过 CSS `aspect-ratio: 16 / 18` 增大为原来（16:9）的两倍，使教学内容展示更突出，适合讲解梯度细节。
+    6. 所有卡片布局自适应，移动端滚动顺畅，数学公式标签清晰。
 -->
 </body>
 </html>
