@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>电势变化快慢的三个特殊方向 | 点电荷等势面可视化</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Poppins', 'Roboto', 'Microsoft YaHei', sans-serif;
+        }
+        
+        /* 顶部标题栏 - 固定在图形上方，不闪烁 */
+        .top-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, rgba(5, 15, 30, 0.92) 0%, rgba(10, 25, 45, 0.92) 100%);
+            backdrop-filter: blur(10px);
+            z-index: 30;
+            text-align: center;
+            padding: 12px 16px 10px 16px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.4);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+        
+        .top-header h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #ffdd99, #ffaa66);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .formula-container {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 12px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+        }
+        
+        .formula-box {
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 4px 16px;
+            display: inline-flex;
+            align-items: baseline;
+            gap: 8px;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            border-left: 3px solid #ffaa66;
+        }
+        
+        .formula-label {
+            color: #aaa;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+        
+        .formula-expr {
+            color: #ffcc88;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .gradient-hint {
+            font-size: 0.7rem;
+            color: #88aaff;
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            padding: 2px 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .top-header h1 {
+                font-size: 1rem;
+            }
+            .formula-container {
+                gap: 8px;
+                font-size: 0.7rem;
+            }
+            .formula-expr {
+                font-size: 0.75rem;
+            }
+            .formula-box {
+                padding: 2px 12px;
+            }
+            .gradient-hint {
+                font-size: 0.6rem;
+            }
+        }
+        
+        /* 底部信息面板 - 精简并保持清晰 */
+        .info-panel {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(10, 20, 35, 0.88);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: white;
+            pointer-events: none;
+            z-index: 20;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            font-size: 13px;
+        }
+        
+        .info-panel p {
+            margin: 4px 0;
+            font-size: 0.73rem;
+            line-height: 1.3;
+            text-align: center;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+            font-size: 0.68rem;
+        }
+        
+        .legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+        
+        .controls-note {
+            position: absolute;
+            top: 85px;
+            right: 12px;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(5px);
+            border-radius: 30px;
+            padding: 4px 12px;
+            font-size: 0.65rem;
+            color: #ccc;
+            pointer-events: none;
+            z-index: 20;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 600px) {
+            .info-panel {
+                padding: 8px 12px;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+            }
+            .legend {
+                gap: 10px;
+            }
+            .controls-note {
+                top: 80px;
+                font-size: 0.6rem;
+            }
+        }
+        
+        canvas, .css2d-object {
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部标题与电势函数表达式 (固定在图形上方) -->
+    <div class="top-header">
+        <h1>📐 电势变化快慢的三个特殊方向</h1>
+        <div class="formula-container">
+            <div class="formula-box">
+                <span class="formula-label">电势函数</span>
+                <span class="formula-expr">V(r) = 1 / r</span>
+            </div>
+            <div class="formula-box">
+                <span class="formula-label">梯度</span>
+                <span class="formula-expr">∇V = - r̂ / r²</span>
+            </div>
+            <div class="gradient-hint">⚡ 电场 E = -∇V 指向电荷</div>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <p>📈 <strong style="color:#ff8888">电场方向 (梯度反方向)</strong> → 电势下降最快 &nbsp;|&nbsp; 📉 <strong style="color:#88ff88">逆电场方向 (梯度方向)</strong> → 电势上升最快 &nbsp;|&nbsp; 🔄 <strong style="color:#88aaff">等势面切向 (垂直梯度)</strong> → 电势不变</p>
+        <div class="legend">
+            <span><div class="color-dot" style="background: #ff5555;"></div> 电场方向 (电势↓最快)</span>
+            <span><div class="color-dot" style="background: #55ff55;"></div> 逆电场方向 (电势↑最快)</span>
+            <span><div class="color-dot" style="background: #55aaff;"></div> 等势面切向 (电势不变)</span>
+            <span><div class="color-dot" style="background: #ffaa44;"></div> 探测小球</span>
+            <span><div class="color-dot" style="background: #ff44aa;"></div> 正电荷中心</span>
+        </div>
+        <p>✨ 自动动画: 小球沿三个特征方向循环运动 | 拖拽旋转视角 | 点击任意位置重新定位小球</p>
+    </div>
+    <div class="controls-note">
+        🖱️ 拖动旋转 / 点击定位
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // --- 初始化场景、相机、渲染器 ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050b1a);
+        scene.fog = new THREE.FogExp2(0x050b1a, 0.006);
+        
+        const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(4.2, 3.5, 5.0);
+        camera.lookAt(0, 0, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+        
+        // CSS2渲染文字
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+        
+        // 轨道控制
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.rotateSpeed = 1.0;
+        controls.zoomSpeed = 1.2;
+        controls.panSpeed = 0.8;
+        controls.enableZoom = true;
+        controls.enableTouchRotate = true;
+        controls.target.set(0, 0, 0);
+        
+        // --- 辅助元素 ---
+        const gridHelper = new THREE.GridHelper(8, 20, 0x88aaff, 0x335588);
+        gridHelper.position.y = -1.5;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.2;
+        scene.add(gridHelper);
+        
+        const axesHelper = new THREE.AxesHelper(4);
+        axesHelper.material.transparent = true;
+        axesHelper.material.opacity = 0.12;
+        scene.add(axesHelper);
+        
+        // 光源系统
+        const ambientLight = new THREE.AmbientLight(0x2a3a5a);
+        scene.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xfff5e0, 1.0);
+        mainLight.position.set(3, 5, 2);
+        mainLight.castShadow = true;
+        scene.add(mainLight);
+        const fillLight = new THREE.PointLight(0x5577aa, 0.45);
+        fillLight.position.set(-2, 1, -3);
+        scene.add(fillLight);
+        const backLight = new THREE.PointLight(0xffaa66, 0.35);
+        backLight.position.set(1, 1.5, -3.5);
+        scene.add(backLight);
+        
+        // ========== 核心：点电荷电势场 V(r)=1/r ==========
+        // 电势函数表达式: V(r) = 1 / r  (r = sqrt(x^2+y^2+z^2))
+        const potential = (x, y, z) => {
+            const r = Math.hypot(x, y, z);
+            if (r < 0.2) return 5.0;
+            return 1.0 / r;
+        };
+        
+        // 梯度计算: grad(V) = -(x,y,z)/r^3
+        const gradientVec = (x, y, z) => {
+            const r = Math.hypot(x, y, z);
+            if (r < 0.2) return new THREE.Vector3(0, 0, 0);
+            const r3 = r * r * r;
+            return new THREE.Vector3(-x / r3, -y / r3, -z / r3);
+        };
+        
+        // 电场方向 = -grad(V) (指向电荷中心，电势下降最快)
+        const electricFieldDir = (x, y, z) => {
+            const grad = gradientVec(x, y, z);
+            const dir = new THREE.Vector3(-grad.x, -grad.y, -grad.z);
+            const len = dir.length();
+            if (len < 0.001) return new THREE.Vector3(0, 0, 0);
+            return dir.divideScalar(len);
+        };
+        
+        // 逆电场方向 (电势上升最快) = grad(V) 方向
+        const oppositeFieldDir = (x, y, z) => {
+            const grad = gradientVec(x, y, z);
+            const len = grad.length();
+            if (len < 0.001) return new THREE.Vector3(0, 0, 0);
+            return grad.clone().divideScalar(len);
+        };
+        
+        // 等势面切向: 与梯度垂直的任意单位向量 (在切平面内，电势不变方向)
+        const tangentDir = (x, y, z) => {
+            const grad = gradientVec(x, y, z);
+            // 找一个不平行于梯度方向的参考向量
+            let ref = new THREE.Vector3(1, 0, 0);
+            if (Math.abs(grad.dot(ref)) > 0.9999) ref = new THREE.Vector3(0, 1, 0);
+            const tangent = new THREE.Vector3().crossVectors(grad, ref).normalize();
+            return tangent;
+        };
+        
+        // ========== 1. 中心电荷 (发光球体) ==========
+        const coreGeo = new THREE.SphereGeometry(0.28, 64, 64);
+        const coreMat = new THREE.MeshStandardMaterial({ color: 0xff4488, emissive: 0xff2266, emissiveIntensity: 0.7, roughness: 0.2 });
+        const chargeCore = new THREE.Mesh(coreGeo, coreMat);
+        chargeCore.castShadow = true;
+        scene.add(chargeCore);
+        
+        // 点光源光晕
+        const glowLight = new THREE.PointLight(0xff44aa, 0.7, 6);
+        glowLight.position.set(0, 0, 0);
+        scene.add(glowLight);
+        
+        // ========== 2. 多个清晰等势面 (半透明球壳) 展示电势不变的面 ==========
+        // 电势值 V = 1/r => 半径 r = 1/V
+        const equipotentialValues = [
+            { v: 1.0, r: 1.0, color: 0x88aaff, opacity: 0.22 },
+            { v: 0.8, r: 1.25, color: 0x88aaff, opacity: 0.2 },
+            { v: 0.6, r: 1.667, color: 0x88aaff, opacity: 0.18 },
+            { v: 0.45, r: 2.222, color: 0x88aaff, opacity: 0.15 },
+            { v: 0.35, r: 2.857, color: 0x88aaff, opacity: 0.13 }
+        ];
+        
+        const equipotentialSpheres = [];
+        equipotentialValues.forEach(eq => {
+            const sphereGeo = new THREE.SphereGeometry(eq.r, 96, 96);
+            const material = new THREE.MeshPhongMaterial({
+                color: eq.color,
+                emissive: 0x112244,
+                transparent: true,
+                opacity: eq.opacity,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+            const sphere = new THREE.Mesh(sphereGeo, material);
+            scene.add(sphere);
+            equipotentialSpheres.push(sphere);
+        });
+        
+        // 额外添加线框球体增强等势面视觉效果
+        equipotentialValues.forEach(eq => {
+            const wireframeGeo = new THREE.SphereGeometry(eq.r, 48, 48);
+            const wireMat = new THREE.MeshBasicMaterial({ color: 0x44ccff, wireframe: true, transparent: true, opacity: 0.25 });
+            const wireSphere = new THREE.Mesh(wireframeGeo, wireMat);
+            scene.add(wireSphere);
+        });
+        
+        // 添加三个主方向上的等势线圆环 (进一步强调等势面)
+        const ringRadii = [1.0, 1.667, 2.222];
+        ringRadii.forEach(r => {
+            const pointsXZ = [];
+            for (let i = 0; i <= 100; i++) {
+                const angle = (i / 100) * Math.PI * 2;
+                const x = r * Math.cos(angle);
+                const z = r * Math.sin(angle);
+                pointsXZ.push(new THREE.Vector3(x, 0, z));
+            }
+            const geoXZ = new THREE.BufferGeometry().setFromPoints(pointsXZ);
+            const matRing = new THREE.LineBasicMaterial({ color: 0x66ddff, linewidth: 1 });
+            const ringXZ = new THREE.LineLoop(geoXZ, matRing);
+            scene.add(ringXZ);
+            
+            const pointsXY = [];
+            for (let i = 0; i <= 100; i++) {
+                const angle = (i / 100) * Math.PI * 2;
+                const x = r * Math.cos(angle);
+                const y = r * Math.sin(angle);
+                pointsXY.push(new THREE.Vector3(x, y, 0));
+            }
+            const geoXY = new THREE.BufferGeometry().setFromPoints(pointsXY);
+            const ringXY = new THREE.LineLoop(geoXY, matRing);
+            scene.add(ringXY);
+            
+            const pointsYZ = [];
+            for (let i = 0; i <= 100; i++) {
+                const angle = (i / 100) * Math.PI * 2;
+                const y = r * Math.cos(angle);
+                const z = r * Math.sin(angle);
+                pointsYZ.push(new THREE.Vector3(0, y, z));
+            }
+            const geoYZ = new THREE.BufferGeometry().setFromPoints(pointsYZ);
+            const ringYZ = new THREE.LineLoop(geoYZ, matRing);
+            scene.add(ringYZ);
+        });
+        
+        // ========== 3. 粒子云表示电势强度 (颜色随电势变化) ==========
+        const particleCount = 2200;
+        const particleGeo = new THREE.BufferGeometry();
+        const particlePositions = new Float32Array(particleCount * 3);
+        const particleColors = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i++) {
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            const r = 0.7 + Math.random() * 2.6;
+            const x = r * Math.sin(phi) * Math.cos(theta);
+            const y = r * Math.sin(phi) * Math.sin(theta);
+            const z = r * Math.cos(phi);
+            particlePositions[i*3] = x;
+            particlePositions[i*3+1] = y;
+            particlePositions[i*3+2] = z;
+            const pot = potential(x, y, z);
+            const t = Math.min(1.0, pot / 2.0);
+            particleColors[i*3] = 0.6 + t * 0.5;
+            particleColors[i*3+1] = 0.4 + t * 0.5;
+            particleColors[i*3+2] = 0.7 + t * 0.3;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+        particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+        const particleMaterial = new THREE.PointsMaterial({ size: 0.04, vertexColors: true, transparent: true, opacity: 0.55 });
+        const particles = new THREE.Points(particleGeo, particleMaterial);
+        scene.add(particles);
+        
+        // ========== 4. 动态探测小球 ==========
+        const sphereGeoMarker = new THREE.SphereGeometry(0.13, 48, 48);
+        const sphereMatMarker = new THREE.MeshStandardMaterial({ color: 0xffaa44, emissive: 0x442200, roughness: 0.25 });
+        const marker = new THREE.Mesh(sphereGeoMarker, sphereMatMarker);
+        marker.castShadow = true;
+        scene.add(marker);
+        
+        // 小球光晕
+        const glowGeo = new THREE.SphereGeometry(0.21, 16, 16);
+        const glowMat = new THREE.MeshBasicMaterial({ color: 0xffaa55, transparent: true, opacity: 0.3 });
+        const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+        marker.add(glowMesh);
+        
+        // ========== 5. 方向箭头 ==========
+        const arrowField = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 0.95, 0xff6666, 0.55, 0.32);
+        const arrowOpposite = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 0.95, 0x66ff66, 0.55, 0.32);
+        const arrowTangent = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 0.95, 0x66aaff, 0.55, 0.32);
+        scene.add(arrowField);
+        scene.add(arrowOpposite);
+        scene.add(arrowTangent);
+        
+        // CSS2D 文字标签
+        function createLabel(text, color) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            div.style.color = color;
+            div.style.fontSize = '12px';
+            div.style.fontWeight = 'bold';
+            div.style.background = 'rgba(0,0,0,0.7)';
+            div.style.padding = '2px 10px';
+            div.style.borderRadius = '24px';
+            div.style.borderLeft = `3px solid ${color}`;
+            div.style.fontFamily = 'sans-serif';
+            div.style.backdropFilter = 'blur(5px)';
+            div.style.whiteSpace = 'nowrap';
+            div.style.pointerEvents = 'none';
+            return new CSS2DObject(div);
+        }
+        
+        const labelFieldCSS = createLabel('⚡ 电场方向 (电势↓最快)', '#ff8888');
+        const labelOppCSS = createLabel('⬆️ 逆电场方向 (电势↑最快)', '#88ff88');
+        const labelTanCSS = createLabel('🔄 等势面切向 (电势不变)', '#88aaff');
+        scene.add(labelFieldCSS);
+        scene.add(labelOppCSS);
+        scene.add(labelTanCSS);
+        
+        // 添加一个始终指向电荷的辅助线
+        const fieldLineMaterial = new THREE.LineBasicMaterial({ color: 0xff8888 });
+        const fieldLinePoints = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0)];
+        const fieldLineGeo = new THREE.BufferGeometry().setFromPoints(fieldLinePoints);
+        const fieldLine = new THREE.Line(fieldLineGeo, fieldLineMaterial);
+        scene.add(fieldLine);
+        
+        // ========== 小球位置与运动逻辑 ==========
+        let currentPos = new THREE.Vector3(2.2, 1.2, 1.5);
+        
+        function moveAlongDirection(pos, dir, stepSize = 0.095) {
+            let newX = pos.x + dir.x * stepSize;
+            let newY = pos.y + dir.y * stepSize;
+            let newZ = pos.z + dir.z * stepSize;
+            const r = Math.hypot(newX, newY, newZ);
+            if (r < 0.45) {
+                const scale = 0.5 / r;
+                newX *= scale;
+                newY *= scale;
+                newZ *= scale;
+            }
+            const limit = 3.4;
+            newX = Math.min(limit, Math.max(-limit, newX));
+            newY = Math.min(limit, Math.max(-limit, newY));
+            newZ = Math.min(limit, Math.max(-limit, newZ));
+            return new THREE.Vector3(newX, newY, newZ);
+        }
+        
+        function updateVisuals(pos) {
+            const eDir = electricFieldDir(pos.x, pos.y, pos.z);
+            const oppDir = oppositeFieldDir(pos.x, pos.y, pos.z);
+            const tanDir = tangentDir(pos.x, pos.y, pos.z);
+            
+            if (eDir.length() > 0.01) {
+                arrowField.setDirection(eDir);
+                arrowField.setLength(0.95, 0.55, 0.32);
+                arrowField.setColor(0xff6666);
+            }
+            if (oppDir.length() > 0.01) {
+                arrowOpposite.setDirection(oppDir);
+                arrowOpposite.setLength(0.95, 0.55, 0.32);
+                arrowOpposite.setColor(0x66ff66);
+            }
+            if (tanDir.length() > 0.01) {
+                arrowTangent.setDirection(tanDir);
+                arrowTangent.setLength(0.9, 0.55, 0.32);
+                arrowTangent.setColor(0x66aaff);
+            }
+            
+            arrowField.position.copy(pos);
+            arrowOpposite.position.copy(pos);
+            arrowTangent.position.copy(pos);
+            
+            const fieldPoints = [new THREE.Vector3(0, 0, 0), pos.clone()];
+            fieldLine.geometry.dispose();
+            fieldLine.geometry = new THREE.BufferGeometry().setFromPoints(fieldPoints);
+            
+            labelFieldCSS.position.copy(pos.clone().add(new THREE.Vector3(0.85, 0.65, 0.75)));
+            labelOppCSS.position.copy(pos.clone().add(new THREE.Vector3(-0.9, 0.6, -0.75)));
+            labelTanCSS.position.copy(pos.clone().add(new THREE.Vector3(0.8, 0.3, -0.85)));
+        }
+        
+        function setPosition(pos) {
+            currentPos.copy(pos);
+            marker.position.copy(currentPos);
+            updateVisuals(currentPos);
+        }
+        
+        setPosition(new THREE.Vector3(2.0, 1.2, 1.3));
+        
+        // ========== 自动动画: 三个方向循环 ==========
+        let phaseTimer = 0;
+        const PHASE_DURATION = 2.5;
+        let currentMode = 0; // 0:电场方向(电势↓), 1:逆电场(电势↑), 2:等势面切向(不变)
+        
+        function getMoveDirByMode(pos, mode) {
+            if (mode === 0) return electricFieldDir(pos.x, pos.y, pos.z);
+            if (mode === 1) return oppositeFieldDir(pos.x, pos.y, pos.z);
+            return tangentDir(pos.x, pos.y, pos.z);
+        }
+        
+        let lastFrameTime = performance.now();
+        
+        // 交互: 点击场景中的虚拟球体来重新定位小球
+        const pickSphereGeo = new THREE.SphereGeometry(3.4, 32, 32);
+        const pickMatInv = new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0 });
+        const pickSphere = new THREE.Mesh(pickSphereGeo, pickMatInv);
+        scene.add(pickSphere);
+        
+        const raycaster = new THREE.Raycaster();
+        function handlePick(event) {
+            const mouse = new THREE.Vector2();
+            if (event.touches) {
+                const rect = renderer.domElement.getBoundingClientRect();
+                mouse.x = ((event.touches[0].clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((event.touches[0].clientY - rect.top) / rect.height) * 2 + 1;
+                event.preventDefault();
+            } else {
+                mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+                mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+            }
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(pickSphere);
+            if (intersects.length > 0) {
+                const point = intersects[0].point;
+                let r = Math.hypot(point.x, point.y, point.z);
+                if (r < 0.5) r = 0.8;
+                let targetR = Math.min(3.2, Math.max(0.8, r));
+                const scale = targetR / r;
+                let newX = point.x * scale;
+                let newY = point.y * scale;
+                let newZ = point.z * scale;
+                setPosition(new THREE.Vector3(newX, newY, newZ));
+                phaseTimer = 0;
+                currentMode = 0;
+            }
+        }
+        
+        renderer.domElement.addEventListener('click', handlePick);
+        renderer.domElement.addEventListener('touchstart', handlePick, { passive: false });
+        
+        let timeAcc = 0;
+        
+        function animate() {
+            const now = performance.now();
+            let delta = Math.min(0.033, (now - lastFrameTime) / 1000);
+            lastFrameTime = now;
+            if (delta <= 0) delta = 0.016;
+            timeAcc += delta;
+            
+            phaseTimer += delta;
+            if (phaseTimer >= PHASE_DURATION) {
+                phaseTimer = 0;
+                currentMode = (currentMode + 1) % 3;
+            }
+            
+            const moveDir = getMoveDirByMode(currentPos, currentMode);
+            if (moveDir.length() > 0.01) {
+                const speed = 0.72;
+                const step = speed * delta;
+                let newPos = moveAlongDirection(currentPos, moveDir, step);
+                setPosition(newPos);
+            }
+            
+            const intensity = 0.65 + Math.sin(timeAcc * 6) * 0.2;
+            glowLight.intensity = intensity;
+            particles.rotation.y += 0.0012;
+            particles.rotation.x = Math.sin(timeAcc * 0.5) * 0.08;
+            
+            equipotentialSpheres.forEach((sphere, idx) => {
+                const baseOpacity = [0.22, 0.2, 0.18, 0.15, 0.13][idx];
+                const variation = Math.sin(timeAcc * 0.8 + idx) * 0.02;
+                sphere.material.opacity = Math.max(0.08, Math.min(0.3, baseOpacity + variation));
+            });
+            
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        console.log('点电荷电势场可视化 | 等势面清晰展示 | 小球沿电场方向(电势↓) → 逆电场(↑) → 等势面切向(不变) 循环运动');
+    </script>
+</body>
+</html>
