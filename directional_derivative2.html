@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
+    <title>方向导数的直观理解 · 多函数交互</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #0a0f18;
+            touch-action: pan-y pinch-zoom;
+        }
+        #main-title {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 0 4px 15px #00000080, 0 0 20px #3a7ca5;
+            letter-spacing: 2px;
+            z-index: 40;
+            pointer-events: none;
+            background: linear-gradient(90deg, transparent, #ffbb3350, transparent);
+            padding: 12px 0;
+            margin: 0;
+            backdrop-filter: blur(2px);
+        }
+        @media (max-width: 600px) {
+            #main-title { font-size: 22px; top: 5px; }
+        }
+        #top-left-panel {
+            position: absolute;
+            top: 75px;
+            left: 20px;
+            z-index: 30;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .control-card {
+            background: rgba(15, 25, 40, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 12px 18px;
+            border: 1px solid #4a6c8a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            pointer-events: auto;
+            color: white;
+        }
+        #function-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .func-btn {
+            background: #1e2e3f;
+            border: 1px solid #3a7ca5;
+            color: #ccdfff;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            will-change: transform;
+        }
+        .func-btn.active {
+            background: #ffaa00;
+            color: #111;
+            border-color: #ffdd88;
+            box-shadow: 0 0 12px #ffaa00aa;
+        }
+        #angle-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        #angle-slider {
+            width: 160px;
+        }
+        #angle-value {
+            min-width: 60px;
+            background: #1e2e3f;
+            padding: 5px 10px;
+            border-radius: 30px;
+            text-align: center;
+            font-family: monospace;
+            border: 1px solid #ffaa00;
+            color: #ffdd99;
+        }
+        #point-info {
+            font-size: 0.9rem;
+        }
+        #curve-container {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 330px;
+            height: 270px;
+            background: rgba(18, 28, 40, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 20px;
+            border: 1px solid #3a5f7a;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            z-index: 25;
+            pointer-events: auto;
+            resize: both;
+            overflow: auto;
+            min-width: 260px;
+            min-height: 200px;
+        }
+        #derivativeCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            will-change: transform;
+        }
+        #gradient-footer {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: #aaccff;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            backdrop-filter: blur(4px);
+            z-index: 20;
+            pointer-events: none;
+        }
+        @media (max-width: 700px) {
+            #top-left-panel { top: 65px; left: 10px; }
+            .control-card { padding: 8px 12px; }
+            #angle-slider { width: 130px; }
+            #curve-container { width: 260px; height: 220px; top: 70px; right: 10px; }
+        }
+        canvas { 
+            display: block; 
+            touch-action: none; 
+            backface-visibility: hidden; 
+            transform: translateZ(0);
+        }
+        /* 防止闪烁 */
+        * { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body>
+    <div id="main-title">🧭 方向导数的直观理解</div>
+
+    <div id="top-left-panel">
+        <div class="control-card" id="function-selector">
+            <button class="func-btn active" data-func="0">f₁ = x·e^{-x²-y²}</button>
+            <button class="func-btn" data-func="1">f₂ = sin(x)·cos(y)</button>
+            <button class="func-btn" data-func="2">f₃ = (x² - y²)/3</button>
+        </div>
+        <div class="control-card">
+            <div id="point-info">
+                📍 P = (<span id="px-val">0.60</span>, <span id="py-val">-0.30</span>)
+            </div>
+            <div id="angle-control" style="margin-top: 10px;">
+                <label style="color:#ffbb33; font-weight:bold;">🧭 θ</label>
+                <input type="range" id="angle-slider" min="0" max="360" value="45" step="0.5">
+                <span id="angle-value">45.0°</span>
+            </div>
+            <div style="margin-top: 8px; color:#7effb7; font-size:0.9rem;">
+                ∇f 方向: <span id="grad-angle">--</span>° | |∇f| ≈ <span id="max-deriv">--</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="curve-container">
+        <canvas id="derivativeCanvas" width="600" height="400"></canvas>
+    </div>
+
+    <div id="gradient-footer">
+        <span style="color:#7effb7;">⬆️ ∇f</span> · <span style="color:#ffaa00;">➡️ l</span> · 投影在底面 · 拖动右下角缩放曲线窗口
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+        
+        // --- 场景初始化 (防止闪烁优化) ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0c1420);
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+        camera.position.set(3.8, 2.8, 5.2);
+        camera.lookAt(0, 0.2, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = false; // 禁用阴影提升性能
+        document.body.appendChild(renderer.domElement);
+        
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0';
+        labelRenderer.domElement.style.left = '0';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+        
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = false;
+        controls.enableZoom = true;
+        controls.enablePan = true;
+        controls.maxPolarAngle = Math.PI / 1.7;
+        controls.target.set(0, 0.2, 0);
+        
+        // 光照
+        scene.add(new THREE.AmbientLight(0x404060));
+        const l1 = new THREE.DirectionalLight(0xffffff, 1.3);
+        l1.position.set(1, 2.5, 1.5);
+        scene.add(l1);
+        const l2 = new THREE.DirectionalLight(0xffeedd, 0.7);
+        l2.position.set(-2, 1.5, 2);
+        scene.add(l2);
+        scene.add(new THREE.PointLight(0x446688, 0.5, 20, -1, 0.5, -2));
+        
+        // 坐标轴 (无网格)
+        scene.add(new THREE.AxesHelper(3.8));
+        
+        // 星星背景
+        const starsGeo = new THREE.BufferGeometry();
+        const starsPos = new Float32Array(800 * 3);
+        for (let i = 0; i < 800 * 3; i += 3) {
+            starsPos[i] = (Math.random() - 0.5) * 200;
+            starsPos[i+1] = (Math.random() - 0.5) * 200;
+            starsPos[i+2] = (Math.random() - 0.5) * 200;
+        }
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starsPos, 3));
+        scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.15 })));
+        
+        // --- 函数库 ---
+        const funcs = [
+            { 
+                f: (x,y) => x * Math.exp(-x*x - y*y),
+                dfdx: (x,y) => Math.exp(-x*x - y*y) * (1 - 2*x*x),
+                dfdy: (x,y) => -2 * x * y * Math.exp(-x*x - y*y),
+                name: 'f₁'
+            },
+            { 
+                f: (x,y) => Math.sin(x) * Math.cos(y),
+                dfdx: (x,y) => Math.cos(x) * Math.cos(y),
+                dfdy: (x,y) => -Math.sin(x) * Math.sin(y),
+                name: 'f₂'
+            },
+            { 
+                f: (x,y) => (x*x - y*y) / 3,
+                dfdx: (x,y) => 2*x / 3,
+                dfdy: (x,y) => -2*y / 3,
+                name: 'f₃'
+            }
+        ];
+        let activeFunc = funcs[0];
+        
+        const size = 2.8;
+        let surfaceMesh, contourGroup;
+        
+        function rebuildSurface() {
+            if (surfaceMesh) scene.remove(surfaceMesh);
+            if (contourGroup) scene.remove(contourGroup);
+            
+            const geom = new THREE.BufferGeometry();
+            const vertices = [], indices = [], colors = [];
+            const w = 70, h = 70;
+            for (let i = 0; i <= w; i++) {
+                const x = -size + (2 * size * i) / w;
+                for (let j = 0; j <= h; j++) {
+                    const y = -size + (2 * size * j) / h;
+                    const z = activeFunc.f(x, y);
+                    vertices.push(x, z, y);
+                    const t = (z + 0.8) / 1.6;
+                    colors.push(0.3 + 0.7 * t, 0.4 + 0.5 * Math.sin(t * Math.PI), 0.8 - 0.5 * t);
+                }
+            }
+            for (let i = 0; i < w; i++) {
+                for (let j = 0; j < h; j++) {
+                    const a = i * (h+1) + j, b = a + 1, c = (i+1) * (h+1) + j, d = c + 1;
+                    indices.push(a, b, c);
+                    indices.push(b, d, c);
+                }
+            }
+            geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geom.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            geom.setIndex(indices);
+            geom.computeVertexNormals();
+            
+            surfaceMesh = new THREE.Mesh(geom, new THREE.MeshPhongMaterial({
+                vertexColors: true,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.92,
+                shininess: 35
+            }));
+            scene.add(surfaceMesh);
+            
+            // 等值线组 (底面投影 + 曲面)
+            contourGroup = new THREE.Group();
+            const levels = [-0.5, -0.3, -0.1, 0, 0.1, 0.3, 0.5, 0.7];
+            levels.forEach(lv => {
+                const segs = [];
+                const N = 80, step = 2 * size / N;
+                for (let i = 0; i < N; i++) {
+                    for (let j = 0; j < N; j++) {
+                        const x0 = -size + i * step, y0 = -size + j * step;
+                        const x1 = x0 + step, y1 = y0 + step;
+                        const v00 = activeFunc.f(x0, y0) - lv;
+                        const v10 = activeFunc.f(x1, y0) - lv;
+                        const v01 = activeFunc.f(x0, y1) - lv;
+                        const v11 = activeFunc.f(x1, y1) - lv;
+                        const pts = [];
+                        if (v00 * v10 < 0) pts.push([x0 + step * (0 - v00) / (v10 - v00), y0]);
+                        if (v00 * v01 < 0) pts.push([x0, y0 + step * (0 - v00) / (v01 - v00)]);
+                        if (v10 * v11 < 0) pts.push([x1, y0 + step * (0 - v10) / (v11 - v10)]);
+                        if (v01 * v11 < 0) pts.push([x0 + step * (0 - v01) / (v11 - v01), y1]);
+                        if (pts.length === 2) {
+                            const p1 = pts[0], p2 = pts[1];
+                            // 底面投影 (y = -0.48)
+                            segs.push(p1[0], -0.48, p1[1], p2[0], -0.48, p2[1]);
+                            // 曲面上的线 (稍微抬高)
+                            const z1 = activeFunc.f(p1[0], p1[1]) + 0.02;
+                            const z2 = activeFunc.f(p2[0], p2[1]) + 0.02;
+                            segs.push(p1[0], z1, p1[1], p2[0], z2, p2[1]);
+                        }
+                    }
+                }
+                if (segs.length) {
+                    const g = new THREE.BufferGeometry();
+                    g.setAttribute('position', new THREE.Float32BufferAttribute(segs, 3));
+                    contourGroup.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0x88aaff })));
+                }
+            });
+            scene.add(contourGroup);
+        }
+        
+        rebuildSurface();
+        
+        // 标记与箭头
+        const sphereMarker = new THREE.Mesh(new THREE.SphereGeometry(0.08, 24), new THREE.MeshStandardMaterial({ color: 0xff5500, emissive: new THREE.Color(0x331100) }));
+        scene.add(sphereMarker);
+        
+        const arrowL = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 0.65, 0xffaa00, 0.22, 0.15);
+        const arrowGrad = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 0.65, 0x33ff77, 0.22, 0.15);
+        const projL = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,-0.48,0), 0.6, 0xffaa00, 0.18, 0.12);
+        const projGrad = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,-0.48,0), 0.6, 0x33ff77, 0.18, 0.12);
+        scene.add(arrowL, arrowGrad, projL, projGrad);
+        
+        function makeLabel(text, color) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            div.style.color = 'white';
+            div.style.fontSize = '15px';
+            div.style.fontWeight = 'bold';
+            div.style.textShadow = '1px 1px 3px black';
+            div.style.background = 'rgba(20,40,70,0.8)';
+            div.style.padding = '3px 10px';
+            div.style.borderRadius = '16px';
+            div.style.border = '1.5px solid ' + color;
+            div.style.pointerEvents = 'none';
+            div.style.backfaceVisibility = 'hidden';
+            return new CSS2DObject(div);
+        }
+        
+        const labelP = makeLabel('P', '#ffaa00');
+        const labelG = makeLabel('∇f', '#33ff77');
+        const labelL = makeLabel('l', '#ffaa00');
+        const labelGp = makeLabel('∇f', '#33ff77');
+        const labelLp = makeLabel('l', '#ffaa00');
+        scene.add(labelP, labelG, labelL, labelGp, labelLp);
+        
+        let currentPoint = { x: 0.6, y: -0.3 };
+        let currentTheta = 45.0;
+        
+        const canvas = document.getElementById('derivativeCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+        let isDraggingCurve = false, dragStart = { x: 0, y: 0 };
+        let viewOffset = { x: 0, y: 0 }, viewScale = 1.0;
+        
+        function drawCurve() {
+            const px = currentPoint.x, py = currentPoint.y;
+            const grad = [activeFunc.dfdx(px, py), activeFunc.dfdy(px, py)];
+            const gradNorm = Math.hypot(grad[0], grad[1]);
+            const gradAngle = (Math.atan2(grad[1], grad[0]) * 180 / Math.PI + 360) % 360;
+            
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            ctx.save();
+            ctx.translate(viewOffset.x, viewOffset.y);
+            ctx.scale(viewScale, viewScale);
+            
+            // 背景
+            ctx.fillStyle = '#121c28';
+            ctx.fillRect(0, 0, w, h);
+            
+            // 坐标轴
+            ctx.strokeStyle = '#6a8aaa';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(65, h - 45);
+            ctx.lineTo(w - 25, h - 45);
+            ctx.moveTo(75, 25);
+            ctx.lineTo(75, h - 25);
+            ctx.stroke();
+            
+            // 刻度
+            ctx.fillStyle = '#aaccff';
+            ctx.font = 'bold 13px "Segoe UI", "Microsoft YaHei"';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            for (let i = 0; i <= 360; i += 45) {
+                const x = 75 + (i / 360) * (w - 110);
+                ctx.fillText(i + '°', x, h - 30);
+            }
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            const maxV = Math.max(0.6, Math.ceil(gradNorm * 1.6 * 10) / 10);
+            for (let v = -maxV; v <= maxV; v += maxV / 4) {
+                const y = h - 45 - ((v + maxV) / (2 * maxV)) * (h - 80);
+                ctx.fillText(v.toFixed(2), 65, y);
+            }
+            
+            // 轴标签
+            ctx.save();
+            ctx.translate(28, h / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.font = 'bold 16px "Segoe UI", "Microsoft YaHei"';
+            ctx.fillStyle = '#ddd';
+            ctx.textAlign = 'center';
+            ctx.fillText('∂f/∂l', 0, 0);
+            ctx.restore();
+            
+            ctx.font = 'bold 16px "Segoe UI", "Microsoft YaHei"';
+            ctx.fillStyle = '#ddd';
+            ctx.textAlign = 'center';
+            ctx.fillText('方向 l 的角度 θ', w / 2, h - 10);
+            
+            // 曲线
+            ctx.beginPath();
+            ctx.lineWidth = 3.2;
+            ctx.strokeStyle = '#ffbb33';
+            for (let d = 0; d <= 360; d += 2) {
+                const rad = d * Math.PI / 180;
+                const val = grad[0] * Math.cos(rad) + grad[1] * Math.sin(rad);
+                const x = 75 + (d / 360) * (w - 110);
+                const y = h - 45 - ((val + maxV) / (2 * maxV)) * (h - 80);
+                if (d === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            
+            // 标记当前点
+            const curVal = grad[0] * Math.cos(currentTheta * Math.PI / 180) + grad[1] * Math.sin(currentTheta * Math.PI / 180);
+            const cx = 75 + (currentTheta / 360) * (w - 110);
+            const cy = h - 45 - ((curVal + maxV) / (2 * maxV)) * (h - 80);
+            ctx.beginPath();
+            ctx.fillStyle = '#ff5555';
+            ctx.arc(cx, cy, 7, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            
+            const gx = 75 + (gradAngle / 360) * (w - 110);
+            const gy = h - 45 - ((gradNorm + maxV) / (2 * maxV)) * (h - 80);
+            ctx.beginPath();
+            ctx.fillStyle = '#33cc77';
+            ctx.arc(gx, gy, 7, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            document.getElementById('grad-angle').textContent = gradAngle.toFixed(1);
+            document.getElementById('max-deriv').textContent = gradNorm.toFixed(3);
+        }
+        
+        function updateAll() {
+            const px = currentPoint.x, py = currentPoint.y;
+            const pz = activeFunc.f(px, py);
+            sphereMarker.position.set(px, pz, py);
+            labelP.position.set(px, pz + 0.22, py);
+            
+            const rad = currentTheta * Math.PI / 180;
+            const dir = new THREE.Vector3(Math.cos(rad), 0, Math.sin(rad));
+            const grad = [activeFunc.dfdx(px, py), activeFunc.dfdy(px, py)];
+            const gradVec = new THREE.Vector3(grad[0], 0, grad[1]).normalize();
+            const gradLen = Math.hypot(grad[0], grad[1]);
+            
+            arrowL.position.set(px, pz, py);
+            arrowL.setDirection(new THREE.Vector3(dir.x, (grad[0]*dir.x + grad[1]*dir.z) * 0.25, dir.z));
+            labelL.position.set(px + dir.x * 0.95, pz + 0.35, py + dir.z * 0.95);
+            
+            arrowGrad.position.set(px, pz, py);
+            arrowGrad.setDirection(new THREE.Vector3(gradVec.x, gradLen * 0.25, gradVec.z));
+            labelG.position.set(px + gradVec.x * 0.95, pz + 0.35, py + gradVec.z * 0.95);
+            
+            projL.position.set(px, -0.48, py);
+            projL.setDirection(new THREE.Vector3(dir.x, 0, dir.z));
+            labelLp.position.set(px + dir.x * 0.95, -0.30, py + dir.z * 0.95);
+            
+            projGrad.position.set(px, -0.48, py);
+            projGrad.setDirection(new THREE.Vector3(gradVec.x, 0, gradVec.z));
+            labelGp.position.set(px + gradVec.x * 0.95, -0.30, py + gradVec.z * 0.95);
+            
+            drawCurve();
+            document.getElementById('px-val').textContent = px.toFixed(2);
+            document.getElementById('py-val').textContent = py.toFixed(2);
+            document.getElementById('angle-value').textContent = currentTheta.toFixed(1) + '°';
+        }
+        
+        // 交互
+        renderer.domElement.addEventListener('click', (e) => {
+            const mouse = new THREE.Vector2();
+            mouse.x = (e.clientX / renderer.domElement.clientWidth) * 2 - 1;
+            mouse.y = -(e.clientY / renderer.domElement.clientHeight) * 2 + 1;
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(surfaceMesh);
+            if (intersects.length) {
+                const p = intersects[0].point;
+                currentPoint.x = Math.min(size, Math.max(-size, p.x));
+                currentPoint.y = Math.min(size, Math.max(-size, p.z));
+                updateAll();
+            }
+        });
+        
+        document.getElementById('angle-slider').addEventListener('input', e => {
+            currentTheta = parseFloat(e.target.value);
+            updateAll();
+        });
+        
+        document.querySelectorAll('.func-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.func-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeFunc = funcs[parseInt(btn.dataset.func)];
+                rebuildSurface();
+                updateAll();
+            });
+        });
+        
+        // 曲线拖拽缩放
+        canvas.addEventListener('mousedown', e => {
+            isDraggingCurve = true;
+            dragStart.x = e.clientX - viewOffset.x;
+            dragStart.y = e.clientY - viewOffset.y;
+            canvas.style.cursor = 'grabbing';
+        });
+        window.addEventListener('mousemove', e => {
+            if (isDraggingCurve) {
+                viewOffset.x = e.clientX - dragStart.x;
+                viewOffset.y = e.clientY - dragStart.y;
+                drawCurve();
+            }
+        });
+        window.addEventListener('mouseup', () => {
+            isDraggingCurve = false;
+            canvas.style.cursor = 'grab';
+        });
+        canvas.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            viewScale *= delta;
+            viewScale = Math.min(3, Math.max(0.5, viewScale));
+            drawCurve();
+        }, { passive: false });
+        canvas.style.cursor = 'grab';
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        updateAll();
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
