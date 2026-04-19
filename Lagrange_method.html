@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>拉格朗日乘数法：条件极值深度可视化 | 梯度平行与极值点</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Microsoft YaHei', sans-serif;
+        }
+        /* UI 面板 */
+        .main-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(10, 20, 35, 0.75);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 12px 20px;
+            color: white;
+            z-index: 20;
+            pointer-events: none;
+            border-left: 5px solid #ffaa44;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-weight: 500;
+        }
+        .main-title h1 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+        .main-title p {
+            margin: 0;
+            font-size: 0.75rem;
+            opacity: 0.85;
+        }
+        .info-card {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(20, 25, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 14px 20px;
+            color: #f0f0f0;
+            z-index: 20;
+            pointer-events: none;
+            border: 1px solid rgba(255,215,100,0.3);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            font-size: 14px;
+        }
+        .info-card h3 {
+            margin: 0 0 6px 0;
+            font-size: 1rem;
+            color: #ffcc77;
+        }
+        .info-card .method {
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+        .info-card .formula {
+            font-family: 'Courier New', monospace;
+            background: rgba(0,0,0,0.6);
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin: 2px 0;
+            font-size: 0.75rem;
+        }
+        .status-badge {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #ffdd99;
+            z-index: 20;
+            pointer-events: none;
+            border-right: 2px solid #ffaa44;
+            font-weight: bold;
+        }
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 6px 12px;
+            display: flex;
+            gap: 12px;
+            z-index: 20;
+            pointer-events: auto;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+        .controls button {
+            background: rgba(30,40,60,0.9);
+            border: none;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .controls button:hover {
+            background: #ffaa44;
+            color: #1e1e2a;
+            transform: scale(0.96);
+        }
+        @media (max-width: 600px) {
+            .main-title { top: 12px; left: 12px; padding: 8px 14px; }
+            .main-title h1 { font-size: 1rem; }
+            .info-card { padding: 10px 15px; bottom: 12px; left: 12px; right: 12px; }
+            .info-card .method { font-size: 0.7rem; }
+            .controls { top: 12px; right: 12px; padding: 4px 8px; gap: 8px; }
+            .status-badge { font-size: 10px; bottom: 12px; right: 12px; }
+        }
+        .legend {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #eee;
+            font-family: monospace;
+            z-index: 20;
+            pointer-events: none;
+            border-left: 3px solid #ffaa44;
+        }
+        .legend span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 6px;
+        }
+        .note-light {
+            position: absolute;
+            top: 90px;
+            left: 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 10px;
+            color: #ccc;
+            pointer-events: none;
+            font-family: monospace;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-title">
+        <h1>📐 拉格朗日乘数法 · 条件极值精讲</h1>
+        <p>∇f = λ ∇g | 几何直观：梯度平行时取极值</p>
+    </div>
+    <div class="info-card">
+        <h3>🔍 原理与做法</h3>
+        <div class="method">
+            对于目标函数 <strong>f(x,y)</strong> 在约束 <strong>g(x,y)=0</strong> 下的极值，构造拉格朗日函数 <strong>L = f - λ·g</strong>。<br>
+            极值点满足 ∇L = 0 → ∇f = λ ∇g，即两梯度平行。<br>
+            📌 <strong>求解步骤：</strong> ① 设 L(x,y,λ)=f(x,y)-λ·g(x,y)  ② 求偏导 ∂L/∂x=0, ∂L/∂y=0, ∂L/∂λ=0  ③ 联立解得极值点。<br>
+            🎯 <strong>当前示例：</strong> f(x,y)=<span class="formula">x·y</span> , 约束 g(x,y)=<span class="formula">x²+y²-1=0</span> (单位圆) → 极值点 (±√2/2, ±√2/2) 极大值0.5， (±√2/2, ∓√2/2) 极小值-0.5。
+        </div>
+    </div>
+    <div class="controls">
+        <span>🎮 视角</span>
+        <button id="view-3d">3D曲面</button>
+        <button id="view-top">俯视等值线</button>
+    </div>
+    <div class="status-badge" id="parallel-status">
+        ⚡ 动态检测梯度平行...
+    </div>
+    <div class="legend">
+        <strong>梯度箭头</strong><br>
+        <span style="background: #88ff88;"></span> ∇f (目标函数梯度)<br>
+        <span style="background: #ffaa66;"></span> ∇g (约束梯度)<br>
+        <span style="background: #ffffff;"></span> 平行时 → 极值条件
+    </div>
+    <div class="note-light">
+        🟡 金色粗线: 约束圆 g=0 &nbsp;|&nbsp; 🔶 橙红粗线: 曲面轨迹 f(x,y) &nbsp;|&nbsp; 彩色曲线: f 等值线
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+        
+        // --- 初始化场景 (深色科技感)---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x030318);
+        scene.fog = new THREE.FogExp2(0x030318, 0.006);
+
+        // 相机
+        let camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(2.8, 2.2, 3.8);
+        camera.lookAt(0, 0, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+        
+        // CSS2渲染文字
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+        
+        // 轨道控制
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.rotateSpeed = 1.0;
+        controls.zoomSpeed = 1.2;
+        controls.enableZoom = true;
+        controls.enablePan = true;
+        controls.target.set(0, 0, 0);
+        
+        // --- 辅助元素: 简单坐标轴 (淡色)---
+        const axesHelper = new THREE.AxesHelper(1.6);
+        axesHelper.material.transparent = true;
+        axesHelper.material.opacity = 0.2;
+        scene.add(axesHelper);
+        
+        // 环境光 + 定向光
+        const ambient = new THREE.AmbientLight(0x2c2c54);
+        scene.add(ambient);
+        const light1 = new THREE.DirectionalLight(0xffffff, 1.0);
+        light1.position.set(1, 2, 1.5);
+        scene.add(light1);
+        const light2 = new THREE.DirectionalLight(0xffaa88, 0.6);
+        light2.position.set(-1, 1.5, -1);
+        scene.add(light2);
+        const fillLight = new THREE.PointLight(0x4466cc, 0.35);
+        fillLight.position.set(0.5, 0.8, 1);
+        scene.add(fillLight);
+        
+        // ================= 数学定义 =================
+        const sqrt2half = Math.sqrt(2) / 2;
+        const extremaPoints = [
+            { x:  sqrt2half, y:  sqrt2half, val: 0.5, type: 'max', color: 0xff6666 },
+            { x: -sqrt2half, y: -sqrt2half, val: 0.5, type: 'max', color: 0xff6666 },
+            { x:  sqrt2half, y: -sqrt2half, val: -0.5, type: 'min', color: 0x66ffaa },
+            { x: -sqrt2half, y:  sqrt2half, val: -0.5, type: 'min', color: 0x66ffaa }
+        ];
+        
+        // ---------- 1. 目标函数 f 的等值线 (彩色曲线，无背景网格面) ----------
+        const contourLevels = [-0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8];
+        const contourColorsArr = [0x33ccff, 0x44ddff, 0x55eeff, 0x88ffff, 0xffdd77, 0xffbb44, 0xff9933, 0xff7733, 0xff5533];
+        const contourGroup = new THREE.Group();
+        
+        contourLevels.forEach((c, idx) => {
+            const points = [];
+            const step = 0.045;
+            // 分支1 正x
+            for (let x = 0.18; x <= 1.7; x += step) {
+                if (Math.abs(x) < 1e-5) continue;
+                const y = c / x;
+                if (Math.abs(y) <= 1.6) points.push(new THREE.Vector3(x, y, -0.04));
+            }
+            for (let x = 1.7; x >= 0.18; x -= step) {
+                const y = c / x;
+                if (Math.abs(y) <= 1.6) points.push(new THREE.Vector3(x, y, -0.04));
+            }
+            // 分支2 负x
+            for (let x = -0.18; x >= -1.7; x -= step) {
+                const y = c / x;
+                if (Math.abs(y) <= 1.6) points.push(new THREE.Vector3(x, y, -0.04));
+            }
+            for (let x = -1.7; x <= -0.18; x += step) {
+                const y = c / x;
+                if (Math.abs(y) <= 1.6) points.push(new THREE.Vector3(x, y, -0.04));
+            }
+            if (points.length > 2) {
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const material = new THREE.LineBasicMaterial({ color: contourColorsArr[idx % contourColorsArr.length], linewidth: 1, transparent: true, opacity: 0.9 });
+                const contourLine = new THREE.Line(geometry, material);
+                contourGroup.add(contourLine);
+            }
+        });
+        scene.add(contourGroup);
+        
+        // 等值线标签
+        const addContourLabel = (text, pos, color = '#ffdd99') => {
+            const div = document.createElement('div');
+            div.textContent = text;
+            div.style.color = color;
+            div.style.fontSize = '11px';
+            div.style.fontWeight = 'bold';
+            div.style.background = 'rgba(0,0,0,0.65)';
+            div.style.padding = '2px 6px';
+            div.style.borderRadius = '14px';
+            div.style.borderLeft = `2px solid ${color}`;
+            div.style.backdropFilter = 'blur(4px)';
+            const label = new CSS2DObject(div);
+            label.position.copy(pos);
+            scene.add(label);
+        };
+        addContourLabel('f = -0.6', new THREE.Vector3(1.25, -0.55, -0.02), '#ffaa66');
+        addContourLabel('f = 0', new THREE.Vector3(1.15, 0.05, -0.02), '#ffffaa');
+        addContourLabel('f = 0.6', new THREE.Vector3(1.35, 0.5, -0.02), '#ff8866');
+        addContourLabel('f = -0.4', new THREE.Vector3(-1.35, 0.45, -0.02), '#ffaa66');
+        
+        // ---------- 2. 约束曲线 g(x,y)=0 (单位圆) 加粗金色 ----------
+        const circlePointsForTube = [];
+        const tubeSegments = 200;
+        for (let i = 0; i <= tubeSegments; i++) {
+            const ang = (i / tubeSegments) * Math.PI * 2;
+            const x = Math.cos(ang);
+            const y = Math.sin(ang);
+            circlePointsForTube.push(new THREE.Vector3(x, y, 0.02));
+        }
+        const curveCircle = new THREE.CatmullRomCurve3(circlePointsForTube);
+        const tubeGeometryCircle = new THREE.TubeGeometry(curveCircle, 200, 0.028, 10, true);
+        const tubeMaterialCircle = new THREE.MeshStandardMaterial({ color: 0xffbb55, emissive: 0x442200, roughness: 0.4, metalness: 0.65 });
+        const thickCircle = new THREE.Mesh(tubeGeometryCircle, tubeMaterialCircle);
+        scene.add(thickCircle);
+        
+        // 发光点阵装饰
+        const glowDots = [];
+        for (let i = 0; i < 360; i += 10) {
+            const rad = i * Math.PI/180;
+            const x = Math.cos(rad), y = Math.sin(rad);
+            glowDots.push(x, y, 0.03);
+        }
+        const dotsGeo = new THREE.BufferGeometry();
+        dotsGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(glowDots), 3));
+        const dotsMat = new THREE.PointsMaterial({ color: 0xffdd88, size: 0.035 });
+        const dotsPoints = new THREE.Points(dotsGeo, dotsMat);
+        scene.add(dotsPoints);
+        
+        // ---------- 3. 曲面 g(x,y)=x^2+y^2-1 (紫红色半透明，展示约束函数) ----------
+        const gSurfaceGeo = new THREE.BufferGeometry();
+        const gWidth = 70, gHeight = 70;
+        const gRange = 1.5;
+        const gVertices = [];
+        const gIndices = [];
+        for (let i = 0; i <= gWidth; i++) {
+            const u = i / gWidth;
+            const x = -gRange + u * 2 * gRange;
+            for (let j = 0; j <= gHeight; j++) {
+                const v = j / gHeight;
+                const y = -gRange + v * 2 * gRange;
+                const z = x*x + y*y - 1;
+                gVertices.push(x, y, z);
+            }
+        }
+        for (let i = 0; i < gWidth; i++) {
+            for (let j = 0; j < gHeight; j++) {
+                const a = i * (gHeight+1) + j;
+                const b = i * (gHeight+1) + j+1;
+                const c = (i+1) * (gHeight+1) + j;
+                const d = (i+1) * (gHeight+1) + j+1;
+                gIndices.push(a, b, c, b, d, c);
+            }
+        }
+        gSurfaceGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(gVertices), 3));
+        gSurfaceGeo.setIndex(gIndices);
+        gSurfaceGeo.computeVertexNormals();
+        const gSurfaceMat = new THREE.MeshPhongMaterial({
+            color: 0xdd44aa,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.3,
+            emissive: 0x331133,
+            shininess: 45
+        });
+        const gSurfaceMesh = new THREE.Mesh(gSurfaceGeo, gSurfaceMat);
+        scene.add(gSurfaceMesh);
+        
+        // g(x,y) 等值线 (辅助理解)
+        const gContourLevels = [-0.5, 0, 0.5, 1.0, 1.5];
+        gContourLevels.forEach(c => {
+            const pointsLine = [];
+            for (let ang = 0; ang <= Math.PI*2; ang += 0.05) {
+                const r = Math.sqrt(c + 1);
+                if (c+1 >= 0 && r <= 1.45) {
+                    const x = r * Math.cos(ang);
+                    const y = r * Math.sin(ang);
+                    pointsLine.push(new THREE.Vector3(x, y, -0.08));
+                }
+            }
+            if (pointsLine.length > 5) {
+                const geo = new THREE.BufferGeometry().setFromPoints(pointsLine);
+                const mat = new THREE.LineBasicMaterial({ color: 0xff88cc, transparent: true, opacity: 0.55 });
+                const lineObj = new THREE.LineLoop(geo, mat);
+                scene.add(lineObj);
+            }
+        });
+        
+        // ---------- 4. 目标函数曲面 f(x,y)=x*y (鲜亮青蓝色，主体) ----------
+        const surfaceGeometry = new THREE.BufferGeometry();
+        const segX = 72, segY = 72;
+        const rangeXY = 1.45;
+        const verts = [], idxs = [];
+        for (let i = 0; i <= segX; i++) {
+            const u = i / segX;
+            const x = -rangeXY + u * 2 * rangeXY;
+            for (let j = 0; j <= segY; j++) {
+                const v = j / segY;
+                const y = -rangeXY + v * 2 * rangeXY;
+                const z = x * y;
+                verts.push(x, y, z);
+            }
+        }
+        for (let i = 0; i < segX; i++) {
+            for (let j = 0; j < segY; j++) {
+                const a = i * (segY+1) + j;
+                const b = i * (segY+1) + j+1;
+                const c = (i+1) * (segY+1) + j;
+                const d = (i+1) * (segY+1) + j+1;
+                idxs.push(a, b, c, b, d, c);
+            }
+        }
+        surfaceGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(verts), 3));
+        surfaceGeometry.setIndex(idxs);
+        surfaceGeometry.computeVertexNormals();
+        const surfaceMat = new THREE.MeshPhongMaterial({
+            color: 0x2a9dff,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.58,
+            emissive: 0x002244,
+            shininess: 75
+        });
+        const fSurface = new THREE.Mesh(surfaceGeometry, surfaceMat);
+        scene.add(fSurface);
+        
+        // ---------- 约束在曲面上的投影轨迹线 (橙红色加粗) ----------
+        const projPoints = [];
+        for (let i = 0; i <= 240; i++) {
+            const ang = (i / 240) * Math.PI * 2;
+            const x = Math.cos(ang);
+            const y = Math.sin(ang);
+            const z = x * y;
+            projPoints.push(new THREE.Vector3(x, y, z));
+        }
+        const projCurve3D = new THREE.CatmullRomCurve3(projPoints);
+        const tubeProjGeo = new THREE.TubeGeometry(projCurve3D, 300, 0.032, 12, true);
+        const tubeProjMat = new THREE.MeshStandardMaterial({ color: 0xff6644, emissive: 0x441100, roughness: 0.35, metalness: 0.55 });
+        const thickProjLine = new THREE.Mesh(tubeProjGeo, tubeProjMat);
+        scene.add(thickProjLine);
+        
+        // 辅助细线 (从约束圆到曲面的连线，增加空间感)
+        for (let ang = 0; ang < Math.PI*2; ang += Math.PI/10) {
+            const x = Math.cos(ang), y = Math.sin(ang);
+            const z0 = 0, z1 = x*y;
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,y,z0), new THREE.Vector3(x,y,z1)]);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x88aaff, transparent: true, opacity: 0.2 });
+            const lineSeg = new THREE.Line(lineGeo, lineMat);
+            scene.add(lineSeg);
+        }
+        
+        // 极值点标记 (球体 + CSS标签)
+        extremaPoints.forEach(p => {
+            const sphereGeo = new THREE.SphereGeometry(0.095, 32, 32);
+            const matSphere = new THREE.MeshStandardMaterial({ color: p.type === 'max' ? 0xff5555 : 0x55ffaa, emissive: p.type === 'max' ? 0x441111 : 0x115544, roughness: 0.3 });
+            const marker = new THREE.Mesh(sphereGeo, matSphere);
+            marker.position.set(p.x, p.y, p.x * p.y);
+            scene.add(marker);
+            const div = document.createElement('div');
+            div.textContent = `${p.type === 'max' ? '🔴 极大点' : '🔵 极小点'} (${p.x.toFixed(2)},${p.y.toFixed(2)}) f=${p.val}`;
+            div.style.backgroundColor = 'rgba(0,0,0,0.75)';
+            div.style.color = '#fff';
+            div.style.padding = '2px 8px';
+            div.style.borderRadius = '20px';
+            div.style.fontSize = '11px';
+            div.style.borderLeft = `3px solid ${p.type === 'max' ? '#ff8888' : '#88ffaa'}`;
+            div.style.fontWeight = 'bold';
+            const cssLbl = new CSS2DObject(div);
+            cssLbl.position.set(p.x, p.y + 0.22, p.x * p.y);
+            scene.add(cssLbl);
+        });
+        
+        // ---------- 动态梯度演示: 移动小球 + 彩色箭头 (∇f 绿色, ∇g 橙色) ----------
+        const movingSphereGeo = new THREE.SphereGeometry(0.085, 24, 24);
+        const movingMatSphere = new THREE.MeshStandardMaterial({ color: 0xff6699, emissive: 0x551133 });
+        const movingSphere = new THREE.Mesh(movingSphereGeo, movingMatSphere);
+        scene.add(movingSphere);
+        
+        const arrowF = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 0.7, 0x66ff66, 0.38, 0.28);
+        const arrowG = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 0.7, 0xffaa66, 0.38, 0.28);
+        scene.add(arrowF);
+        scene.add(arrowG);
+        
+        // 箭头文字标签 (CSS2D)
+        const fLabelDiv = new CSS2DObject((() => {
+            const d = document.createElement('div'); d.textContent = '∇f'; d.style.color = '#aaffaa'; d.style.fontWeight='bold'; d.style.textShadow='0 0 3px black'; d.style.fontSize='13px'; d.style.background='rgba(0,0,0,0.6)'; d.style.padding='0px 6px'; d.style.borderRadius='16px'; d.style.border = '1px solid #88ff88'; return d;
+        })());
+        const gLabelDiv = new CSS2DObject((() => {
+            const d = document.createElement('div'); d.textContent = '∇g'; d.style.color = '#ffbb77'; d.style.fontWeight='bold'; d.style.fontSize='13px'; d.style.background='rgba(0,0,0,0.6)'; d.style.padding='0px 6px'; d.style.borderRadius='16px'; d.style.border = '1px solid #ffaa66'; return d;
+        })());
+        scene.add(fLabelDiv);
+        scene.add(gLabelDiv);
+        
+        let angleRad = 0;
+        let speedActive = true;
+        let pauseTimer = null;
+        const statusElem = document.getElementById('parallel-status');
+        
+        function updateGradientAndSphere(rad) {
+            const x = Math.cos(rad);
+            const y = Math.sin(rad);
+            movingSphere.position.set(x, y, 0.12);
+            const gradf = new THREE.Vector3(y, x, 0).normalize();
+            const gradg = new THREE.Vector3(x, y, 0).normalize();
+            const dotVal = Math.abs(gradf.dot(gradg));
+            const isParallel = dotVal > 0.998;
+            
+            if (isParallel && speedActive && !pauseTimer) {
+                speedActive = false;
+                statusElem.innerHTML = `⏸️ 梯度平行！∇f ∥ ∇g  (θ=${(rad*180/Math.PI).toFixed(1)}°) 极值条件满足 · 暂停1秒 ⏸️`;
+                statusElem.style.color = '#ffaa77';
+                pauseTimer = setTimeout(() => {
+                    speedActive = true;
+                    statusElem.innerHTML = `⚡ 继续旋转 · 动态检测梯度平行条件 ⚡`;
+                    statusElem.style.color = '#ffdd99';
+                    if (pauseTimer) clearTimeout(pauseTimer);
+                    pauseTimer = null;
+                }, 1000);
+            }
+            
+            if (speedActive && !pauseTimer) {
+                statusElem.innerHTML = `🔄 梯度夹角 cosθ = ${dotVal.toFixed(4)}  ${dotVal > 0.99 ? '接近平行' : '不平行'} | 极值点处 ∇f = λ∇g`;
+                statusElem.style.color = '#ffdd99';
+            } else if (pauseTimer) {
+                statusElem.innerHTML = `⏸️ 梯度平行 (极值候选点) 演示暂停中 · 观察箭头重合 ⏸️`;
+            }
+            
+            const startPos = new THREE.Vector3(x, y, 0.15);
+            arrowF.setDirection(gradf);
+            arrowF.setLength(0.72, 0.32, 0.24);
+            arrowF.setColor(0x88ff88);
+            arrowF.position.copy(startPos);
+            
+            arrowG.setDirection(gradg);
+            arrowG.setLength(0.72, 0.32, 0.24);
+            arrowG.setColor(0xffaa66);
+            arrowG.position.copy(startPos);
+            
+            fLabelDiv.position.copy(startPos.clone().add(gradf.clone().multiplyScalar(0.68)));
+            gLabelDiv.position.copy(startPos.clone().add(gradg.clone().multiplyScalar(0.68)));
+        }
+        
+        let accumulatedAngle = 0;
+        function animateRotation() {
+            if (speedActive && !pauseTimer) {
+                accumulatedAngle += 0.0075;
+                if (accumulatedAngle > Math.PI * 2) accumulatedAngle -= Math.PI * 2;
+                angleRad = accumulatedAngle;
+                updateGradientAndSphere(angleRad);
+            } else if (!speedActive && pauseTimer) {
+                // 暂停时保持
+            } else if (speedActive && !pauseTimer) {
+                accumulatedAngle += 0.0075;
+                if (accumulatedAngle > Math.PI * 2) accumulatedAngle -= Math.PI * 2;
+                angleRad = accumulatedAngle;
+                updateGradientAndSphere(angleRad);
+            }
+        }
+        
+        // 视角切换
+        const btn3d = document.getElementById('view-3d');
+        const btnTop = document.getElementById('view-top');
+        btn3d.addEventListener('click', () => {
+            camera.position.set(2.8, 2.2, 3.8);
+            controls.target.set(0, 0, 0);
+            controls.update();
+            surfaceMat.opacity = 0.58;
+            gSurfaceMat.opacity = 0.3;
+        });
+        btnTop.addEventListener('click', () => {
+            camera.position.set(0, 0, 5.2);
+            controls.target.set(0, 0, 0);
+            controls.update();
+            surfaceMat.opacity = 0.35;
+            gSurfaceMat.opacity = 0.2;
+        });
+        
+        updateGradientAndSphere(0.8);
+        
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            animateRotation();
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        renderLoop();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        console.log("最终版: 已移除网格参考面，保留等值线、曲面、加粗曲线及梯度箭头，视觉清爽");
+    </script>
+</body>
+</html>
