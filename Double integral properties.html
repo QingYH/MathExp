@@ -150,10 +150,10 @@
         <button id="btnOrder">📈 保序性</button>
         <button id="btnMaxMin">⚖️ 最值性</button>
         <button id="btnMean">🎯 中值性</button>
-        <button id="btnSymmetry">🔄 区域对称性</button>
+        <button id="btnSymmetry">🔄 对称性</button>
         <div id="dynamicSlider" style="display: flex; gap: 8px; align-items: center;"></div>
     </div>
-    <div class="status-note">✨ 自由拖拽旋转 | 高精曲面 | 平面精准嵌入柱体内部 | 无闪烁连续</div>
+    <div class="status-note">✨ 自由拖拽旋转 | 高精曲面 | 平面精准嵌入柱体内部 | </div>
 
     <script type="importmap">
         {
@@ -548,13 +548,13 @@
             } else if (prop === 'symmetry') {
                 if (symmetryMode === 'xAxis') {
                     mathSpan.innerHTML = `
-                        <div>📌 区域关于x轴对称 (本文体现为z=1.5)</div>
+                        <div>📌 区域关于x轴对称</div>
                         D关于x轴对称，f关于z为偶函数 ⇒ ∬<sub>D</sub> f dσ = 2∬<sub>D₁</sub> f dσ <br>
                         f关于z为奇函数 ⇒ ∬<sub>D</sub> f dσ = 0
                     `;
                 } else if (symmetryMode === 'yAxis') {
                     mathSpan.innerHTML = `
-                        <div>📌 区域关于y轴对称 (本文体现为x=1.5)</div>
+                        <div>📌 区域关于y轴对称 </div>
                         D关于y轴对称，f关于x为偶函数 ⇒ ∬<sub>D</sub> f dσ = 2∬<sub>D₁</sub> f dσ <br>
                         f关于x为奇函数 ⇒ ∬<sub>D</sub> f dσ = 0
                     `;
@@ -692,7 +692,7 @@
                     mirrorPlane.rotation.y = 0; // 平面法线指向z
                     group.add(mirrorPlane);
                     
-                    descText = `区域关于x轴对称: D关于x轴(本文z=1.5)对称，被积函数关于z为偶函数 ⇒ 积分＝2倍半区积分 (偶倍)；若为奇函数⇒积分＝0 (奇零)。`;
+                    descText = `区域关于x轴对称: D关于x轴对称，被积函数关于z为偶函数 ⇒ 积分＝2倍半区积分 (偶倍)；若为奇函数⇒积分＝0 (奇零)。`;
                 } else if (symmetryMode === 'yAxis') {
                     const symFunc = funcs.symmetricAboutYAxisFunc;
                     group = createHighQualityPrism(symFunc, 0x99ccff, 0.7, 98);
@@ -713,7 +713,7 @@
                     mirrorPlane.rotation.y = Math.PI/2;
                     group.add(mirrorPlane);
                     
-                    descText = `区域关于y轴对称: D关于y轴(本文x=1.5)对称，被积函数关于x为偶函数 ⇒ 积分＝2倍半区积分 (偶倍)；若为奇函数⇒积分＝0 (奇零)。`;
+                    descText = `区域关于y轴对称: D关于y轴对称，被积函数关于x为偶函数 ⇒ 积分＝2倍半区积分 (偶倍)；若为奇函数⇒积分＝0 (奇零)。`;
                 } else {
                     const cyclicFunc = funcs.cyclicFunc;
                     group = createHighQualityPrism(cyclicFunc, 0x99ccff, 0.7, 98);
