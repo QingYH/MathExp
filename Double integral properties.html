@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>二重积分性质 | 数形结合 · 曲面精准嵌入</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', 'Segoe UI', 'Roboto', sans-serif;
+        }
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(10, 18, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 14px 24px;
+            color: #f0f5ff;
+            pointer-events: none;
+            z-index: 10;
+            border-left: 5px solid #66ccff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            font-size: 14px;
+            max-width: 520px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        .info-panel h1 {
+            margin: 0 0 8px;
+            font-size: 1.28rem;
+            font-weight: 500;
+        }
+        .prop-math {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.02rem;
+            background: rgba(0,0,0,0.45);
+            padding: 5px 12px;
+            border-radius: 12px;
+            margin: 8px 0 4px;
+            color: #ccddff;
+            word-break: break-word;
+            font-style: italic;
+            line-height: 1.6;
+        }
+        .info-panel p {
+            margin: 6px 0 0;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+        .property-title {
+            font-weight: bold;
+            color: #88ccff;
+        }
+        .controls {
+            position: absolute;
+            bottom: 22px;
+            right: 22px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(12px);
+            border-radius: 44px;
+            padding: 12px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 10px;
+            z-index: 20;
+            pointer-events: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 90vw;
+        }
+        button {
+            background: rgba(35, 45, 65, 0.9);
+            border: none;
+            color: #eef5ff;
+            padding: 8px 18px;
+            border-radius: 36px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.08);
+            letter-spacing: 0.5px;
+        }
+        button.active {
+            background: #66ccff;
+            color: #0a1220;
+            box-shadow: 0 0 14px rgba(102,204,255,0.7);
+            border-color: #ffffffaa;
+        }
+        button:hover {
+            background: #88ddff;
+            color: #0a1220;
+            transform: scale(1.02);
+        }
+        .slider-container, .interact-bar {
+            background: rgba(20, 30, 45, 0.85);
+            border-radius: 40px;
+            padding: 6px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: #cceeff;
+            backdrop-filter: blur(4px);
+        }
+        input {
+            width: 130px;
+            cursor: pointer;
+            background: #2a3a55;
+            accent-color: #66ccff;
+            border-radius: 10px;
+        }
+        .status-note {
+            position: absolute;
+            bottom: 22px;
+            left: 22px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 28px;
+            padding: 6px 16px;
+            font-size: 12px;
+            color: #ccddee;
+            pointer-events: none;
+            z-index: 10;
+            font-family: monospace;
+            backdrop-filter: blur(5px);
+        }
+        @media (max-width: 780px) {
+            .controls { gap: 8px; padding: 10px 14px; }
+            button { padding: 6px 12px; font-size: 10px; }
+            .slider-container { gap: 6px; padding: 4px 10px; }
+            input { width: 90px; }
+            .info-panel { font-size: 11px; max-width: 300px; padding: 12px 16px; }
+            .prop-math { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="info-panel">
+        <h1>📐 二重积分 · 光滑曲顶柱体</h1>
+        <div class="prop-math" id="mathExpr">∬<sub>D</sub> (c₁f₁ + c₂f₂) dσ = c₁∬<sub>D</sub> f₁ dσ + c₂∬<sub>D</sub> f₂ dσ</div>
+        <p><span id="propName" class="property-title">线性性</span> — <span id="propDesc">系数调节，体积线性叠加</span></p>
+    </div>
+    <div class="controls">
+        <button id="btnLinear" class="active">📊 线性性</button>
+        <button id="btnAdditivity">🧩 可加性</button>
+        <button id="btnOrder">📈 保序性</button>
+        <button id="btnMaxMin">⚖️ 最值性</button>
+        <button id="btnMean">🎯 中值性</button>
+        <button id="btnSymmetry">🔄 区域对称性</button>
+        <div id="dynamicSlider" style="display: flex; gap: 8px; align-items: center;"></div>
+    </div>
+    <div class="status-note">✨ 自由拖拽旋转 | 高精曲面 | 平面精准嵌入柱体内部 | 无闪烁连续</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // --- 高性能场景设置 ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a1022);
+        scene.fog = new THREE.FogExp2(0x0a1022, 0.0018);
+
+        const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(5.2, 5.0, 6.5);
+        camera.lookAt(1.5, 1.8, 1.5);
+
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: false, 
+            powerPreference: "high-performance",
+            preserveDrawingBuffer: false,
+            stencil: false,
+            depth: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        document.body.appendChild(renderer.domElement);
+
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.rotateSpeed = 0.9;
+        controls.zoomSpeed = 1.2;
+        controls.enablePan = true;
+        controls.target.set(1.5, 1.8, 1.5);
+        controls.maxPolarAngle = Math.PI / 1.85;
+        controls.minDistance = 3.5;
+        controls.maxDistance = 15;
+
+        // 辅助装饰
+        const gridHelper = new THREE.GridHelper(7, 24, 0xaaccff, 0x4477aa);
+        gridHelper.position.y = -0.02;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.25;
+        scene.add(gridHelper);
+        
+        const axesHelper = new THREE.AxesHelper(4.0);
+        axesHelper.material.transparent = true;
+        axesHelper.material.opacity = 0.15;
+        scene.add(axesHelper);
+        
+        // 光照
+        const ambientLight = new THREE.AmbientLight(0x5a6e8a, 0.7);
+        scene.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xfff5ea, 1.0);
+        mainLight.position.set(3.2, 6.0, 2.8);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.width = 1024;
+        mainLight.shadow.mapSize.height = 1024;
+        mainLight.shadow.bias = -0.0002;
+        mainLight.shadow.normalBias = 0.02;
+        scene.add(mainLight);
+        const fillLight = new THREE.PointLight(0x88aaff, 0.5);
+        fillLight.position.set(1.8, 3.5, 2.0);
+        scene.add(fillLight);
+        const warmFill = new THREE.PointLight(0xffccaa, 0.45);
+        warmFill.position.set(2.0, 2.5, 3.0);
+        scene.add(warmFill);
+        const backFill = new THREE.PointLight(0x99bbff, 0.35);
+        backFill.position.set(-0.8, 2.2, -1.2);
+        scene.add(backFill);
+
+        const xMin = 0, xMax = 3, zMin = 0, zMax = 3;
+        
+        // 函数库
+        const funcs = {
+            f1: (x, z) => 1.25 + 0.3 * Math.sin(x * 1.25) * Math.cos(z * 1.15) + 0.07 * x,
+            f2: (x, z) => 0.98 + 0.38 * x + 0.15 * z,
+            g_large: (x, z) => 1.72 + 0.22 * Math.sin(x * 1.3) * Math.sin(z * 1.3) + 0.09 * x,
+            f_small: (x, z) => 0.92 + 0.08 * x + 0.05 * z,
+            maxminFunc: (x, z) => {
+                const cx = 1.5, cz = 1.5;
+                const r2 = (x-cx)**2 + (z-cz)**2;
+                return 1.08 + 0.68 * Math.exp(-r2 / 4.0) + 0.1 * Math.sin(x*1.4) * Math.cos(z*1.4);
+            },
+            meanFunc: (x, z) => {
+                const cx = 1.3, cz = 1.6;
+                const r2 = (x-cx)**2 + (z-cz)**2;
+                return 1.12 + 0.58 * Math.exp(-r2 / 3.3) + 0.13 * Math.cos((x-1.5)*1.25) * Math.sin((z-1.5)*1.25);
+            },
+            // 关于x轴对称的偶函数：f(x, -z) = f(x, z) ，在区域[0,3]中体现为关于z=1.5对称
+            symmetricAboutXAxisFunc: (x, z) => {
+                const centeredZ = z - 1.5;
+                return 1.4 + 0.5 * Math.cos(x * 1.1) * Math.cos(centeredZ * 1.3);
+            },
+            // 关于y轴对称的偶函数：f(-x, z) = f(x, z) ，在区域[0,3]中体现为关于x=1.5对称
+            symmetricAboutYAxisFunc: (x, z) => {
+                const centeredX = x - 1.5;
+                return 1.35 + 0.45 * Math.cos(centeredX * 1.2) * Math.cos((z-1.5) * 1.2);
+            },
+            // 轮换对称函数：f(x,z) = f(z,x)
+            cyclicFunc: (x, z) => {
+                return 1.3 + 0.4 * Math.sin(x * 1.5) * Math.sin(z * 1.5) + 0.1 * (x + z);
+            }
+        };
+        
+        let currentProperty = 'linear';
+        let currentSurfaceGroup = null;
+        let c1 = 1.0, c2 = 0.7;
+        let splitPosition = 1.5;
+        let symmetryMode = 'yAxis'; // 'xAxis' 关于x轴对称, 'yAxis' 关于y轴对称, 'cyclic' 轮换对称
+        
+        function createHighQualityPrism(heightFunc, colorHex = 0x77ccff, opacityVal = 0.7, subdivisions = 98) {
+            const group = new THREE.Group();
+            const stepX = (xMax - xMin) / subdivisions;
+            const stepZ = (zMax - zMin) / subdivisions;
+            const vertices = [];
+            const indices = [];
+            const gridPoints = [];
+            
+            for (let i = 0; i <= subdivisions; i++) {
+                const x = xMin + i * stepX;
+                const row = [];
+                for (let j = 0; j <= subdivisions; j++) {
+                    const z = zMin + j * stepZ;
+                    const y = heightFunc(x, z);
+                    vertices.push(x, y, z);
+                    row.push(vertices.length / 3 - 1);
+                }
+                gridPoints.push(row);
+            }
+            
+            for (let i = 0; i < subdivisions; i++) {
+                for (let j = 0; j < subdivisions; j++) {
+                    const a = gridPoints[i][j];
+                    const b = gridPoints[i+1][j];
+                    const c = gridPoints[i+1][j+1];
+                    const d = gridPoints[i][j+1];
+                    indices.push(a, b, c);
+                    indices.push(a, c, d);
+                }
+            }
+            
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+            
+            const surfaceMat = new THREE.MeshStandardMaterial({
+                color: colorHex,
+                transparent: true,
+                opacity: opacityVal,
+                side: THREE.DoubleSide,
+                roughness: 0.4,
+                metalness: 0.05,
+                emissive: new THREE.Color(0x112233),
+                emissiveIntensity: 0.04,
+                depthWrite: true,
+                depthTest: true
+            });
+            const surface = new THREE.Mesh(geometry, surfaceMat);
+            surface.castShadow = true;
+            surface.receiveShadow = true;
+            surface.renderOrder = 1;
+            group.add(surface);
+            
+            const wallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x88aacc, 
+                transparent: true, 
+                opacity: opacityVal * 0.45, 
+                side: THREE.DoubleSide,
+                depthWrite: true,
+                depthTest: true
+            });
+            const wallSteps = 72;
+            function addWall(points3D) {
+                const wallVerts = [];
+                points3D.forEach(p => wallVerts.push(p.x, p.y, p.z));
+                const wallIndices = [];
+                for (let i = 0; i < (points3D.length / 2) - 1; i++) {
+                    const i1 = i*2, i2 = i*2+1, i3 = (i+1)*2, i4 = (i+1)*2+1;
+                    wallIndices.push(i1, i2, i3, i2, i4, i3);
+                }
+                const wallGeo = new THREE.BufferGeometry();
+                wallGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(wallVerts), 3));
+                wallGeo.setIndex(wallIndices);
+                wallGeo.computeVertexNormals();
+                const wallMesh = new THREE.Mesh(wallGeo, wallMaterial);
+                wallMesh.renderOrder = 2;
+                group.add(wallMesh);
+            }
+            
+            const left = [], right = [], front = [], back = [];
+            for (let k = 0; k <= wallSteps; k++) {
+                const z = zMin + (k / wallSteps) * (zMax - zMin);
+                const yL = heightFunc(xMin, z);
+                const yR = heightFunc(xMax, z);
+                left.push(new THREE.Vector3(xMin, 0, z), new THREE.Vector3(xMin, yL, z));
+                right.push(new THREE.Vector3(xMax, 0, z), new THREE.Vector3(xMax, yR, z));
+            }
+            for (let k = 0; k <= wallSteps; k++) {
+                const x = xMin + (k / wallSteps) * (xMax - xMin);
+                const yF = heightFunc(x, zMin);
+                const yB = heightFunc(x, zMax);
+                front.push(new THREE.Vector3(x, 0, zMin), new THREE.Vector3(x, yF, zMin));
+                back.push(new THREE.Vector3(x, 0, zMax), new THREE.Vector3(x, yB, zMax));
+            }
+            addWall(left); addWall(right); addWall(front); addWall(back);
+            
+            const bottomPlane = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshStandardMaterial({ color: 0x88aacc, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthWrite: true }));
+            bottomPlane.rotation.x = -Math.PI/2;
+            bottomPlane.position.set(1.5, 0.008, 1.5);
+            bottomPlane.renderOrder = 3;
+            group.add(bottomPlane);
+            return group;
+        }
+        
+        function createAdditivityWithSplitPlane(heightFunc, splitX, subdivisions = 96) {
+            const group = new THREE.Group();
+            const stepX = (xMax - xMin) / subdivisions;
+            const stepZ = (zMax - zMin) / subdivisions;
+            
+            const leftVertices = [], rightVertices = [];
+            const leftIndices = [], rightIndices = [];
+            const leftGrid = [], rightGrid = [];
+            
+            for (let i = 0; i <= subdivisions; i++) {
+                const x = xMin + i * stepX;
+                const leftRow = [], rightRow = [];
+                for (let j = 0; j <= subdivisions; j++) {
+                    const z = zMin + j * stepZ;
+                    const y = heightFunc(x, z);
+                    if (x <= splitX + 1e-9) {
+                        leftVertices.push(x, y, z);
+                        leftRow.push(leftVertices.length / 3 - 1);
+                    } 
+                    if (x >= splitX - 1e-9) {
+                        rightVertices.push(x, y, z);
+                        rightRow.push(rightVertices.length / 3 - 1);
+                    }
+                }
+                if (x <= splitX) leftGrid.push(leftRow);
+                if (x >= splitX) rightGrid.push(rightRow);
+            }
+            
+            function buildSubMesh(vertices, indicesArr, color) {
+                if (vertices.length === 0) return null;
+                const geom = new THREE.BufferGeometry();
+                geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+                geom.setIndex(indicesArr);
+                geom.computeVertexNormals();
+                const mat = new THREE.MeshStandardMaterial({ color: color, transparent: true, opacity: 0.75, side: THREE.DoubleSide, roughness: 0.4, depthWrite: true });
+                const mesh = new THREE.Mesh(geom, mat);
+                mesh.renderOrder = 1;
+                return mesh;
+            }
+            
+            for (let i = 0; i < leftGrid.length - 1; i++) {
+                for (let j = 0; j < leftGrid[i].length - 1; j++) {
+                    const a = leftGrid[i][j], b = leftGrid[i+1][j], c = leftGrid[i+1][j+1], d = leftGrid[i][j+1];
+                    leftIndices.push(a, b, c, a, c, d);
+                }
+            }
+            for (let i = 0; i < rightGrid.length - 1; i++) {
+                for (let j = 0; j < rightGrid[i].length - 1; j++) {
+                    const a = rightGrid[i][j], b = rightGrid[i+1][j], c = rightGrid[i+1][j+1], d = rightGrid[i][j+1];
+                    rightIndices.push(a, b, c, a, c, d);
+                }
+            }
+            const leftMesh = buildSubMesh(leftVertices, leftIndices, 0x77aaff);
+            const rightMesh = buildSubMesh(rightVertices, rightIndices, 0xffaa88);
+            if (leftMesh) group.add(leftMesh);
+            if (rightMesh) group.add(rightMesh);
+            
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x88aacc, transparent: true, opacity: 0.4, depthWrite: true });
+            function addBoundaryWalls(points) {
+                const verts = [];
+                points.forEach(p => verts.push(p.x, p.y, p.z));
+                const idxs = [];
+                for (let i=0; i<(points.length/2)-1; i++) {
+                    idxs.push(i*2, i*2+1, (i+1)*2, i*2+1, (i+1)*2+1, (i+1)*2);
+                }
+                const geom = new THREE.BufferGeometry();
+                geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(verts), 3));
+                geom.setIndex(idxs);
+                const wallMesh = new THREE.Mesh(geom, wallMat);
+                wallMesh.renderOrder = 2;
+                group.add(wallMesh);
+            }
+            const stepsW = 70;
+            const leftWall=[], rightWall=[], frontWall=[], backWall=[];
+            for (let k=0;k<=stepsW;k++) {
+                const z = zMin + (k/stepsW)*(zMax-zMin);
+                const yL = heightFunc(xMin,z), yR = heightFunc(xMax,z);
+                leftWall.push(new THREE.Vector3(xMin,0,z), new THREE.Vector3(xMin,yL,z));
+                rightWall.push(new THREE.Vector3(xMax,0,z), new THREE.Vector3(xMax,yR,z));
+            }
+            for (let k=0;k<=stepsW;k++) {
+                const x = xMin + (k/stepsW)*(xMax-xMin);
+                const yF = heightFunc(x,zMin), yB = heightFunc(x,zMax);
+                frontWall.push(new THREE.Vector3(x,0,zMin), new THREE.Vector3(x,yF,zMin));
+                backWall.push(new THREE.Vector3(x,0,zMax), new THREE.Vector3(x,yB,zMax));
+            }
+            addBoundaryWalls(leftWall); addBoundaryWalls(rightWall); addBoundaryWalls(frontWall); addBoundaryWalls(backWall);
+            
+            const bottom = new THREE.Mesh(new THREE.PlaneGeometry(3,3), new THREE.MeshStandardMaterial({ color: 0x88aacc, transparent: true, opacity: 0.15, side: THREE.DoubleSide, depthWrite: true }));
+            bottom.rotation.x = -Math.PI/2;
+            bottom.position.set(1.5, 0.008, 1.5);
+            bottom.renderOrder = 3;
+            group.add(bottom);
+            
+            const splitLinePoints = [];
+            const stepZsplit = (zMax - zMin) / 120;
+            for (let z = zMin; z <= zMax + 1e-6; z += stepZsplit) {
+                const yOnCurve = heightFunc(splitX, z);
+                splitLinePoints.push(new THREE.Vector3(splitX, yOnCurve, z));
+            }
+            
+            const planeVertices = [];
+            const planeIndices = [];
+            for (let i = 0; i < splitLinePoints.length; i++) {
+                const pt = splitLinePoints[i];
+                planeVertices.push(splitX, 0, pt.z);
+                planeVertices.push(pt.x, pt.y, pt.z);
+            }
+            for (let i = 0; i < splitLinePoints.length - 1; i++) {
+                const baseIdx = i * 2;
+                planeIndices.push(baseIdx, baseIdx+1, baseIdx+2);
+                planeIndices.push(baseIdx+1, baseIdx+3, baseIdx+2);
+            }
+            const splitPlaneGeom = new THREE.BufferGeometry();
+            splitPlaneGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(planeVertices), 3));
+            splitPlaneGeom.setIndex(planeIndices);
+            splitPlaneGeom.computeVertexNormals();
+            const splitPlaneMat = new THREE.MeshPhongMaterial({ color: 0xffdd99, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: true });
+            const splitPlaneMesh = new THREE.Mesh(splitPlaneGeom, splitPlaneMat);
+            splitPlaneMesh.renderOrder = 4;
+            group.add(splitPlaneMesh);
+            
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints(splitLinePoints);
+            const splitCurveLine = new THREE.Line(lineGeometry, new THREE.LineBasicMaterial({ color: 0xffcc66 }));
+            group.add(splitCurveLine);
+            
+            return group;
+        }
+        
+        function getExactMinMax(func, samples=85) {
+            let minV = Infinity, maxV = -Infinity;
+            for (let i=0;i<=samples;i++) {
+                const x = xMin + (i/samples)*3;
+                for (let j=0;j<=samples;j++) {
+                    const z = zMin + (j/samples)*3;
+                    const val = func(x,z);
+                    if (val < minV) minV = val;
+                    if (val > maxV) maxV = val;
+                }
+            }
+            return { min: minV, max: maxV };
+        }
+        
+        function updateMathExpression(prop) {
+            const mathSpan = document.getElementById('mathExpr');
+            if (prop === 'linear') {
+                mathSpan.innerHTML = `∬<sub>D</sub> (c₁f₁ + c₂f₂) dσ = c₁∬<sub>D</sub> f₁ dσ + c₂∬<sub>D</sub> f₂ dσ  &nbsp;&nbsp; (c₁=${c1.toFixed(2)}, c₂=${c2.toFixed(2)})`;
+            } else if (prop === 'additivity') {
+                mathSpan.innerHTML = `∬<sub>D₁∪D₂</sub> f dσ = ∬<sub>D₁</sub> f dσ + ∬<sub>D₂</sub> f dσ &nbsp; (D₁: x ≤ ${splitPosition.toFixed(2)})`;
+            } else if (prop === 'order') {
+                mathSpan.innerHTML = `f(x,y) ≤ g(x,y) ⇒ ∬<sub>D</sub> f dσ ≤ ∬<sub>D</sub> g dσ`;
+            } else if (prop === 'maxmin') {
+                mathSpan.innerHTML = `m·A ≤ ∬<sub>D</sub> f dσ ≤ M·A &nbsp; (m = min f, M = max f)`;
+            } else if (prop === 'mean') {
+                mathSpan.innerHTML = `∃(ξ,η)∈D, f(ξ,η) = <sup>1</sup>&frasl;<sub>A</sub> ∬<sub>D</sub> f dσ &nbsp; (中值定理)`;
+            } else if (prop === 'symmetry') {
+                if (symmetryMode === 'xAxis') {
+                    mathSpan.innerHTML = `
+                        <div>📌 区域关于x轴对称 (本文体现为z=1.5)</div>
+                        D关于x轴对称，f关于z为偶函数 ⇒ ∬<sub>D</sub> f dσ = 2∬<sub>D₁</sub> f dσ <br>
+                        f关于z为奇函数 ⇒ ∬<sub>D</sub> f dσ = 0
+                    `;
+                } else if (symmetryMode === 'yAxis') {
+                    mathSpan.innerHTML = `
+                        <div>📌 区域关于y轴对称 (本文体现为x=1.5)</div>
+                        D关于y轴对称，f关于x为偶函数 ⇒ ∬<sub>D</sub> f dσ = 2∬<sub>D₁</sub> f dσ <br>
+                        f关于x为奇函数 ⇒ ∬<sub>D</sub> f dσ = 0
+                    `;
+                } else {
+                    mathSpan.innerHTML = `
+                        <div>📌 轮换对称性</div>
+                        D关于y=x对称 <br>
+                        ⇒ ∬<sub>D</sub> f(x,y) dxdy = ∬<sub>D</sub> f(y,x) dxdy
+                    `;
+                }
+            }
+        }
+        
+        function updateVisualization() {
+            if (currentSurfaceGroup) {
+                scene.remove(currentSurfaceGroup);
+                if (currentSurfaceGroup.children) {
+                    currentSurfaceGroup.children.forEach(child => {
+                        if (child.geometry) child.geometry.dispose();
+                        if (child.material) {
+                            if (Array.isArray(child.material)) child.material.forEach(m => m.dispose());
+                            else child.material.dispose();
+                        }
+                    });
+                }
+            }
+            
+            let group = new THREE.Group();
+            let descText = "";
+            let sliderHtml = "";
+            const sliderDiv = document.getElementById('dynamicSlider');
+            updateMathExpression(currentProperty);
+            
+            if (currentProperty === 'linear') {
+                const combined = (x,z) => c1 * funcs.f1(x,z) + c2 * funcs.f2(x,z);
+                group = createHighQualityPrism(combined, 0x77ccff, 0.72, 98);
+                descText = `线性组合: 体积随系数连续变化，体现叠加原理。`;
+                sliderHtml = `
+                    <div class="slider-container"><span>🔵 c₁</span><input type="range" id="c1Slider" min="0" max="1.8" step="0.01" value="${c1}"></div>
+                    <div class="slider-container"><span>🟠 c₂</span><input type="range" id="c2Slider" min="0" max="1.8" step="0.01" value="${c2}"></div>
+                `;
+            } 
+            else if (currentProperty === 'additivity') {
+                const funcAdd = (x,z) => 1.22 + 0.28 * Math.sin(x * 1.28) * Math.cos(z * 1.2) + 0.09 * x;
+                group = createAdditivityWithSplitPlane(funcAdd, splitPosition, 94);
+                descText = `区域分割: 整体积分 = 左子域 + 右子域，分割平面动态贴合曲面脊线。`;
+                sliderHtml = `
+                    <div class="interact-bar">
+                        <span>✂️ 分割线 x = </span>
+                        <input type="range" id="splitSlider" min="0.6" max="2.4" step="0.02" value="${splitPosition}">
+                        <span id="splitValue" style="min-width: 42px;">${splitPosition.toFixed(2)}</span>
+                    </div>
+                `;
+            }
+            else if (currentProperty === 'order') {
+                const largeGroup = createHighQualityPrism(funcs.g_large, 0xffaa99, 0.55, 96);
+                const smallGroup = createHighQualityPrism(funcs.f_small, 0x88ddcc, 0.72, 96);
+                group.add(largeGroup);
+                group.add(smallGroup);
+                descText = `保序性: 对任意 (x,z) 有 f_small ≤ g_large ⇒ 积分值关系一致。`;
+                sliderHtml = `<div class="slider-container"><span>📊 f ≤ g  ⇒  ∬f ≤ ∬g</span></div>`;
+            }
+            else if (currentProperty === 'maxmin') {
+                const funcMM = funcs.maxminFunc;
+                group = createHighQualityPrism(funcMM, 0x77ccff, 0.68, 98);
+                const { min: rawMin, max: rawMax } = getExactMinMax(funcMM, 85);
+                const planeWidth = 2.97, planeDepth = 2.97;
+                const planeMatMin = new THREE.MeshStandardMaterial({ color: 0x88aaff, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: true });
+                const planeMin = new THREE.Mesh(new THREE.PlaneGeometry(planeWidth, planeDepth), planeMatMin);
+                planeMin.rotation.x = -Math.PI/2;
+                planeMin.position.set(1.5, rawMin, 1.5);
+                const planeMatMax = new THREE.MeshStandardMaterial({ color: 0xffaa88, transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: true });
+                const planeMax = new THREE.Mesh(new THREE.PlaneGeometry(planeWidth, planeDepth), planeMatMax);
+                planeMax.rotation.x = -Math.PI/2;
+                planeMax.position.set(1.5, rawMax, 1.5);
+                group.add(planeMin);
+                group.add(planeMax);
+                const edgesMin = new THREE.EdgesGeometry(planeMin.geometry);
+                const wireMin = new THREE.LineSegments(edgesMin, new THREE.LineBasicMaterial({ color: 0xaaddff }));
+                wireMin.position.copy(planeMin.position); wireMin.rotation.copy(planeMin.rotation);
+                const edgesMax = new THREE.EdgesGeometry(planeMax.geometry);
+                const wireMax = new THREE.LineSegments(edgesMax, new THREE.LineBasicMaterial({ color: 0xffccaa }));
+                wireMax.position.copy(planeMax.position); wireMax.rotation.copy(planeMax.rotation);
+                group.add(wireMin, wireMax);
+                descText = `最值性: 最小值平面(蓝)与最大值平面(橙)嵌入柱体，m·A ≤ 积分 ≤ M·A。`;
+                sliderHtml = `<div class="slider-container"><span>⚖️ m≈${rawMin.toFixed(2)} &nbsp; M≈${rawMax.toFixed(2)}</span></div>`;
+            }
+            else if (currentProperty === 'mean') {
+                const funcMean = funcs.meanFunc;
+                group = createHighQualityPrism(funcMean, 0x77ccff, 0.7, 98);
+                let sum = 0, cnt = 0;
+                const samples = 96;
+                for (let i=0;i<=samples;i++) {
+                    const x = xMin + (i/samples)*3;
+                    for (let j=0;j<=samples;j++) {
+                        const z = zMin + (j/samples)*3;
+                        sum += funcMean(x,z);
+                        cnt++;
+                    }
+                }
+                const avgH = sum / cnt;
+                const avgPlaneMat = new THREE.MeshStandardMaterial({ color: 0xffcc99, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: true });
+                const avgPlane = new THREE.Mesh(new THREE.PlaneGeometry(2.97, 2.97), avgPlaneMat);
+                avgPlane.rotation.x = -Math.PI/2;
+                avgPlane.position.set(1.5, avgH, 1.5);
+                group.add(avgPlane);
+                const edgesAvg = new THREE.EdgesGeometry(avgPlane.geometry);
+                const wireAvg = new THREE.LineSegments(edgesAvg, new THREE.LineBasicMaterial({ color: 0xffcc88 }));
+                wireAvg.position.copy(avgPlane.position); wireAvg.rotation.copy(avgPlane.rotation);
+                group.add(wireAvg);
+                const sphereMarker = new THREE.Mesh(new THREE.SphereGeometry(0.095, 32, 32), new THREE.MeshStandardMaterial({ color: 0xffaa77, emissive: 0x552200 }));
+                sphereMarker.position.set(1.5, avgH, 1.5);
+                group.add(sphereMarker);
+                descText = `中值性: 存在点使得函数值等于平均高度 ≈ ${avgH.toFixed(3)}。`;
+                sliderHtml = `<div class="slider-container"><span>🎯 平均高度 ${avgH.toFixed(3)}</span></div>`;
+            }
+            else if (currentProperty === 'symmetry') {
+                if (symmetryMode === 'xAxis') {
+                    const symFunc = funcs.symmetricAboutXAxisFunc;
+                    group = createHighQualityPrism(symFunc, 0x99ccff, 0.7, 98);
+                    
+                    // x轴对称轴 (在区域[0,3]中体现为z=1.5的水平线)
+                    const axisPoints = [];
+                    for (let x = 0; x <= 3; x += 0.08) {
+                        const y = symFunc(x, 1.5);
+                        axisPoints.push(new THREE.Vector3(x, y + 0.1, 1.5));
+                    }
+                    const axisGeo = new THREE.BufferGeometry().setFromPoints(axisPoints);
+                    const symAxisLine = new THREE.Line(axisGeo, new THREE.LineBasicMaterial({ color: 0xff88cc }));
+                    group.add(symAxisLine);
+                    
+                    // 对称平面 (垂直于z轴，位于z=1.5)
+                    const mirrorPlane = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2), new THREE.MeshPhongMaterial({ color: 0xffaaff, transparent: true, opacity: 0.2, side: THREE.DoubleSide }));
+                    mirrorPlane.position.set(1.5, 1.75, 1.5);
+                    mirrorPlane.rotation.y = 0; // 平面法线指向z
+                    group.add(mirrorPlane);
+                    
+                    descText = `区域关于x轴对称: D关于x轴(本文z=1.5)对称，被积函数关于z为偶函数 ⇒ 积分＝2倍半区积分 (偶倍)；若为奇函数⇒积分＝0 (奇零)。`;
+                } else if (symmetryMode === 'yAxis') {
+                    const symFunc = funcs.symmetricAboutYAxisFunc;
+                    group = createHighQualityPrism(symFunc, 0x99ccff, 0.7, 98);
+                    
+                    // y轴对称轴 (在区域[0,3]中体现为x=1.5)
+                    const axisPoints = [];
+                    for (let z = 0; z <= 3; z += 0.08) {
+                        const y = symFunc(1.5, z);
+                        axisPoints.push(new THREE.Vector3(1.5, y + 0.1, z));
+                    }
+                    const axisGeo = new THREE.BufferGeometry().setFromPoints(axisPoints);
+                    const symAxisLine = new THREE.Line(axisGeo, new THREE.LineBasicMaterial({ color: 0xff88cc }));
+                    group.add(symAxisLine);
+                    
+                    // 对称平面 (垂直于x轴，位于x=1.5)
+                    const mirrorPlane = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2), new THREE.MeshPhongMaterial({ color: 0xffaaff, transparent: true, opacity: 0.2, side: THREE.DoubleSide }));
+                    mirrorPlane.position.set(1.5, 1.75, 1.5);
+                    mirrorPlane.rotation.y = Math.PI/2;
+                    group.add(mirrorPlane);
+                    
+                    descText = `区域关于y轴对称: D关于y轴(本文x=1.5)对称，被积函数关于x为偶函数 ⇒ 积分＝2倍半区积分 (偶倍)；若为奇函数⇒积分＝0 (奇零)。`;
+                } else {
+                    const cyclicFunc = funcs.cyclicFunc;
+                    group = createHighQualityPrism(cyclicFunc, 0x99ccff, 0.7, 98);
+                    
+                    // y=x对角线
+                    const diagPoints = [];
+                    for (let t = 0; t <= 3; t += 0.05) {
+                        diagPoints.push(new THREE.Vector3(t, cyclicFunc(t, t) + 0.15, t));
+                    }
+                    const diagGeo = new THREE.BufferGeometry().setFromPoints(diagPoints);
+                    const diagLine = new THREE.Line(diagGeo, new THREE.LineBasicMaterial({ color: 0xff88cc }));
+                    group.add(diagLine);
+                    
+                    // 对角线平面
+                    const diagPlane = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 3.2), new THREE.MeshPhongMaterial({ color: 0xffaaff, transparent: true, opacity: 0.2, side: THREE.DoubleSide }));
+                    diagPlane.position.set(1.5, 1.75, 1.5);
+                    diagPlane.rotation.y = Math.PI/4;
+                    group.add(diagPlane);
+                    
+                    descText = `轮换对称性: D关于y=x对称，f(x,y)满足轮换对称 ⇒ ∬_D f(x,y) dxdy = ∬_D f(y,x) dxdy。`;
+                }
+                
+                sliderHtml = `
+                    <button id="btnXAxisMode" class="${symmetryMode === 'xAxis' ? 'active' : ''}" style="padding:6px 14px;">关于x轴对称</button>
+                    <button id="btnYAxisMode" class="${symmetryMode === 'yAxis' ? 'active' : ''}" style="padding:6px 14px;">关于y轴对称</button>
+                    <button id="btnCyclicMode" class="${symmetryMode === 'cyclic' ? 'active' : ''}" style="padding:6px 14px;">轮换对称性</button>
+                `;
+            }
+            
+            currentSurfaceGroup = group;
+            scene.add(currentSurfaceGroup);
+            document.getElementById('propName').innerHTML = document.getElementById(`btn${currentProperty.charAt(0).toUpperCase()+currentProperty.slice(1)}`)?.innerText || currentProperty;
+            document.getElementById('propDesc').innerHTML = descText;
+            
+            if (sliderDiv) {
+                sliderDiv.innerHTML = sliderHtml;
+                if (currentProperty === 'linear') {
+                    document.getElementById('c1Slider')?.addEventListener('input', (e) => { c1 = parseFloat(e.target.value); updateVisualization(); });
+                    document.getElementById('c2Slider')?.addEventListener('input', (e) => { c2 = parseFloat(e.target.value); updateVisualization(); });
+                } else if (currentProperty === 'additivity') {
+                    const splitSlider = document.getElementById('splitSlider');
+                    const splitSpan = document.getElementById('splitValue');
+                    if (splitSlider) {
+                        splitSlider.addEventListener('input', (e) => {
+                            splitPosition = parseFloat(e.target.value);
+                            if (splitSpan) splitSpan.innerText = splitPosition.toFixed(2);
+                            updateVisualization();
+                        });
+                    }
+                } else if (currentProperty === 'symmetry') {
+                    document.getElementById('btnXAxisMode')?.addEventListener('click', () => {
+                        symmetryMode = 'xAxis';
+                        updateVisualization();
+                    });
+                    document.getElementById('btnYAxisMode')?.addEventListener('click', () => {
+                        symmetryMode = 'yAxis';
+                        updateVisualization();
+                    });
+                    document.getElementById('btnCyclicMode')?.addEventListener('click', () => {
+                        symmetryMode = 'cyclic';
+                        updateVisualization();
+                    });
+                }
+            }
+        }
+        
+        function setProperty(prop) {
+            currentProperty = prop;
+            ['Linear','Additivity','Order','MaxMin','Mean','Symmetry'].forEach(p => {
+                document.getElementById(`btn${p}`)?.classList.remove('active');
+            });
+            document.getElementById(`btn${prop.charAt(0).toUpperCase()+prop.slice(1)}`)?.classList.add('active');
+            if (prop === 'symmetry') symmetryMode = 'yAxis';
+            updateVisualization();
+        }
+        
+        document.getElementById('btnLinear').addEventListener('click', () => setProperty('linear'));
+        document.getElementById('btnAdditivity').addEventListener('click', () => setProperty('additivity'));
+        document.getElementById('btnOrder').addEventListener('click', () => setProperty('order'));
+        document.getElementById('btnMaxMin').addEventListener('click', () => setProperty('maxmin'));
+        document.getElementById('btnMean').addEventListener('click', () => setProperty('mean'));
+        document.getElementById('btnSymmetry').addEventListener('click', () => setProperty('symmetry'));
+        
+        updateVisualization();
+        
+        // 星空背景
+        const starGeo = new THREE.BufferGeometry();
+        const starCount = 2200;
+        const starPos = [];
+        for(let i=0;i<starCount;i++) {
+            starPos.push((Math.random() - 0.5) * 280);
+            starPos.push((Math.random() - 0.5) * 160);
+            starPos.push((Math.random() - 0.5) * 140 - 60);
+        }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starPos), 3));
+        const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.055, transparent: true }));
+        scene.add(stars);
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            stars.rotation.y += 0.0002;
+            
+            renderer.clear();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
