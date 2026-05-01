@@ -398,7 +398,7 @@
             return label;
         }
         
-        const labelIntegralZ = makeStaticLabel("∫<sub>z₁</sub><sup>z₂</sup> ρ(x₀, y, z) d<i>z</i>  ( 先一：薯条质量 )", new THREE.Vector3(fryX + 1.62, 2.28, fryZ + 0.85), "0.85rem", 0.75);
+        const labelIntegralZ = makeStaticLabel("∫<sub>z₁</sub><sup>z₂</sup> ρ(x₀, y₀, z) d<i>z</i>  ( 先一：薯条质量 )", new THREE.Vector3(fryX + 1.62, 2.28, fryZ + 0.85), "0.85rem", 0.75);
         const labelDoubleIntegral = makeStaticLabel("∬<sub>D</sub> [ ∫ ρ d<i>z</i> ] dσ  ( 后二：投影区域二重积分 )", new THREE.Vector3(3.0, -0.18, 2.08), "0.85rem", 0.75);
         const labelFryHint = makeStaticLabel("🍟 抽出的薯条 → 竖向积分得质量微元", new THREE.Vector3(fryX + 1.18, 1.58, fryZ + 1.05), "0.8rem", 0.7);
         const labelPressHint = makeStaticLabel("⬇️ 土豆压扁至区域 D → 二重积分求和", new THREE.Vector3(2.38, -0.72, 1.82), "0.8rem", 0.7);
@@ -584,7 +584,7 @@
             labelRenderer.setSize(window.innerWidth, window.innerHeight);
         });
         
-        console.log("三重积分演示 - 土豆表面斑点纹理，逼真表皮，标题居中，无多余标记");
+        console.log("三重积分演示 - 土豆表面斑点纹理，逼真表皮");
     </script>
 </body>
 </html>
