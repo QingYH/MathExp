@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>二重积分应用 | 微元法思想 | 科技感动态演示 | 体积·质量·面积·重心</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', 'Times New Roman', serif;
+            background-color: #0a0f1a;
+            color: #eef4ff;
+        }
+        .main-title {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            pointer-events: none;
+            z-index: 30;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e0f0ff;
+            text-shadow: 0 0 8px rgba(0,160,255,0.6);
+            background: rgba(10, 20, 35, 0.65);
+            backdrop-filter: blur(8px);
+            width: fit-content;
+            margin: 0 auto;
+            padding: 6px 20px;
+            border-radius: 60px;
+            border: 1px solid rgba(0, 180, 240, 0.5);
+            white-space: nowrap;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Segoe UI', 'Georgia', serif;
+        }
+        @media (max-width: 700px) {
+            .main-title { font-size: 0.9rem; white-space: normal; width: 90%; padding: 4px 12px; top: 10px; }
+        }
+        .card-control {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(15, 25, 45, 0.88);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 12px 18px;
+            border: 1px solid rgba(0, 180, 240, 0.4);
+            z-index: 20;
+            pointer-events: auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .card-control button {
+            background: rgba(0, 50, 80, 0.8);
+            border: 1px solid #2c9fcf;
+            color: #d6f0ff;
+            padding: 8px 18px;
+            border-radius: 48px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .card-control button:hover {
+            background: #1e7ab0;
+            transform: scale(1.02);
+            box-shadow: 0 0 8px rgba(0,180,255,0.5);
+        }
+        .card-control .active-case {
+            background: #2c9fcf;
+            color: #fff;
+            border-color: #7fd4ff;
+            box-shadow: 0 0 12px rgba(44,159,207,0.6);
+        }
+        .extra-controls {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 25;
+            pointer-events: auto;
+        }
+        .action-btn {
+            background: rgba(0, 50, 80, 0.9);
+            border: 1px solid #5bc0ff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .action-btn:hover {
+            background: #2c9fcf;
+            box-shadow: 0 0 8px #2c9fcf;
+        }
+        .info-area {
+            position: absolute;
+            top: 70px;
+            left: 15px;
+            background: rgba(0, 30, 55, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 10px 16px;
+            border-radius: 20px;
+            max-width: 380px;
+            font-size: 0.8rem;
+            border-left: 3px solid #2ca9e0;
+            pointer-events: none;
+            z-index: 25;
+        }
+        .info-area h4 {
+            margin: 0 0 4px;
+            color: #5bc0ff;
+        }
+        .formula-dynamic {
+            font-family: 'Times New Roman', 'Cambria Math', 'STIXGeneral', monospace;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 600px) {
+            .card-control button { padding: 5px 12px; font-size: 0.7rem; }
+            .extra-controls { bottom: 90px; right: 12px; gap: 8px; }
+            .action-btn { padding: 5px 10px; font-size: 0.7rem; }
+            .info-area { top: 60px; left: 8px; max-width: 280px; font-size: 0.7rem; }
+            .formula-dynamic { font-size: 0.7rem; }
+        }
+        .status {
+            position: absolute;
+            top: 70px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            border-right: 2px solid #2ca9e0;
+            pointer-events: none;
+            z-index: 25;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-title">📐 二重积分应用 · 微元法思想 · 动态切除“微元”演示</div>
+    <div class="card-control" id="caseButtons">
+        <button data-case="0" class="active-case">📦 几何体积</button>
+        <button data-case="1">⚖️ 薄板质量</button>
+        <button data-case="2">🌀 曲面面积</button>
+        <button data-case="3">🎯 平面重心</button>
+    </div>
+    <div class="extra-controls">
+        <button id="cutMicroBtn" class="action-btn">✂️ 分割 / 切出微元</button>
+    </div>
+    <div class="info-area" id="infoText">
+        <h4 id="caseTitle">几何体积 · 曲顶柱体</h4>
+        <div id="caseDesc">微元法：竖直切出一根“小曲顶柱体”，体积微元 dV = f(x,y) dσ，积分得总体积。</div>
+        <div class="formula-dynamic" id="integralFormula">V = ∬<sub>D</sub> f(x,y) dσ</div>
+    </div>
+    <div class="status" id="stepHint">✨ 选择案例 | 点击“分割/切出微元” 微元移至右上角停留6秒</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // --- 初始化场景 ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0f1a);
+        scene.fog = new THREE.FogExp2(0x0a0f1a, 0.008);
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(5.0, 3.8, 6.5);
+        camera.lookAt(0, 0.8, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+        
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+        
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = true;
+        controls.target.set(0, 0.8, 0);
+        
+        // 灯光
+        const ambientLight = new THREE.AmbientLight(0x2a4060);
+        scene.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xc8e8ff, 1.1);
+        mainLight.position.set(3, 5, 2);
+        mainLight.castShadow = true;
+        scene.add(mainLight);
+        const fillLight = new THREE.PointLight(0x5a8eb0, 0.6);
+        fillLight.position.set(-1.5, 2, 2);
+        scene.add(fillLight);
+        const backLight = new THREE.PointLight(0x4a7ca0, 0.5);
+        backLight.position.set(0, 1.5, -3);
+        scene.add(backLight);
+        
+        // 辅助轴线 (半透明)
+        const axesHelper = new THREE.AxesHelper(3.5);
+        axesHelper.material.transparent = true;
+        axesHelper.material.opacity = 0.15;
+        scene.add(axesHelper);
+        
+        // 地面网格 (下移)
+        const gridHelper = new THREE.GridHelper(7, 20, 0x4a6c8f, 0x2a4a6a);
+        gridHelper.position.y = -0.55;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.2;
+        scene.add(gridHelper);
+        
+        // 全局变量
+        let currentGroup = null;
+        let microElement = null;
+        let microLabel = null;
+        let animId = null;
+        let currentCase = 0;
+        let isAnimating = false;
+        let extraCurtain = null;
+        
+        const RADIUS = 1.8;
+        
+        function inDisk(x, z) {
+            return (x*x + z*z) <= RADIUS * RADIUS + 0.02;
+        }
+        
+        // 曲顶柱体高度函数
+        function topHeight(x, z) {
+            if (!inDisk(x, z)) return -0.5;
+            return 2.0 + 0.5 * Math.sin(x * 1.2) * Math.cos(z * 1.2);
+        }
+        
+        // 主体材质定义
+        const volumeMaterial = new THREE.MeshPhongMaterial({ color: 0x5f9eff, side: THREE.DoubleSide, transparent: true, opacity: 0.75, emissive: 0x112244 });
+        const laminaMaterial = new THREE.MeshPhongMaterial({ color: 0x88aadd, transparent: true, opacity: 0.7 });
+        
+        // ========== 1. 几何体积：封闭的曲顶柱体立体 ==========
+        function buildClosedCurvedVolume() {
+            const group = new THREE.Group();
+            const radialSegments = 64;
+            const heightSegments = 32;
+            
+            // 顶部曲面
+            const topVertices = [];
+            const topIndices = [];
+            const stepAngle = (Math.PI * 2) / radialSegments;
+            const stepR = RADIUS / heightSegments;
+            
+            for (let i = 0; i <= radialSegments; i++) {
+                const angle = i * stepAngle;
+                for (let j = 0; j <= heightSegments; j++) {
+                    const r = j * stepR;
+                    const x = r * Math.cos(angle);
+                    const z = r * Math.sin(angle);
+                    const y = topHeight(x, z);
+                    topVertices.push(x, y, z);
+                }
+            }
+            for (let i = 0; i < radialSegments; i++) {
+                for (let j = 0; j < heightSegments; j++) {
+                    const a = i * (heightSegments+1) + j;
+                    const b = i * (heightSegments+1) + j + 1;
+                    const c = (i+1) * (heightSegments+1) + j;
+                    const d = (i+1) * (heightSegments+1) + j + 1;
+                    topIndices.push(a, b, c);
+                    topIndices.push(b, d, c);
+                }
+            }
+            const topGeom = new THREE.BufferGeometry();
+            topGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(topVertices), 3));
+            topGeom.setIndex(topIndices);
+            topGeom.computeVertexNormals();
+            const topMesh = new THREE.Mesh(topGeom, volumeMaterial);
+            group.add(topMesh);
+            
+            // 底部圆盘
+            const bottomVertices = [];
+            const bottomIndices = [];
+            for (let i = 0; i <= radialSegments; i++) {
+                const angle = i * stepAngle;
+                for (let j = 0; j <= heightSegments; j++) {
+                    const r = j * stepR;
+                    const x = r * Math.cos(angle);
+                    const z = r * Math.sin(angle);
+                    const y = -0.12;
+                    bottomVertices.push(x, y, z);
+                }
+            }
+            for (let i = 0; i < radialSegments; i++) {
+                for (let j = 0; j < heightSegments; j++) {
+                    const a = i * (heightSegments+1) + j;
+                    const b = i * (heightSegments+1) + j + 1;
+                    const c = (i+1) * (heightSegments+1) + j;
+                    const d = (i+1) * (heightSegments+1) + j + 1;
+                    bottomIndices.push(a, b, c);
+                    bottomIndices.push(b, d, c);
+                }
+            }
+            const bottomGeom = new THREE.BufferGeometry();
+            bottomGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(bottomVertices), 3));
+            bottomGeom.setIndex(bottomIndices);
+            bottomGeom.computeVertexNormals();
+            const bottomMesh = new THREE.Mesh(bottomGeom, volumeMaterial);
+            group.add(bottomMesh);
+            
+            // 侧面
+            const sideVertices = [];
+            const sideIndices = [];
+            for (let i = 0; i <= radialSegments; i++) {
+                const angle = i * stepAngle;
+                const x = RADIUS * Math.cos(angle);
+                const z = RADIUS * Math.sin(angle);
+                const yTop = topHeight(x, z);
+                const yBottom = -0.12;
+                const baseIdx = sideVertices.length / 3;
+                sideVertices.push(x, yBottom, z);
+                sideVertices.push(x, yTop, z);
+                if (i > 0) {
+                    const prevIdx = baseIdx - 2;
+                    sideIndices.push(prevIdx, prevIdx+1, baseIdx);
+                    sideIndices.push(prevIdx+1, baseIdx+1, baseIdx);
+                }
+            }
+            const sideGeom = new THREE.BufferGeometry();
+            sideGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(sideVertices), 3));
+            sideGeom.setIndex(sideIndices);
+            sideGeom.computeVertexNormals();
+            const sideMesh = new THREE.Mesh(sideGeom, volumeMaterial);
+            group.add(sideMesh);
+            
+            return group;
+        }
+        
+        function buildCurtainAndProjection() {
+            const group = new THREE.Group();
+            const materialLine = new THREE.LineBasicMaterial({ color: 0x88ccff });
+            const topPoints = [];
+            for (let t = 0; t <= 100; t++) {
+                const angle = (t / 100) * Math.PI * 2;
+                const x = RADIUS * Math.cos(angle);
+                const z = RADIUS * Math.sin(angle);
+                const y = topHeight(x, z);
+                topPoints.push(new THREE.Vector3(x, y, z));
+            }
+            const topLineGeo = new THREE.BufferGeometry().setFromPoints(topPoints);
+            const topLine = new THREE.Line(topLineGeo, materialLine);
+            group.add(topLine);
+            const projPoints = [];
+            for (let t = 0; t <= 100; t++) {
+                const angle = (t / 100) * Math.PI * 2;
+                const rx = (RADIUS + 0.02) * Math.cos(angle);
+                const rz = (RADIUS + 0.02) * Math.sin(angle);
+                projPoints.push(new THREE.Vector3(rx, -0.12, rz));
+            }
+            const projGeo = new THREE.BufferGeometry().setFromPoints(projPoints);
+            const projMat = new THREE.LineBasicMaterial({ color: 0xffaa66 });
+            const projLoop = new THREE.LineLoop(projGeo, projMat);
+            group.add(projLoop);
+            return group;
+        }
+        
+        // ========== 2. 薄板质量 ==========
+        function buildDensityPlate() {
+            const group = new THREE.Group();
+            const plateGeom = new THREE.BoxGeometry(3.6, 0.08, 3.6);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xcab577, roughness: 0.4, metalness: 0.1 });
+            const plate = new THREE.Mesh(plateGeom, mat);
+            plate.position.y = 0;
+            plate.castShadow = true;
+            group.add(plate);
+            return group;
+        }
+        
+        // ========== 3. 曲面面积：不显示曲面，仅占位（三角形面片为空）==========
+        function buildEmptySurface() {
+            const group = new THREE.Group();
+            // 不添加任何几何体，保持场景干净
+            return group;
+        }
+        
+        // ========== 4. 平面重心 ==========
+        function buildLamina() {
+            const group = new THREE.Group();
+            const discGeom = new THREE.CylinderGeometry(1.6, 1.6, 0.06, 64);
+            const disc = new THREE.Mesh(discGeom, laminaMaterial);
+            disc.rotation.x = Math.PI/2;
+            disc.position.y = 0;
+            group.add(disc);
+            return group;
+        }
+        
+        // ========== 微元构建函数 ==========
+        function buildSmallCurvedColumn(x, z) {
+            const group = new THREE.Group();
+            const h = topHeight(x, z);
+            if (h < 0) return group;
+            const pillarGeom = new THREE.BoxGeometry(0.28, h, 0.28);
+            const mat = new THREE.MeshPhongMaterial({ color: 0x5f9eff, emissive: 0x112244 });
+            const pillar = new THREE.Mesh(pillarGeom, mat);
+            pillar.position.y = h/2;
+            group.add(pillar);
+            group.position.set(x, 0, z);
+            return group;
+        }
+        
+        function buildSmallPlate(x, z) {
+            const group = new THREE.Group();
+            const plateGeom = new THREE.BoxGeometry(0.32, 0.04, 0.32);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xffcc88, emissive: 0x553300 });
+            const plate = new THREE.Mesh(plateGeom, mat);
+            plate.position.y = 0.02;
+            group.add(plate);
+            group.position.set(x, 0, z);
+            return group;
+        }
+        
+        // 曲面面积的微元：紫色小片（仅用于演示微元概念，无背景曲面）
+        function buildSmallPurplePatch(x, z) {
+            const group = new THREE.Group();
+            // 创建一个独立的小曲面片，代表微元
+            const patchGeom = new THREE.CylinderGeometry(0.22, 0.22, 0.05, 16);
+            const patchMat = new THREE.MeshPhongMaterial({ color: 0xaa66ff, emissive: 0x331166, shininess: 60 });
+            const patch = new THREE.Mesh(patchGeom, patchMat);
+            patch.rotation.x = Math.PI/2;
+            patch.position.y = 0.3;
+            group.add(patch);
+            const glowGeom = new THREE.SphereGeometry(0.1, 6, 6);
+            const glowMat = new THREE.MeshStandardMaterial({ color: 0xcc99ff, emissive: 0x6633aa, transparent: true, opacity: 0.5 });
+            const glow = new THREE.Mesh(glowGeom, glowMat);
+            glow.position.y = 0.3;
+            group.add(glow);
+            group.position.set(x, 0, z);
+            return group;
+        }
+        
+        function buildSmallLamina(x, z) {
+            const group = new THREE.Group();
+            const laminaGeom = new THREE.BoxGeometry(0.32, 0.05, 0.32);
+            const mat = new THREE.MeshPhongMaterial({ color: 0x88aadd, emissive: 0x224466 });
+            const lamina = new THREE.Mesh(laminaGeom, mat);
+            lamina.position.y = 0.025;
+            group.add(lamina);
+            const edgesGeo = new THREE.EdgesGeometry(laminaGeom);
+            const edgesMat = new THREE.LineBasicMaterial({ color: 0xaaccff });
+            const wireframe = new THREE.LineSegments(edgesGeo, edgesMat);
+            wireframe.position.y = 0.025;
+            group.add(wireframe);
+            group.position.set(x, 0, z);
+            return group;
+        }
+        
+        function makeMicroLabel(text, position) {
+            const div = document.createElement('div');
+            div.innerHTML = text;
+            div.style.background = 'rgba(0, 40, 60, 0.9)';
+            div.style.color = '#ffdd99';
+            div.style.padding = '4px 12px';
+            div.style.borderRadius = '20px';
+            div.style.fontSize = '0.8rem';
+            div.style.fontFamily = "'Times New Roman', 'Cambria Math', 'STIXGeneral', monospace";
+            div.style.border = '1px solid #ffaa55';
+            div.style.whiteSpace = 'nowrap';
+            const label = new CSS2DObject(div);
+            label.position.copy(position);
+            scene.add(label);
+            return label;
+        }
+        
+        // 微元动画：停留时间6秒
+        function animateMicroElement(caseIdx, microObjCreator) {
+            if (isAnimating) return;
+            if (microElement) scene.remove(microElement);
+            if (microLabel) scene.remove(microLabel);
+            if (animId) cancelAnimationFrame(animId);
+            isAnimating = true;
+            
+            const x0 = 1.2;
+            const z0 = 0.9;
+            const micro = microObjCreator(x0, z0);
+            scene.add(micro);
+            microElement = micro;
+            
+            let formulaText = "";
+            if (caseIdx === 0) formulaText = "dV = f(x₀,y₀) dσ";
+            else if (caseIdx === 1) formulaText = "dm = ρ(x₀,y₀) dσ";
+            else if (caseIdx === 2) formulaText = "dS = √(1 + (∂z/∂x)² + (∂z/∂y)²) dσ";
+            else formulaText = "dm = ρ dσ ,  dM<sub>x</sub> = x·dm ,  dM<sub>y</sub> = y·dm";
+            
+            const labelPos = new THREE.Vector3(x0 + 1.2, (micro.position.y || 0.5) + 0.6, z0 + 0.6);
+            microLabel = makeMicroLabel(formulaText, labelPos);
+            
+            const targetX = 2.5;
+            const targetZ = -1.8;
+            const durationMove = 1500;
+            const stayDuration = 6000;
+            const durationBack = 1500;
+            const startX = x0;
+            const startZ = z0;
+            const startTime = performance.now();
+            
+            function stepMove(now) {
+                const elapsed = now - startTime;
+                let t = Math.min(1, elapsed / durationMove);
+                const ease = 1 - Math.pow(1 - t, 2);
+                const curX = startX + (targetX - startX) * ease;
+                const curZ = startZ + (targetZ - startZ) * ease;
+                micro.position.x = curX;
+                micro.position.z = curZ;
+                if (microLabel) {
+                    microLabel.position.x = curX + 0.6;
+                    microLabel.position.z = curZ + 0.5;
+                }
+                if (t < 1) {
+                    animId = requestAnimationFrame(stepMove);
+                } else {
+                    setTimeout(() => {
+                        const backStart = performance.now();
+                        function stepBack(nowBack) {
+                            const elapsedBack = nowBack - backStart;
+                            let tb = Math.min(1, elapsedBack / durationBack);
+                            const easeBack = 1 - Math.pow(1 - tb, 2);
+                            const backX = targetX + (startX - targetX) * easeBack;
+                            const backZ = targetZ + (startZ - targetZ) * easeBack;
+                            micro.position.x = backX;
+                            micro.position.z = backZ;
+                            if (microLabel) {
+                                microLabel.position.x = backX + 0.6;
+                                microLabel.position.z = backZ + 0.5;
+                            }
+                            if (tb < 1) {
+                                animId = requestAnimationFrame(stepBack);
+                            } else {
+                                scene.remove(micro);
+                                if (microLabel) scene.remove(microLabel);
+                                microElement = null;
+                                microLabel = null;
+                                isAnimating = false;
+                            }
+                        }
+                        animId = requestAnimationFrame(stepBack);
+                    }, stayDuration);
+                }
+            }
+            animId = requestAnimationFrame(stepMove);
+        }
+        
+        const cases = [
+            { name: "几何体积 · 曲顶柱体", desc: "微元法：竖直切出一根“小曲顶柱体”，体积微元 dV = f(x,y) dσ，积分得总体积。", formula: "V = ∬<sub>D</sub> f(x,y) dσ", createSolid: buildClosedCurvedVolume, createExtra: buildCurtainAndProjection, createMicro: buildSmallCurvedColumn },
+            { name: "薄板质量 · 非均匀密度", desc: "微元法：竖直切出一小块薄板，质量微元 dm = ρ(x,y) dσ，积分得总质量。", formula: "M = ∬<sub>D</sub> ρ(x,y) dσ", createSolid: buildDensityPlate, createExtra: () => null, createMicro: buildSmallPlate },
+            { name: "曲面面积 · 空间曲面", desc: "微元法：切出一小块曲面片，面积微元 dS = √(1+zₓ²+zᵧ²) dσ，积分得总面积。", formula: "S = ∬<sub>D</sub> √(1 + (∂z/∂x)² + (∂z/∂y)²) dσ", createSolid: buildEmptySurface, createExtra: () => null, createMicro: buildSmallPurplePatch },
+            { name: "平面重心 · 形心计算", desc: "微元法：竖直切出一小块，静力矩微元 dMₓ = x·dm , dMᵧ = y·dm，积分得重心坐标。", formula: "x̄ = (∬<sub>D</sub> x dσ)/A ,  ȳ = (∬<sub>D</sub> y dσ)/A", createSolid: buildLamina, createExtra: () => null, createMicro: buildSmallLamina }
+        ];
+        
+        function switchCase(index) {
+            if (isAnimating) return;
+            if (currentGroup) scene.remove(currentGroup);
+            if (extraCurtain) scene.remove(extraCurtain);
+            currentGroup = cases[index].createSolid();
+            scene.add(currentGroup);
+            if (cases[index].createExtra) {
+                const extra = cases[index].createExtra();
+                if (extra) { extraCurtain = extra; scene.add(extraCurtain); }
+            } else { extraCurtain = null; }
+            if (index === 2) {
+                camera.position.set(4.2, 3.0, 5.5);
+                controls.target.set(0, 0.1, 0);
+            } else {
+                camera.position.set(5.0, 3.8, 6.5);
+                controls.target.set(0, 0.8, 0);
+            }
+            controls.update();
+            document.getElementById('caseTitle').innerHTML = cases[index].name;
+            document.getElementById('caseDesc').innerHTML = cases[index].desc;
+            document.getElementById('integralFormula').innerHTML = cases[index].formula;
+            currentCase = index;
+        }
+        
+        document.getElementById('cutMicroBtn').addEventListener('click', () => {
+            if (isAnimating) return;
+            animateMicroElement(currentCase, cases[currentCase].createMicro);
+        });
+        
+        const btns = document.querySelectorAll('#caseButtons button');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isAnimating) return;
+                const idx = parseInt(btn.dataset.case);
+                btns.forEach(b => b.classList.remove('active-case'));
+                btn.classList.add('active-case');
+                switchCase(idx);
+            });
+        });
+        
+        switchCase(0);
+        
+        function animate() {
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
