@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>三重积分应用 · 微元法思想 · 动态演示</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Roboto', 'Georgia', 'Times New Roman', serif;
+            background-color: #0a0f1a;
+            color: #eef4ff;
+        }
+        .main-title {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            pointer-events: none;
+            z-index: 30;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #e0f0ff;
+            text-shadow: 0 0 8px rgba(0,160,255,0.6);
+            background: rgba(10, 20, 35, 0.65);
+            backdrop-filter: blur(8px);
+            width: fit-content;
+            margin: 0 auto;
+            padding: 6px 20px;
+            border-radius: 60px;
+            border: 1px solid rgba(0, 180, 240, 0.5);
+            white-space: nowrap;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Segoe UI', 'Georgia', serif;
+        }
+        @media (max-width: 700px) {
+            .main-title { font-size: 0.9rem; white-space: normal; width: 90%; padding: 4px 12px; top: 10px; }
+        }
+        .card-control {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(15, 25, 45, 0.88);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 12px 18px;
+            border: 1px solid rgba(0, 180, 240, 0.4);
+            z-index: 20;
+            pointer-events: auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .card-control button {
+            background: rgba(0, 50, 80, 0.8);
+            border: 1px solid #2c9fcf;
+            color: #d6f0ff;
+            padding: 8px 18px;
+            border-radius: 48px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .card-control button:hover {
+            background: #1e7ab0;
+            transform: scale(1.02);
+            box-shadow: 0 0 8px rgba(0,180,255,0.5);
+        }
+        .card-control .active-case {
+            background: #2c9fcf;
+            color: #fff;
+            border-color: #7fd4ff;
+            box-shadow: 0 0 12px rgba(44,159,207,0.6);
+        }
+        .extra-controls {
+            position: absolute;
+            bottom: 100px;
+            right: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 25;
+            pointer-events: auto;
+        }
+        .action-btn {
+            background: rgba(0, 50, 80, 0.9);
+            border: 1px solid #5bc0ff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .action-btn:hover {
+            background: #2c9fcf;
+            box-shadow: 0 0 8px #2c9fcf;
+        }
+        .info-area {
+            position: absolute;
+            top: 70px;
+            left: 15px;
+            background: rgba(0, 30, 55, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 10px 16px;
+            border-radius: 20px;
+            max-width: 380px;
+            font-size: 0.8rem;
+            border-left: 3px solid #2ca9e0;
+            pointer-events: none;
+            z-index: 25;
+        }
+        .info-area h4 {
+            margin: 0 0 4px;
+            color: #5bc0ff;
+        }
+        .formula-dynamic {
+            font-family: 'Times New Roman', 'Cambria Math', 'STIXGeneral', monospace;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 8px;
+            border-radius: 12px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 600px) {
+            .card-control button { padding: 5px 12px; font-size: 0.7rem; }
+            .extra-controls { bottom: 90px; right: 12px; gap: 8px; }
+            .action-btn { padding: 5px 10px; font-size: 0.7rem; }
+            .info-area { top: 60px; left: 8px; max-width: 280px; font-size: 0.7rem; }
+            .formula-dynamic { font-size: 0.7rem; }
+        }
+        .status {
+            position: absolute;
+            top: 70px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            border-right: 2px solid #2ca9e0;
+            pointer-events: none;
+            z-index: 25;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-title">📐 三重积分应用 · 微元法思想 · 动态切除微元演示</div>
+    <div class="card-control" id="caseButtons">
+        <button data-case="0" class="active-case">📦 几何体积</button>
+        <button data-case="1">⚖️ 物体质量</button>
+        <button data-case="2">🔄 转动惯量</button>
+        <button data-case="3">🌌 引力势能</button>
+    </div>
+    <div class="extra-controls">
+        <button id="cutMicroBtn" class="action-btn">✂️ 分割 / 切出微元</button>
+    </div>
+    <div class="info-area" id="infoText">
+        <h4 id="caseTitle">几何体积 · 三维区域</h4>
+        <div id="caseDesc">微元法：切出一小块小立方体，体积微元 dV = dxdydz，积分得总体积。</div>
+        <div class="formula-dynamic" id="integralFormula">V = ∭<sub>Ω</sub> dV</div>
+    </div>
+    <div class="status" id="stepHint">✨ 选择案例 | 点击分割/切出微元按钮查看微元动画</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // 场景初始化
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0f1a);
+        scene.fog = new THREE.FogExp2(0x0a0f1a, 0.008);
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(4.8, 3.5, 6.2);
+        camera.lookAt(0, 0.5, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+        
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+        
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = true;
+        controls.target.set(0, 0.5, 0);
+        
+        // 灯光设置
+        const ambientLight = new THREE.AmbientLight(0x2a4060);
+        scene.add(ambientLight);
+        const mainLight = new THREE.DirectionalLight(0xc8e8ff, 1.1);
+        mainLight.position.set(3, 5, 2);
+        mainLight.castShadow = true;
+        scene.add(mainLight);
+        const fillLight = new THREE.PointLight(0x5a8eb0, 0.6);
+        fillLight.position.set(-1.5, 2, 2);
+        scene.add(fillLight);
+        const backLight = new THREE.PointLight(0x4a7ca0, 0.5);
+        backLight.position.set(0, 1.5, -3);
+        scene.add(backLight);
+        
+        // 辅助元素
+        const axesHelper = new THREE.AxesHelper(3.5);
+        scene.add(axesHelper);
+        
+        const gridHelper = new THREE.GridHelper(7, 20, 0x4a6c8f, 0x2a4a6a);
+        gridHelper.position.y = -0.8;
+        scene.add(gridHelper);
+        
+        // 全局状态变量
+        let currentGroup = null;
+        let microElement = null;
+        let microLabel = null;
+        let animId = null;
+        let currentCase = 0;
+        let isAnimating = false;
+        let extraFieldGroup = null;
+        let rotationAnimationId = null;
+        
+        // 构建几何体函数
+        function buildSphereVolume() {
+            const group = new THREE.Group();
+            const geometry = new THREE.SphereGeometry(1.2, 64, 64);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0x5f9eff, 
+                transparent: true, 
+                opacity: 0.65, 
+                emissive: 0x112244 
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.castShadow = true;
+            group.add(sphere);
+            
+            const wireframeMat = new THREE.MeshBasicMaterial({ 
+                color: 0x88ccff, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.25 
+            });
+            const wireframe = new THREE.Mesh(geometry, wireframeMat);
+            group.add(wireframe);
+            
+            return group;
+        }
+        
+        function buildEllipsoidMass() {
+            const group = new THREE.Group();
+            const geometry = new THREE.SphereGeometry(1, 64, 64);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0xcab577, 
+                transparent: true, 
+                opacity: 0.7, 
+                emissive: 0x331100 
+            });
+            const ellipsoid = new THREE.Mesh(geometry, material);
+            ellipsoid.castShadow = true;
+            ellipsoid.scale.set(1.5, 1.0, 1.2);
+            group.add(ellipsoid);
+            
+            return group;
+        }
+        
+        function buildCylinderInertia() {
+            const group = new THREE.Group();
+            
+            // 圆柱体
+            const geometry = new THREE.CylinderGeometry(1.0, 1.0, 1.8, 64);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0x88aadd, 
+                transparent: true, 
+                opacity: 0.7, 
+                emissive: 0x224466 
+            });
+            const cylinder = new THREE.Mesh(geometry, material);
+            cylinder.castShadow = true;
+            group.add(cylinder);
+            
+            // 旋转轴指示线（Y轴）
+            const axisPoints = [];
+            for (let y = -1.2; y <= 1.2; y += 0.1) {
+                axisPoints.push(new THREE.Vector3(0, y, 0));
+            }
+            const axisGeo = new THREE.BufferGeometry().setFromPoints(axisPoints);
+            const axisMat = new THREE.LineBasicMaterial({ color: 0xffaa66 });
+            const axisLine = new THREE.Line(axisGeo, axisMat);
+            group.add(axisLine);
+            
+            // 在圆柱体表面添加旋转方向标记（小箭头）
+            const arrowColor = 0xff6600;
+            const radius = 1.05;
+            const heights = [-0.6, 0, 0.6];
+            
+            heights.forEach(y => {
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const x = Math.cos(angle) * radius;
+                    const z = Math.sin(angle) * radius;
+                    
+                    // 切线方向（绕Y轴逆时针）
+                    const tangentX = -Math.sin(angle);
+                    const tangentZ = Math.cos(angle);
+                    
+                    // 创建小三角形指示器
+                    const triangleShape = new THREE.Shape();
+                    triangleShape.moveTo(0, 0.08);
+                    triangleShape.lineTo(0.12, 0);
+                    triangleShape.lineTo(0, -0.08);
+                    triangleShape.lineTo(0, 0.08);
+                    
+                    const extrudeSettings = { depth: 0.02, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.01, bevelSegments: 1 };
+                    const triangleGeo = new THREE.ExtrudeGeometry(triangleShape, extrudeSettings);
+                    const triangleMat = new THREE.MeshBasicMaterial({ color: arrowColor });
+                    const triangle = new THREE.Mesh(triangleGeo, triangleMat);
+                    
+                    triangle.position.set(x, y, z);
+                    
+                    // 旋转三角形使其指向切线方向
+                    triangle.rotation.y = -angle;
+                    triangle.rotation.z = Math.PI / 2;
+                    
+                    group.add(triangle);
+                }
+            });
+            
+            return group;
+        }
+        
+        function buildConePotential() {
+            const group = new THREE.Group();
+            const geometry = new THREE.ConeGeometry(1.0, 1.8, 64);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0xaa66ff, 
+                transparent: true, 
+                opacity: 0.7, 
+                emissive: 0x331166 
+            });
+            const cone = new THREE.Mesh(geometry, material);
+            cone.castShadow = true;
+            group.add(cone);
+            
+            return group;
+        }
+        
+        // 构建引力势能辅助场
+        function buildGravityField() {
+            const group = new THREE.Group();
+            
+            // 使用ArrowHelper显示引力方向
+            const arrowColor = 0xff6688;
+            const positions = [
+                [1.3, 0.8, 1.3], [-1.3, 0.8, 1.3],
+                [1.3, 0.8, -1.3], [-1.3, 0.8, -1.3],
+                [1.5, 0.3, 0], [-1.5, 0.3, 0],
+                [0, 1.3, 1.4], [0, 1.3, -1.4],
+                [1.2, -0.2, 1.2], [-1.2, -0.2, -1.2]
+            ];
+            
+            positions.forEach(([x, y, z]) => {
+                const origin = new THREE.Vector3(x, y, z);
+                const direction = new THREE.Vector3(-x, -y + 0.3, -z).normalize();
+                const arrow = new THREE.ArrowHelper(direction, origin, 0.4, arrowColor, 0.12, 0.08);
+                group.add(arrow);
+            });
+            
+            // 添加粒子效果
+            const particleCount = 300;
+            const particleGeo = new THREE.BufferGeometry();
+            const particlePositions = [];
+            for (let i = 0; i < particleCount; i++) {
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                const r = 1.3 + Math.random() * 0.8;
+                const x = r * Math.sin(phi) * Math.cos(theta);
+                const y = r * Math.sin(phi) * Math.sin(theta) * 0.8 + 0.3;
+                const z = r * Math.cos(phi);
+                particlePositions.push(x, y, z);
+            }
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(particlePositions), 3));
+            const particleMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.03, transparent: true, opacity: 0.4 });
+            const particles = new THREE.Points(particleGeo, particleMat);
+            group.add(particles);
+            
+            return group;
+        }
+        
+        // 微元构建函数
+        function buildMicroCube(x, y, z, color) {
+            const group = new THREE.Group();
+            const size = 0.28;
+            const geometry = new THREE.BoxGeometry(size, size, size);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: color, 
+                emissive: 0x442200 
+            });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.castShadow = true;
+            group.add(cube);
+            
+            const edgesGeo = new THREE.EdgesGeometry(geometry);
+            const edgesMat = new THREE.LineBasicMaterial({ color: 0xffcc99 });
+            const wireframe = new THREE.LineSegments(edgesGeo, edgesMat);
+            group.add(wireframe);
+            
+            group.position.set(x, y, z);
+            return group;
+        }
+        
+        function makeMicroLabel(text, position) {
+            const div = document.createElement('div');
+            div.innerHTML = text;
+            div.style.background = 'rgba(0, 40, 60, 0.9)';
+            div.style.color = '#ffdd99';
+            div.style.padding = '4px 12px';
+            div.style.borderRadius = '20px';
+            div.style.fontSize = '0.8rem';
+            div.style.fontFamily = "Times New Roman, Cambria Math, monospace";
+            div.style.border = '1px solid #ffaa55';
+            div.style.whiteSpace = 'nowrap';
+            const label = new CSS2DObject(div);
+            label.position.copy(position);
+            scene.add(label);
+            return label;
+        }
+        
+        // 微元动画函数
+        function animateMicroElement(caseIdx) {
+            if (isAnimating) return;
+            if (microElement) {
+                scene.remove(microElement);
+                microElement = null;
+            }
+            if (microLabel) {
+                scene.remove(microLabel);
+                microLabel = null;
+            }
+            if (animId) {
+                cancelAnimationFrame(animId);
+                animId = null;
+            }
+            
+            isAnimating = true;
+            
+            let microColor = 0xffaa66;
+            let formulaText = "";
+            let posX = 0.9, posY = 0.5, posZ = 0.8;
+            
+            if (caseIdx === 0) {
+                microColor = 0x5f9eff;
+                formulaText = "dV = dx dy dz";
+                posX = 0.8; posY = 0.6; posZ = 0.7;
+            } else if (caseIdx === 1) {
+                microColor = 0xcab577;
+                formulaText = "dm = ρ dV";
+                posX = 0.9; posY = 0.4; posZ = 0.8;
+            } else if (caseIdx === 2) {
+                microColor = 0x88aadd;
+                formulaText = "dI = r² dm";
+                posX = 0.8; posY = 0.5; posZ = 0.9;
+            } else if (caseIdx === 3) {
+                microColor = 0xaa66ff;
+                formulaText = "dU = -G·dm / r";
+                posX = 0.9; posY = 0.5; posZ = 0.7;
+            }
+            
+            microElement = buildMicroCube(posX, posY, posZ, microColor);
+            scene.add(microElement);
+            
+            const labelPos = new THREE.Vector3(posX + 1.0, posY + 0.5, posZ + 0.6);
+            microLabel = makeMicroLabel(formulaText, labelPos);
+            
+            const targetX = 2.4;
+            const targetZ = -1.6;
+            const durationMove = 1500;
+            const stayDuration = 6000;
+            const durationBack = 1500;
+            const startX = posX;
+            const startZ = posZ;
+            const startTime = performance.now();
+            
+            function stepMove(now) {
+                const elapsed = now - startTime;
+                let t = Math.min(1, elapsed / durationMove);
+                const ease = 1 - Math.pow(1 - t, 2);
+                const curX = startX + (targetX - startX) * ease;
+                const curZ = startZ + (targetZ - startZ) * ease;
+                
+                if (microElement) {
+                    microElement.position.x = curX;
+                    microElement.position.z = curZ;
+                }
+                if (microLabel) {
+                    microLabel.position.x = curX + 0.6;
+                    microLabel.position.z = curZ + 0.5;
+                }
+                
+                if (t < 1) {
+                    animId = requestAnimationFrame(stepMove);
+                } else {
+                    setTimeout(() => {
+                        const backStart = performance.now();
+                        function stepBack(nowBack) {
+                            const elapsedBack = nowBack - backStart;
+                            let tb = Math.min(1, elapsedBack / durationBack);
+                            const easeBack = 1 - Math.pow(1 - tb, 2);
+                            const backX = targetX + (startX - targetX) * easeBack;
+                            const backZ = targetZ + (startZ - targetZ) * easeBack;
+                            
+                            if (microElement) {
+                                microElement.position.x = backX;
+                                microElement.position.z = backZ;
+                            }
+                            if (microLabel) {
+                                microLabel.position.x = backX + 0.6;
+                                microLabel.position.z = backZ + 0.5;
+                            }
+                            
+                            if (tb < 1) {
+                                animId = requestAnimationFrame(stepBack);
+                            } else {
+                                if (microElement) {
+                                    scene.remove(microElement);
+                                    microElement = null;
+                                }
+                                if (microLabel) {
+                                    scene.remove(microLabel);
+                                    microLabel = null;
+                                }
+                                isAnimating = false;
+                            }
+                        }
+                        animId = requestAnimationFrame(stepBack);
+                    }, stayDuration);
+                }
+            }
+            animId = requestAnimationFrame(stepMove);
+        }
+        
+        // 案例切换函数
+        function switchCase(index) {
+            if (isAnimating) return;
+            
+            // 停止旋转
+            if (rotationAnimationId) {
+                cancelAnimationFrame(rotationAnimationId);
+                rotationAnimationId = null;
+            }
+            
+            // 移除旧对象
+            if (currentGroup) {
+                scene.remove(currentGroup);
+                currentGroup = null;
+            }
+            if (extraFieldGroup) {
+                scene.remove(extraFieldGroup);
+                extraFieldGroup = null;
+            }
+            
+            // 创建新对象
+            if (index === 0) {
+                currentGroup = buildSphereVolume();
+                scene.add(currentGroup);
+                document.getElementById('caseTitle').innerHTML = '几何体积 · 三维区域';
+                document.getElementById('caseDesc').innerHTML = '微元法：切出一小块小立方体，体积微元 dV = dxdydz，积分得总体积。';
+                document.getElementById('integralFormula').innerHTML = 'V = ∭<sub>Ω</sub> dV';
+                document.getElementById('stepHint').innerHTML = '✨ 选择案例 | 点击分割/切出微元按钮查看微元动画';
+            } else if (index === 1) {
+                currentGroup = buildEllipsoidMass();
+                scene.add(currentGroup);
+                document.getElementById('caseTitle').innerHTML = '物体质量 · 非均匀密度';
+                document.getElementById('caseDesc').innerHTML = '微元法：切出一小块，质量微元 dm = ρ(x,y,z) dV，积分得总质量。';
+                document.getElementById('integralFormula').innerHTML = 'M = ∭<sub>Ω</sub> ρ(x,y,z) dV';
+                document.getElementById('stepHint').innerHTML = '✨ 选择案例 | 点击分割/切出微元按钮查看微元动画';
+            } else if (index === 2) {
+                currentGroup = buildCylinderInertia();
+                scene.add(currentGroup);
+                document.getElementById('caseTitle').innerHTML = '转动惯量 · 刚体力学';
+                document.getElementById('caseDesc').innerHTML = '微元法：切出一小块，转动惯量微元 dI = r² dm = r² ρ dV，积分得总转动惯量。';
+                document.getElementById('integralFormula').innerHTML = 'I = ∭<sub>Ω</sub> r² ρ dV';
+                document.getElementById('stepHint').innerHTML = '🔄 圆柱体绕Y轴旋转中 | 橙色三角标记指示旋转方向';
+                
+                // 启动旋转动画 - 整个group一起旋转
+                let lastTime = performance.now();
+                function rotateStep(now) {
+                    if (!currentGroup || currentCase !== 2) {
+                        return;
+                    }
+                    const delta = Math.min(0.05, (now - lastTime) / 1000);
+                    lastTime = now;
+                    currentGroup.rotation.y += delta * 1.5;
+                    rotationAnimationId = requestAnimationFrame(rotateStep);
+                }
+                rotationAnimationId = requestAnimationFrame(rotateStep);
+            } else if (index === 3) {
+                currentGroup = buildConePotential();
+                scene.add(currentGroup);
+                extraFieldGroup = buildGravityField();
+                scene.add(extraFieldGroup);
+                document.getElementById('caseTitle').innerHTML = '引力势能 · 万有引力';
+                document.getElementById('caseDesc').innerHTML = '微元法：切出一小块，引力势能微元 dU = -G·dm / r，积分得总势能。';
+                document.getElementById('integralFormula').innerHTML = 'U = -G ∭<sub>Ω</sub> ρ/r dV';
+                document.getElementById('stepHint').innerHTML = '✨ 粉色箭头表示引力方向 | 点击分割查看微元';
+            }
+            
+            currentCase = index;
+        }
+        
+        // 事件监听
+        document.getElementById('cutMicroBtn').addEventListener('click', () => {
+            if (!isAnimating) {
+                animateMicroElement(currentCase);
+            }
+        });
+        
+        const btns = document.querySelectorAll('#caseButtons button');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!isAnimating) {
+                    const idx = parseInt(btn.dataset.case, 10);
+                    btns.forEach(b => b.classList.remove('active-case'));
+                    btn.classList.add('active-case');
+                    switchCase(idx);
+                }
+            });
+        });
+        
+        // 初始化默认案例
+        switchCase(0);
+        
+        // 渲染循环
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+        
+        // 窗口调整
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // 清理
+        window.addEventListener('beforeunload', () => {
+            if (rotationAnimationId) cancelAnimationFrame(rotationAnimationId);
+            if (animId) cancelAnimationFrame(animId);
+        });
+    </script>
+</body>
+</html>
