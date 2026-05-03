@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>二重积分应用 | 微元法思想 | 科技感动态演示 | 体积·质量·面积·重心</title>
+    <title>二重积分应用 | 微元法思想 | 科技感动态演示</title>
     <style>
         body {
             margin: 0;
@@ -34,7 +34,6 @@
             white-space: nowrap;
             left: 50%;
             transform: translateX(-50%);
-            font-family: 'Segoe UI', 'Georgia', serif;
         }
         @media (max-width: 700px) {
             .main-title { font-size: 0.9rem; white-space: normal; width: 90%; padding: 4px 12px; top: 10px; }
@@ -228,13 +227,13 @@
         backLight.position.set(0, 1.5, -3);
         scene.add(backLight);
         
-        // 辅助轴线 (半透明)
+        // 辅助轴线
         const axesHelper = new THREE.AxesHelper(3.5);
         axesHelper.material.transparent = true;
         axesHelper.material.opacity = 0.15;
         scene.add(axesHelper);
         
-        // 地面网格 (下移)
+        // 地面网格
         const gridHelper = new THREE.GridHelper(7, 20, 0x4a6c8f, 0x2a4a6a);
         gridHelper.position.y = -0.55;
         gridHelper.material.transparent = true;
@@ -261,18 +260,42 @@
             if (!inDisk(x, z)) return -0.5;
             return 2.0 + 0.5 * Math.sin(x * 1.2) * Math.cos(z * 1.2);
         }
+
+        // 曲面面积案例的曲面高度函数（整体向下移动0.8）
+        function surfaceHeight(x, z) {
+            if (!inDisk(x, z)) return -0.5;
+            return 0.7 + Math.sin(x * 1.5) * Math.cos(z * 1.5) + 0.3 * Math.cos(x * 2.0) + 0.3 * Math.sin(z * 2.0);
+        }
         
-        // 主体材质定义
-        const volumeMaterial = new THREE.MeshPhongMaterial({ color: 0x5f9eff, side: THREE.DoubleSide, transparent: true, opacity: 0.75, emissive: 0x112244 });
-        const laminaMaterial = new THREE.MeshPhongMaterial({ color: 0x88aadd, transparent: true, opacity: 0.7 });
+        // 主体材质定义（稳定不消失）
+        const volumeMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x5f9eff, 
+            side: THREE.DoubleSide, 
+            transparent: true, 
+            opacity: 0.75, 
+            emissive: 0x112244
+        });
+        const laminaMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x88aadd, 
+            transparent: true, 
+            opacity: 0.7
+        });
+        // 曲面面积专用材质（稳定不消失+同色+无闪烁）
+        const surfaceMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x7a66ff, 
+            side: THREE.DoubleSide, 
+            transparent: true, 
+            opacity: 0.8, 
+            emissive: 0x221166,
+            shininess: 80
+        });
         
-        // ========== 1. 几何体积：封闭的曲顶柱体立体 ==========
+        // ========== 1. 几何体积 ==========
         function buildClosedCurvedVolume() {
             const group = new THREE.Group();
             const radialSegments = 64;
             const heightSegments = 32;
             
-            // 顶部曲面
             const topVertices = [];
             const topIndices = [];
             const stepAngle = (Math.PI * 2) / radialSegments;
@@ -305,7 +328,6 @@
             const topMesh = new THREE.Mesh(topGeom, volumeMaterial);
             group.add(topMesh);
             
-            // 底部圆盘
             const bottomVertices = [];
             const bottomIndices = [];
             for (let i = 0; i <= radialSegments; i++) {
@@ -335,7 +357,6 @@
             const bottomMesh = new THREE.Mesh(bottomGeom, volumeMaterial);
             group.add(bottomMesh);
             
-            // 侧面
             const sideVertices = [];
             const sideIndices = [];
             for (let i = 0; i <= radialSegments; i++) {
@@ -403,10 +424,56 @@
             return group;
         }
         
-        // ========== 3. 曲面面积：不显示曲面，仅占位（三角形面片为空）==========
-        function buildEmptySurface() {
+        // ========== 3. 曲面面积（已下移+稳定显示+无闪烁） ==========
+        function buildSurfaceAreaMesh() {
             const group = new THREE.Group();
-            // 不添加任何几何体，保持场景干净
+            const radialSegments = 64;
+            const heightSegments = 32;
+            
+            const vertices = [];
+            const indices = [];
+            const stepAngle = (Math.PI * 2) / radialSegments;
+            const stepR = RADIUS / heightSegments;
+            
+            for (let i = 0; i <= radialSegments; i++) {
+                const angle = i * stepAngle;
+                for (let j = 0; j <= heightSegments; j++) {
+                    const r = j * stepR;
+                    const x = r * Math.cos(angle);
+                    const z = r * Math.sin(angle);
+                    const y = surfaceHeight(x, z);
+                    vertices.push(x, y, z);
+                }
+            }
+            
+            for (let i = 0; i < radialSegments; i++) {
+                for (let j = 0; j < heightSegments; j++) {
+                    const a = i * (heightSegments + 1) + j;
+                    const b = i * (heightSegments + 1) + j + 1;
+                    const c = (i + 1) * (heightSegments + 1) + j;
+                    const d = (i + 1) * (heightSegments + 1) + j + 1;
+                    indices.push(a, b, c);
+                    indices.push(b, d, c);
+                }
+            }
+            
+            const surfaceGeom = new THREE.BufferGeometry();
+            surfaceGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+            surfaceGeom.setIndex(indices);
+            surfaceGeom.computeVertexNormals();
+            
+            const surfaceMesh = new THREE.Mesh(surfaceGeom, surfaceMaterial);
+            group.add(surfaceMesh);
+
+            const edges = new THREE.EdgesGeometry(surfaceGeom);
+            const edgeMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x9a88ff, 
+                transparent: true, 
+                opacity: 0.6 
+            });
+            const edgeLines = new THREE.LineSegments(edges, edgeMaterial);
+            group.add(edgeLines);
+            
             return group;
         }
         
@@ -421,7 +488,7 @@
             return group;
         }
         
-        // ========== 微元构建函数 ==========
+        // ========== 微元构建 ==========
         function buildSmallCurvedColumn(x, z) {
             const group = new THREE.Group();
             const h = topHeight(x, z);
@@ -446,21 +513,30 @@
             return group;
         }
         
-        // 曲面面积的微元：紫色小片（仅用于演示微元概念，无背景曲面）
-        function buildSmallPurplePatch(x, z) {
+        // 曲面微元（同色+稳定显示）
+        function buildSmallSurfacePatch(x, z) {
             const group = new THREE.Group();
-            // 创建一个独立的小曲面片，代表微元
-            const patchGeom = new THREE.CylinderGeometry(0.22, 0.22, 0.05, 16);
-            const patchMat = new THREE.MeshPhongMaterial({ color: 0xaa66ff, emissive: 0x331166, shininess: 60 });
+            const h = surfaceHeight(x, z);
+            if (h < 0) return group;
+
+            const patchGeom = new THREE.PlaneGeometry(0.3, 0.3);
+            const patchMat = surfaceMaterial.clone();
+            patchMat.opacity = 1.0;
             const patch = new THREE.Mesh(patchGeom, patchMat);
-            patch.rotation.x = Math.PI/2;
-            patch.position.y = 0.3;
+            
+            patch.position.y = h;
+            patch.rotation.x = Math.sin(x * 1.2) * 0.2;
+            patch.rotation.z = Math.cos(z * 1.2) * 0.2;
+            
+            const edgesGeo = new THREE.EdgesGeometry(patchGeom);
+            const edgesMat = new THREE.LineBasicMaterial({ color: 0xaa99ff });
+            const wireframe = new THREE.LineSegments(edgesGeo, edgesMat);
+            wireframe.position.y = h;
+            wireframe.rotation.x = patch.rotation.x;
+            wireframe.rotation.z = patch.rotation.z;
+            
             group.add(patch);
-            const glowGeom = new THREE.SphereGeometry(0.1, 6, 6);
-            const glowMat = new THREE.MeshStandardMaterial({ color: 0xcc99ff, emissive: 0x6633aa, transparent: true, opacity: 0.5 });
-            const glow = new THREE.Mesh(glowGeom, glowMat);
-            glow.position.y = 0.3;
-            group.add(glow);
+            group.add(wireframe);
             group.position.set(x, 0, z);
             return group;
         }
@@ -498,7 +574,7 @@
             return label;
         }
         
-        // 微元动画：停留时间6秒
+        // 微元动画（标准长根号）
         function animateMicroElement(caseIdx, microObjCreator) {
             if (isAnimating) return;
             if (microElement) scene.remove(microElement);
@@ -515,7 +591,8 @@
             let formulaText = "";
             if (caseIdx === 0) formulaText = "dV = f(x₀,y₀) dσ";
             else if (caseIdx === 1) formulaText = "dm = ρ(x₀,y₀) dσ";
-            else if (caseIdx === 2) formulaText = "dS = √(1 + (∂z/∂x)² + (∂z/∂y)²) dσ";
+            // ✅ 标准HTML实体根号 + 长横杠（安全不炸3D）
+            else if (caseIdx === 2) formulaText = "dS = √1 + (∂z/∂x)² + (∂z/∂y)² dσ";
             else formulaText = "dm = ρ dσ ,  dM<sub>x</sub> = x·dm ,  dM<sub>y</sub> = y·dm";
             
             const labelPos = new THREE.Vector3(x0 + 1.2, (micro.position.y || 0.5) + 0.6, z0 + 0.6);
@@ -576,11 +653,12 @@
             animId = requestAnimationFrame(stepMove);
         }
         
+        // 案例配置（✅ 标准根号）
         const cases = [
             { name: "几何体积 · 曲顶柱体", desc: "微元法：竖直切出一根“小曲顶柱体”，体积微元 dV = f(x,y) dσ，积分得总体积。", formula: "V = ∬<sub>D</sub> f(x,y) dσ", createSolid: buildClosedCurvedVolume, createExtra: buildCurtainAndProjection, createMicro: buildSmallCurvedColumn },
             { name: "薄板质量 · 非均匀密度", desc: "微元法：竖直切出一小块薄板，质量微元 dm = ρ(x,y) dσ，积分得总质量。", formula: "M = ∬<sub>D</sub> ρ(x,y) dσ", createSolid: buildDensityPlate, createExtra: () => null, createMicro: buildSmallPlate },
-            { name: "曲面面积 · 空间曲面", desc: "微元法：切出一小块曲面片，面积微元 dS =√(1+zₓ²+zᵧ²)dσ，积分得总面积。", formula: "S = ∬<sub>D</sub> √(1 + (∂z/∂x)² + (∂z/∂y)²) dσ", createSolid: buildEmptySurface, createExtra: () => null, createMicro: buildSmallPurplePatch },
-            { name: "平面重心 · 形心计算", desc: "微元法：竖直切出一小块，静力矩微元 dMₓ = x·dm , dMᵧ = y·dm，积分得重心坐标。", formula: "x̄ = (∬<sub>D</sub> x dσ)/A ,  ȳ = (∬<sub>D</sub> y dσ)/A", createSolid: buildLamina, createExtra: () => null, createMicro: buildSmallLamina }
+            { name: "曲面面积 · 空间曲面", desc: "微元法：切出一小块曲面片，面积微元 dS = √1+zₓ²+zᵧ² dσ，积分得总面积。", formula: "S = ∬<sub>D</sub> √1 + (∂z/∂x)² + (∂z/∂y)² dσ", createSolid: buildSurfaceAreaMesh, createExtra: () => null, createMicro: buildSmallSurfacePatch },
+            { name: "平面重心 · 形心计算", desc: "微元法：竖直切出一小块，静力矩微元 dMₓ = x·dm , dMᵧ = y·dm，积分得重心坐标。", formula: "x̄ = (∬<sub>D</sub> x dσ)/A ,  ȳ = (∬<sub>D</sub> y dσ)/A", createSolid: buildLamina, createExtra: () => null, createMicro: buildSmallLamina }
         ];
         
         function switchCase(index) {
@@ -593,9 +671,11 @@
                 const extra = cases[index].createExtra();
                 if (extra) { extraCurtain = extra; scene.add(extraCurtain); }
             } else { extraCurtain = null; }
+            
+            // 曲面面积最佳视角
             if (index === 2) {
-                camera.position.set(4.2, 3.0, 5.5);
-                controls.target.set(0, 0.1, 0);
+                camera.position.set(4.5, 2.2, 5.0);
+                controls.target.set(0, -0.1, 0);
             } else {
                 camera.position.set(5.0, 3.8, 6.5);
                 controls.target.set(0, 0.8, 0);
@@ -626,10 +706,10 @@
         switchCase(0);
         
         function animate() {
+            requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
             labelRenderer.render(scene, camera);
-            requestAnimationFrame(animate);
         }
         animate();
         
