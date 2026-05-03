@@ -154,7 +154,7 @@
     </style>
 </head>
 <body>
-    <div class="main-title">📐 二重积分应用 · 微元法思想 · 动态切除“微元”演示</div>
+    <div class="main-title">📐 二重积分应用 · 微元法思想 · 动态切出“微元”演示</div>
     <div class="card-control" id="caseButtons">
         <button data-case="0" class="active-case">📦 几何体积</button>
         <button data-case="1">⚖️ 薄板质量</button>
@@ -579,7 +579,7 @@
         const cases = [
             { name: "几何体积 · 曲顶柱体", desc: "微元法：竖直切出一根“小曲顶柱体”，体积微元 dV = f(x,y) dσ，积分得总体积。", formula: "V = ∬<sub>D</sub> f(x,y) dσ", createSolid: buildClosedCurvedVolume, createExtra: buildCurtainAndProjection, createMicro: buildSmallCurvedColumn },
             { name: "薄板质量 · 非均匀密度", desc: "微元法：竖直切出一小块薄板，质量微元 dm = ρ(x,y) dσ，积分得总质量。", formula: "M = ∬<sub>D</sub> ρ(x,y) dσ", createSolid: buildDensityPlate, createExtra: () => null, createMicro: buildSmallPlate },
-            { name: "曲面面积 · 空间曲面", desc: "微元法：切出一小块曲面片，面积微元 dS = √(1+zₓ²+zᵧ²) dσ，积分得总面积。", formula: "S = ∬<sub>D</sub> √(1 + (∂z/∂x)² + (∂z/∂y)²) dσ", createSolid: buildEmptySurface, createExtra: () => null, createMicro: buildSmallPurplePatch },
+            { name: "曲面面积 · 空间曲面", desc: "微元法：切出一小块曲面片，面积微元 dS = \sqrt{(1+zₓ²+zᵧ²) }dσ，积分得总面积。", formula: "S = ∬<sub>D</sub> √(1 + (∂z/∂x)² + (∂z/∂y)²) dσ", createSolid: buildEmptySurface, createExtra: () => null, createMicro: buildSmallPurplePatch },
             { name: "平面重心 · 形心计算", desc: "微元法：竖直切出一小块，静力矩微元 dMₓ = x·dm , dMᵧ = y·dm，积分得重心坐标。", formula: "x̄ = (∬<sub>D</sub> x dσ)/A ,  ȳ = (∬<sub>D</sub> y dσ)/A", createSolid: buildLamina, createExtra: () => null, createMicro: buildSmallLamina }
         ];
         
