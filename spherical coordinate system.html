@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, shrink-to-fit=no, viewport-fit=cover">
+  <title>球面坐标系 · 动态演示 | 高等数学</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+      background-color: #0a1424;
+    }
+    #info {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      color: #ffffff;
+      background: rgba(10, 20, 40, 0.75);
+      backdrop-filter: blur(14px);
+      padding: 10px 22px;
+      border-radius: 40px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.25);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .coord-display {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(12, 22, 38, 0.8);
+      backdrop-filter: blur(16px);
+      padding: 16px 22px;
+      border-radius: 24px;
+      color: #f0f4ff;
+      font-size: 0.95rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      text-align: right;
+      z-index: 5;
+      line-height: 1.8;
+      min-width: 200px;
+    }
+    .coord-display span {
+      font-weight: 700;
+      color: #66ccff;
+      font-size: 1.1rem;
+    }
+    .formula-box {
+      position: absolute;
+      bottom: 140px;
+      left: 20px;
+      background: rgba(8, 16, 30, 0.8);
+      backdrop-filter: blur(12px);
+      padding: 14px 20px;
+      border-radius: 24px;
+      color: #ddd;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      z-index: 5;
+      line-height: 1.8;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      max-width: 280px;
+    }
+    .formula-box strong {
+      color: #ffb347;
+    }
+    .formula-box .var-name {
+      color: #87ceeb;
+      font-weight: 600;
+    }
+    .control-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(14, 24, 42, 0.8);
+      backdrop-filter: blur(22px);
+      border-radius: 36px;
+      padding: 14px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 16px 24px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #e8f0ff;
+      z-index: 10;
+      width: fit-content;
+      max-width: 95vw;
+    }
+    @media (max-width: 750px) {
+      .control-panel {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px 18px;
+        bottom: 12px;
+        width: 92%;
+      }
+      .coord-display {
+        top: 10px;
+        right: 10px;
+        padding: 10px 14px;
+        font-size: 0.8rem;
+      }
+      .formula-box {
+        bottom: 140px;
+        left: 10px;
+        font-size: 0.7rem;
+        padding: 10px 14px;
+        max-width: 240px;
+      }
+    }
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.1);
+      padding: 6px 18px;
+      border-radius: 30px;
+      backdrop-filter: blur(8px);
+    }
+    .slider-group label {
+      font-weight: 600;
+      font-size: 1rem;
+      min-width: 42px;
+      color: #b7d9ff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .slider-group input[type="range"] {
+      width: 100px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.2);
+      height: 6px;
+      border-radius: 3px;
+      accent-color: #4da6ff;
+    }
+    .slider-group span {
+      display: inline-block;
+      min-width: 58px;
+      text-align: right;
+      font-weight: 500;
+      background: rgba(0,0,0,0.5);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    button {
+      background: rgba(77, 166, 255, 0.3);
+      border: 1px solid rgba(255,255,255,0.45);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: 0.2s;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    button:hover {
+      background: rgba(77, 166, 255, 0.6);
+      border-color: rgba(255,255,255,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    🌐 球面坐标系 (r, φ, θ)  ·  Z轴竖直
+  </div>
+  <div class="coord-display" id="coordDisplay">
+    📍 动点坐标<br>
+    <span id="rVal">2.50</span> , 
+    <span id="phiVal">1.05</span> , 
+    <span id="thetaVal">0.79</span><br>
+    <span style="font-size:0.8rem; color:#bbccff;">直角 (x, y, z)</span><br>
+    <span id="xyzDisplay">(1.44, 1.44, 1.77)</span>
+  </div>
+  <div class="formula-box">
+    <strong>📐 坐标含义</strong><br>
+    <span class="var-name">r</span> ：原点到动点的距离<br>
+    <span class="var-name">φ</span> ：与Z轴正半轴的夹角<br>
+    <span class="var-name">θ</span> ：X轴正向到XY平面投影的转角<br>
+    <strong>📏 球坐标 → 直角</strong><br>
+    x = r sinφ cosθ<br>
+    y = r sinφ sinθ<br>
+    z = r cosφ<br>
+    <strong>📐 柱坐标 (ρ, θ, z)</strong><br>
+    ρ = r sinφ, θ = θ, z = r cosφ<br>
+    x = ρ cosθ, y = ρ sinθ
+  </div>
+
+  <div class="control-panel">
+    <div class="slider-group">
+      <label style="color:#4da6ff;">🔵 r</label>
+      <input type="range" id="rSlider" min="0.8" max="3.5" step="0.01" value="2.5">
+      <span id="rDisplay">2.50</span>
+    </div>
+    <div class="slider-group">
+      <label style="color:#55dd88;">🟢 φ</label>
+      <input type="range" id="phiSlider" min="0.15" max="3.0" step="0.01" value="1.05">
+      <span id="phiDisplay">1.05 rad</span>
+    </div>
+    <div class="slider-group">
+      <label style="color:#ff8c42;">🟠 θ</label>
+      <input type="range" id="thetaSlider" min="0.0" max="6.28" step="0.01" value="0.79">
+      <span id="thetaDisplay">0.79 rad</span>
+    </div>
+    <button id="resetBtn">
+      <span>↺</span> 重置视角
+    </button>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+    // ---------- 初始化场景 ----------
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1424);
+    
+    // 星星背景
+    const starsGeometry = new THREE.BufferGeometry();
+    const starsCount = 500;
+    const starsPositions = new Float32Array(starsCount * 3);
+    for (let i = 0; i < starsCount * 3; i += 3) {
+      starsPositions[i] = (Math.random() - 0.5) * 22;
+      starsPositions[i+1] = (Math.random() - 0.5) * 18;
+      starsPositions[i+2] = (Math.random() - 0.5) * 20;
+    }
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
+    const starsMaterial = new THREE.PointsMaterial({color: 0xccddff, size: 0.09});
+    const stars = new THREE.Points(starsGeometry, starsMaterial);
+    scene.add(stars);
+
+    // 相机
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 50);
+    camera.position.set(6, -4, 5);
+    camera.lookAt(0, 0, 2);
+
+    // WebGL渲染器
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x0a1424);
+    renderer.sortObjects = true;
+    document.body.appendChild(renderer.domElement);
+
+    // CSS2渲染器
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0px';
+    labelRenderer.domElement.style.left = '0px';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    document.body.appendChild(labelRenderer.domElement);
+
+    // 控制器
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.rotateSpeed = 0.7;
+    controls.target.set(0, 0, 2);
+    controls.update();
+    controls.maxPolarAngle = Math.PI;
+    controls.minDistance = 2.8;
+    controls.maxDistance = 16;
+
+    // 光照
+    const ambientLight = new THREE.AmbientLight(0x335577);
+    scene.add(ambientLight);
+    const dirLight1 = new THREE.DirectionalLight(0xffeedd, 0.9);
+    dirLight1.position.set(1, 2, 1.5);
+    scene.add(dirLight1);
+    const dirLight2 = new THREE.DirectionalLight(0xbbccff, 0.7);
+    dirLight2.position.set(-1.2, -0.8, -1);
+    scene.add(dirLight2);
+    
+    // ---------- 坐标轴 ----------
+    function createArrow(direction, origin, color, length = 4.5) {
+      const arrow = new THREE.ArrowHelper(
+        new THREE.Vector3(direction.x, direction.y, direction.z).normalize(),
+        new THREE.Vector3(origin.x, origin.y, origin.z),
+        length,
+        color,
+        0.25,
+        0.15
+      );
+      scene.add(arrow);
+    }
+    
+    createArrow(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 0xff6666, 4.5);
+    createArrow(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 0, 0), 0x66ff66, 4.5);
+    createArrow(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 0x6688ff, 4.5);
+    
+    function addAxisLabel(text, position, color = '#ffffff') {
+      const div = document.createElement('div');
+      div.textContent = text;
+      div.style.color = color;
+      div.style.fontWeight = 'bold';
+      div.style.fontSize = '18px';
+      div.style.textShadow = '1px 1px 3px black';
+      const label = new CSS2DObject(div);
+      label.position.copy(position);
+      scene.add(label);
+    }
+    addAxisLabel('X', new THREE.Vector3(4.7, 0, 0), '#ff8888');
+    addAxisLabel('Y', new THREE.Vector3(0, 0, -4.7), '#88ff88');
+    addAxisLabel('Z', new THREE.Vector3(0, 4.7, 0), '#8888ff');
+
+    const mainGroup = new THREE.Group();
+    scene.add(mainGroup);
+    
+    const dynamicGroup = new THREE.Group();
+    mainGroup.add(dynamicGroup);
+    
+    // 动点 - 蓝、绿、橙三色球
+    const pointGroup = new THREE.Group();
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    
+    const centerX = 128;
+    const centerY = 128;
+    const radius = 120;
+    
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, -Math.PI/2, -Math.PI/2 + 2*Math.PI/3);
+    ctx.closePath();
+    ctx.fillStyle = '#4488ff';
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, -Math.PI/2 + 2*Math.PI/3, -Math.PI/2 + 4*Math.PI/3);
+    ctx.closePath();
+    ctx.fillStyle = '#44dd66';
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, -Math.PI/2 + 4*Math.PI/3, -Math.PI/2 + 2*Math.PI);
+    ctx.closePath();
+    ctx.fillStyle = '#ff8833';
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 15, 0, 2*Math.PI);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    
+    const pointGeometry = new THREE.SphereGeometry(0.22, 32, 32);
+    const pointMaterial = new THREE.MeshStandardMaterial({ 
+      map: texture,
+      roughness: 0.2,
+      metalness: 0.1,
+      emissive: new THREE.Color(0x111111)
+    });
+    const dynamicPoint = new THREE.Mesh(pointGeometry, pointMaterial);
+    pointGroup.add(dynamicPoint);
+    mainGroup.add(pointGroup);
+    
+    const glowLight = new THREE.PointLight(0xffffff, 1.0, 2.5);
+    pointGroup.add(glowLight);
+
+    function ourToThree(ourX, ourY, ourZ) {
+      return new THREE.Vector3(ourX, ourZ, -ourY);
+    }
+    
+    function createLatLongSphere(radius, color = 0x4da6ff) {
+      const group = new THREE.Group();
+      
+      // 半透明面片球体 - 降低透明度
+      const geometry = new THREE.SphereGeometry(radius, 20, 14);
+      const material = new THREE.MeshPhongMaterial({ 
+        color: 0x4da6ff,
+        transparent: true,
+        opacity: 0.12,
+        side: THREE.DoubleSide,
+        emissive: new THREE.Color(0x001122),
+        specular: new THREE.Color(0x4488cc),
+        shininess: 30,
+        depthWrite: false
+      });
+      const sphere = new THREE.Mesh(geometry, material);
+      group.add(sphere);
+      
+      // 经纬网格
+      const latCount = 14;
+      const lonCount = 20;
+      
+      // 纬线
+      for (let i = 1; i < latCount; i++) {
+        const phi = (i / latCount) * Math.PI;
+        const circleRadius = radius * Math.sin(phi);
+        const z = radius * Math.cos(phi);
+        
+        const points = [];
+        const segments = 64;
+        for (let j = 0; j <= segments; j++) {
+          const theta = (j / segments) * Math.PI * 2;
+          const ourX = circleRadius * Math.cos(theta);
+          const ourY = circleRadius * Math.sin(theta);
+          const ourZ = z;
+          const threePos = ourToThree(ourX, ourY, ourZ);
+          points.push(threePos);
+        }
+        
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const lineMaterial = new THREE.LineBasicMaterial({ 
+          color: 0x66bbff,
+          transparent: true,
+          opacity: 0.3,
+          depthTest: true,
+          depthWrite: false
+        });
+        const line = new THREE.Line(lineGeometry, lineMaterial);
+        group.add(line);
+      }
+      
+      // 经线
+      for (let j = 0; j < lonCount; j++) {
+        const theta = (j / lonCount) * Math.PI * 2;
+        const points = [];
+        const segments = 48;
+        for (let i = 0; i <= segments; i++) {
+          const phi = (i / segments) * Math.PI;
+          const ourX = radius * Math.sin(phi) * Math.cos(theta);
+          const ourY = radius * Math.sin(phi) * Math.sin(theta);
+          const ourZ = radius * Math.cos(phi);
+          const threePos = ourToThree(ourX, ourY, ourZ);
+          points.push(threePos);
+        }
+        
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const lineMaterial = new THREE.LineBasicMaterial({ 
+          color: 0x66bbff,
+          transparent: true,
+          opacity: 0.3,
+          depthTest: true,
+          depthWrite: false
+        });
+        const line = new THREE.Line(lineGeometry, lineMaterial);
+        group.add(line);
+      }
+      
+      return group;
+    }
+
+    function createConeSurface(phi, maxR = 4.5, color = 0x55dd88) {
+      const segmentsR = 40;
+      const segmentsTheta = 60;
+      const vertices = [];
+      const indices = [];
+      
+      const sinPhi = Math.sin(phi);
+      const cosPhi = Math.cos(phi);
+      
+      vertices.push(0, 0, 0);
+      
+      for (let i = 0; i <= segmentsR; i++) {
+        const r = (i / segmentsR) * maxR;
+        for (let j = 0; j <= segmentsTheta; j++) {
+          const theta = (j / segmentsTheta) * Math.PI * 2;
+          const ourX = r * sinPhi * Math.cos(theta);
+          const ourY = r * sinPhi * Math.sin(theta);
+          const ourZ = r * cosPhi;
+          const threePos = ourToThree(ourX, ourY, ourZ);
+          vertices.push(threePos.x, threePos.y, threePos.z);
+        }
+      }
+      
+      for (let i = 0; i < segmentsR; i++) {
+        for (let j = 0; j < segmentsTheta; j++) {
+          const current = 1 + i * (segmentsTheta + 1) + j;
+          const next = current + 1;
+          const upper = current + (segmentsTheta + 1);
+          const upperNext = upper + 1;
+          indices.push(current, next, upperNext);
+          indices.push(current, upperNext, upper);
+        }
+      }
+      for (let j = 0; j < segmentsTheta; j++) {
+        const current = 1 + j;
+        const next = current + 1;
+        indices.push(0, current, next);
+      }
+      
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+      
+      const material = new THREE.MeshPhongMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.45,
+        side: THREE.DoubleSide,
+        emissive: new THREE.Color(0x003311),
+        shininess: 30,
+        depthWrite: true
+      });
+      return new THREE.Mesh(geometry, material);
+    }
+
+    function createHalfPlane(theta, maxR = 4.5, color = 0xff8c42) {
+      const segmentsZ = 28;
+      const segmentsR = 15;
+      const vertices = [];
+      const indices = [];
+      
+      const zMin = -maxR * 0.9;
+      const zMax = maxR * 0.9;
+      
+      for (let i = 0; i <= segmentsZ; i++) {
+        const ourZ = zMin + (i / segmentsZ) * (zMax - zMin);
+        for (let j = 0; j <= segmentsR; j++) {
+          const dist = (j / segmentsR) * maxR * 1.1;
+          const ourX = dist * Math.cos(theta);
+          const ourY = dist * Math.sin(theta);
+          const threePos = ourToThree(ourX, ourY, ourZ);
+          vertices.push(threePos.x, threePos.y, threePos.z);
+        }
+      }
+      
+      for (let i = 0; i < segmentsZ; i++) {
+        for (let j = 0; j < segmentsR; j++) {
+          const a = i * (segmentsR + 1) + j;
+          const b = a + 1;
+          const c = a + (segmentsR + 1);
+          const d = c + 1;
+          indices.push(a, b, d);
+          indices.push(a, d, c);
+        }
+      }
+      
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));
+      geometry.setIndex(indices);
+      geometry.computeVertexNormals();
+      
+      const material = new THREE.MeshPhongMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.5,
+        side: THREE.DoubleSide,
+        emissive: new THREE.Color(0x331100),
+        shininess: 30,
+        depthWrite: true
+      });
+      return new THREE.Mesh(geometry, material);
+    }
+
+    function updateSurfaces(rVal, phiVal, thetaVal) {
+      while(dynamicGroup.children.length > 0) {
+        dynamicGroup.remove(dynamicGroup.children[0]);
+      }
+      
+      const sphere = createLatLongSphere(rVal, 0x4da6ff);
+      dynamicGroup.add(sphere);
+      
+      const cone = createConeSurface(phiVal, 4.5, 0x44dd77);
+      dynamicGroup.add(cone);
+      
+      const halfPlane = createHalfPlane(thetaVal, 4.5, 0xff8c42);
+      dynamicGroup.add(halfPlane);
+      
+      const sinPhi = Math.sin(phiVal);
+      const cosPhi = Math.cos(phiVal);
+      const ourX = rVal * sinPhi * Math.cos(thetaVal);
+      const ourY = rVal * sinPhi * Math.sin(thetaVal);
+      const ourZ = rVal * cosPhi;
+      
+      const threePos = ourToThree(ourX, ourY, ourZ);
+      pointGroup.position.copy(threePos);
+      
+      document.getElementById('rDisplay').textContent = rVal.toFixed(2);
+      document.getElementById('phiDisplay').textContent = phiVal.toFixed(2) + ' rad';
+      document.getElementById('thetaDisplay').textContent = thetaVal.toFixed(2) + ' rad';
+      document.getElementById('rVal').textContent = rVal.toFixed(2);
+      document.getElementById('phiVal').textContent = phiVal.toFixed(2);
+      document.getElementById('thetaVal').textContent = thetaVal.toFixed(2);
+      document.getElementById('xyzDisplay').textContent = `(${ourX.toFixed(2)}, ${ourY.toFixed(2)}, ${ourZ.toFixed(2)})`;
+    }
+
+    const rSlider = document.getElementById('rSlider');
+    const phiSlider = document.getElementById('phiSlider');
+    const thetaSlider = document.getElementById('thetaSlider');
+    
+    let currentR = parseFloat(rSlider.value);
+    let currentPhi = parseFloat(phiSlider.value);
+    let currentTheta = parseFloat(thetaSlider.value);
+    
+    rSlider.addEventListener('input', () => { currentR = parseFloat(rSlider.value); updateSurfaces(currentR, currentPhi, currentTheta); });
+    phiSlider.addEventListener('input', () => { currentPhi = parseFloat(phiSlider.value); updateSurfaces(currentR, currentPhi, currentTheta); });
+    thetaSlider.addEventListener('input', () => { currentTheta = parseFloat(thetaSlider.value); updateSurfaces(currentR, currentPhi, currentTheta); });
+    
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      camera.position.set(6, -4, 5);
+      controls.target.set(0, 0, 2);
+      controls.update();
+    });
+
+    updateSurfaces(currentR, currentPhi, currentTheta);
+
+    function addTextLabel(text, position, color = '#ffffff', fontSize = '0.85rem') {
+      const div = document.createElement('div');
+      div.textContent = text;
+      div.style.color = color;
+      div.style.fontWeight = '500';
+      div.style.fontSize = fontSize;
+      div.style.background = 'rgba(8,15,28,0.8)';
+      div.style.padding = '2px 12px';
+      div.style.borderRadius = '14px';
+      const label = new CSS2DObject(div);
+      label.position.copy(position);
+      mainGroup.add(label);
+    }
+    
+    addTextLabel('r = 常数 (球面)', ourToThree(2.8, 2.0, 2.5), '#4da6ff');
+    addTextLabel('φ = 常数 (锥面)', ourToThree(1.8, 2.8, -2.0), '#44dd77');
+    addTextLabel('θ = 常数 (半平面)', ourToThree(-2.5, 0.8, 2.3), '#ff8c42');
+
+    function animate() {
+      requestAnimationFrame(animate);
+      
+      stars.rotation.y += 0.0002;
+      
+      pointGroup.rotation.x += 0.03;
+      pointGroup.rotation.y += 0.04;
+      pointGroup.rotation.z += 0.02;
+      
+      controls.update();
+      renderer.render(scene, camera);
+      labelRenderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
