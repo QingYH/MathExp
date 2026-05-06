@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>柱面坐标系 · 最终修正 · θ与X轴正向夹角</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, sans-serif;
+            background-color: #0a0e1a;
+            color: white;
+            touch-action: pan-x pan-y;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(10, 14, 30, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 12px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            z-index: 10;
+        }
+        #info h1 {
+            margin: 0;
+            font-weight: 400;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #b3d9ff, #7aa9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        #info small {
+            display: block;
+            color: #aac0e6;
+            font-size: 0.7rem;
+            opacity: 0.8;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+        #coords-display {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 12px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            min-width: 150px;
+            text-align: left;
+            z-index: 10;
+            color: #e0f0ff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+        #coords-display .coord-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        #coords-display .label {
+            color: #a0b8d0;
+        }
+        #coords-display .value {
+            color: #ffffff;
+            font-weight: 500;
+        }
+        #controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px 40px;
+            background: rgba(8, 12, 28, 0.65);
+            backdrop-filter: blur(12px);
+            padding: 18px 30px;
+            border-radius: 60px;
+            margin: 0 auto;
+            width: fit-content;
+            max-width: 94%;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            pointer-events: auto;
+            transition: all 0.2s;
+        }
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #d0e2ff;
+            font-weight: 300;
+            font-size: 0.95rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .slider-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .slider-group label span {
+            min-width: 20px;
+            text-align: center;
+            font-weight: 500;
+            color: #9bc0ff;
+        }
+        input[type=range] {
+            width: 110px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, #3c6eff, #8ab4ff);
+            border-radius: 10px;
+            outline: none;
+            cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 15px #3c6eff, 0 0 8px #3c6eff;
+            border: 2px solid #aac9ff;
+            transition: 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.12);
+            background: #e6f0ff;
+        }
+        .value-badge {
+            background: rgba(60, 110, 255, 0.25);
+            padding: 2px 12px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            min-width: 45px;
+            text-align: center;
+            color: #b8d4ff;
+        }
+        @media (max-width: 700px) {
+            #controls {
+                flex-direction: column;
+                gap: 10px;
+                width: 90%;
+                border-radius: 40px;
+                padding: 18px 15px;
+                bottom: 20px;
+            }
+            .slider-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            input[type=range] {
+                width: 100px;
+            }
+            #info h1 {
+                font-size: 1.1rem;
+            }
+            #coords-display {
+                top: 80px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 8px 12px;
+                min-width: 120px;
+            }
+        }
+        #note {
+            position: absolute;
+            bottom: 110px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 14px;
+            border-radius: 30px;
+            backdrop-filter: blur(2px);
+            pointer-events: none;
+            z-index: 5;
+        }
+        .highlight {
+            color: #ffd966;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h1>🧪 柱面坐标系 · 最终修正</h1>
+        <small>θ=0 半平面与 <span style="color:#7fbfff; font-weight:bold;">X轴</span> 重合</small>
+    </div>
+    <div id="coords-display">
+        <div class="coord-row"><span class="label">柱坐标 (r, θ, z)</span> <span class="value" id="cyl-coords">(2.00, 1.80, 1.20)</span></div>
+        <div class="coord-row"><span class="label">直角坐标 (x, y, z)</span> <span class="value" id="cart-coords">(1.20, 0.64, 0.97)</span></div>
+        <div style="margin-top:6px; border-top:1px solid rgba(255,255,255,0.1); padding-top:4px; font-size:0.8rem; color:#aac0e6;">
+            x = r·cos(θ) &nbsp; z = r·sin(θ) &nbsp; y = z<sub>cyl</sub>
+        </div>
+    </div>
+    <div id="controls">
+        <div class="slider-group">
+            <label><span style="color:#ff9f4a;">r</span> <input type="range" id="r-slider" min="0.5" max="3.0" step="0.01" value="2.0"> <span class="value-badge" id="r-value">2.00</span></label>
+        </div>
+        <div class="slider-group">
+            <label><span style="color:#6bc0ff;">θ (与<span style="color:#7fbfff;">X</span>轴正向夹角)</span> <input type="range" id="theta-slider" min="0" max="6.28319" step="0.02" value="1.8"> <span class="value-badge" id="theta-value">1.80</span></label>
+        </div>
+        <div class="slider-group">
+            <label><span style="color:#b3a0ff;">z (竖直)</span> <input type="range" id="z-slider" min="-2.0" max="3.0" step="0.01" value="1.2"> <span class="value-badge" id="z-value">1.20</span></label>
+        </div>
+    </div>
+    <div id="note">拖动滑块 · 动点位于三个坐标面交点</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.126.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.126.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // --- 初始化场景、相机、渲染器 ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0e1a);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = false;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+
+        // --- 相机设置 ---
+        const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 20);
+        camera.position.set(6, 4, 6);
+        camera.lookAt(0, 0, 0);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.08;
+        controls.rotateSpeed = 0.8;
+        controls.autoRotate = false;
+        controls.enableZoom = true;
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        // --- 灯光 ---
+        const ambientLight = new THREE.AmbientLight(0x6060a0);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        dirLight.position.set(3, 6, 4);
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0x88ccff, 0.8);
+        fillLight.position.set(-4, 2, -3);
+        scene.add(fillLight);
+
+        const backLight = new THREE.DirectionalLight(0x6688cc, 0.6);
+        backLight.position.set(-2, 1, -5);
+        scene.add(backLight);
+
+        const bottomLight = new THREE.DirectionalLight(0x4488ff, 0.4);
+        bottomLight.position.set(0, -3, 0);
+        scene.add(bottomLight);
+
+        // 星星背景
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 1200;
+        const starPos = new Float32Array(starsCount * 3);
+        for (let i = 0; i < starsCount * 3; i += 3) {
+            starPos[i] = (Math.random() - 0.5) * 200;
+            starPos[i + 1] = (Math.random() - 0.5) * 200;
+            starPos[i + 2] = (Math.random() - 0.5) * 200;
+        }
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMaterial = new THREE.PointsMaterial({
+            color: 0xbbddff,
+            size: 0.2,
+            transparent: true,
+            opacity: 0.6
+        });
+        const stars = new THREE.Points(starsGeometry, starMaterial);
+        scene.add(stars);
+
+        // --- 坐标轴轮换 ---
+        // 原Y轴 → 新Z轴 (竖直方向, 绿色)
+        // 原Z轴 → 新X轴 (蓝色)
+        // 原X轴 → 新Y轴 (红色)
+        function createAxis() {
+            const length = 4.5;
+
+            // 新X轴 (原Z方向) - 蓝色
+            const newXDir = new THREE.Vector3(0, 0, 1);
+            const newXColor = 0x7fbfff;
+            const arrowNewX = new THREE.ArrowHelper(newXDir, new THREE.Vector3(0, 0, 0), length, newXColor, 0.3, 0.2);
+            scene.add(arrowNewX);
+
+            // 新Y轴 (原X方向) - 红色
+            const newYDir = new THREE.Vector3(1, 0, 0);
+            const newYColor = 0xff7f7f;
+            const arrowNewY = new THREE.ArrowHelper(newYDir, new THREE.Vector3(0, 0, 0), length, newYColor, 0.3, 0.2);
+            scene.add(arrowNewY);
+
+            // 新Z轴 (原Y方向) - 绿色 (竖直)
+            const newZDir = new THREE.Vector3(0, 1, 0);
+            const newZColor = 0x7fff7f;
+            const arrowNewZ = new THREE.ArrowHelper(newZDir, new THREE.Vector3(0, 0, 0), length, newZColor, 0.3, 0.2);
+            scene.add(arrowNewZ);
+
+            const makeLabel = (text, pos, color) => {
+                const div = document.createElement('div');
+                div.textContent = text;
+                div.style.color = color;
+                div.style.fontSize = '20px';
+                div.style.fontWeight = 'bold';
+                div.style.textShadow = '0 0 20px rgba(0,0,0,0.8)';
+                div.style.background = 'rgba(0,0,0,0.3)';
+                div.style.padding = '0 8px';
+                div.style.borderRadius = '8px';
+                div.style.backdropFilter = 'blur(2px)';
+                const label = new CSS2DObject(div);
+                label.position.copy(pos);
+                scene.add(label);
+            };
+            makeLabel('X', new THREE.Vector3(0, -0.2, 4.8), '#7fbfff');
+            makeLabel('Y', new THREE.Vector3(4.8, -0.2, 0), '#ff7f7f');
+            makeLabel('Z', new THREE.Vector3(0, 5.0, 0), '#7fff7f');
+
+            const originDiv = document.createElement('div');
+            originDiv.textContent = 'O';
+            originDiv.style.color = '#cccccc';
+            originDiv.style.fontSize = '18px';
+            originDiv.style.fontWeight = 'bold';
+            originDiv.style.textShadow = '0 0 10px black';
+            const originLabel = new CSS2DObject(originDiv);
+            originLabel.position.set(0, -0.3, 0);
+            scene.add(originLabel);
+        }
+        createAxis();
+
+        // --- 动态组 ---
+        const dynamicGroup = {
+            cylinder: null,
+            thetaPlane: null,
+            zPlane: null,
+            point: null,
+            pointLabel: null,
+        };
+
+        // 圆柱 (r=常数) 沿新Z轴方向 (原Y轴，竖直方向)
+        function buildCylinder(r, height = 5.5, color = 0x44ddff) {
+            const geometry = new THREE.CylinderGeometry(r, r, height, 48, 1, true);
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.35,
+                side: THREE.DoubleSide,
+                wireframe: false,
+                emissive: 0x2266aa,
+                shininess: 60,
+            });
+            const cylinder = new THREE.Mesh(geometry, material);
+            cylinder.position.set(0, 0, 0);
+
+            // 添加母线 (沿新Z轴=原Y轴方向)
+            const lineMat = new THREE.LineBasicMaterial({
+                color: 0x88ddff,
+                transparent: true,
+                opacity: 0.6
+            });
+            const points = [];
+            const segments = 16;
+            for (let i = 0; i < segments; i++) {
+                const angle = (i / segments) * Math.PI * 2;
+                const newX = r * Math.cos(angle);
+                const newY = r * Math.sin(angle);
+                points.push(new THREE.Vector3(newY, -height / 2, newX));
+                points.push(new THREE.Vector3(newY, height / 2, newX));
+            }
+            const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+            const lines = new THREE.LineSegments(lineGeo, lineMat);
+            cylinder.add(lines);
+
+            // 边缘线框
+            const edges = new THREE.EdgesGeometry(geometry);
+            const edgeMat = new THREE.LineBasicMaterial({
+                color: 0x88ddff,
+                transparent: true,
+                opacity: 0.5
+            });
+            const wireframe = new THREE.LineSegments(edges, edgeMat);
+            cylinder.add(wireframe);
+
+            return cylinder;
+        }
+
+        // 半平面 (θ=常数) 从新Z轴出发，包含新X轴正向
+        function buildThetaPlane(theta, rMax = 4.2, height = 5.2, color = 0xffaa55) {
+            const cosT = Math.cos(theta);
+            const sinT = Math.sin(theta);
+            const hHalf = height / 2;
+
+            const vertices = [
+                0, -hHalf, 0,
+                sinT * rMax, -hHalf, cosT * rMax,
+                sinT * rMax, hHalf, cosT * rMax,
+                0, hHalf, 0
+            ];
+            const indices = [0, 1, 2, 0, 2, 3];
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.50,
+                side: THREE.DoubleSide,
+                emissive: 0x663300,
+                depthWrite: false,
+            });
+            const plane = new THREE.Mesh(geometry, material);
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMat = new THREE.LineBasicMaterial({
+                color: 0xffaa55,
+                transparent: true,
+                opacity: 0.8
+            });
+            const wireframe = new THREE.LineSegments(edges, lineMat);
+            plane.add(wireframe);
+            return plane;
+        }
+
+        // 水平面 (z=常数) 垂直于新Z轴(竖直方向)
+        function buildZPlane(z_cyl, rMax = 4.2, color = 0xaa88ff) {
+            const geometry = new THREE.CircleGeometry(rMax, 40);
+            const material = new THREE.MeshPhongMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.45,
+                side: THREE.DoubleSide,
+                depthWrite: false,
+            });
+            const plane = new THREE.Mesh(geometry, material);
+            plane.position.y = z_cyl;
+            plane.rotation.x = -Math.PI / 2;
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMat = new THREE.LineBasicMaterial({
+                color: 0xccbbff,
+                transparent: true,
+                opacity: 0.6
+            });
+            const wireframe = new THREE.LineSegments(edges, lineMat);
+            plane.add(wireframe);
+            return plane;
+        }
+
+        // 动点
+        function buildPoint(pos, color = 0xffdd77) {
+            const sphereGeo = new THREE.SphereGeometry(0.25, 24, 24);
+            const sphereMat = new THREE.MeshStandardMaterial({
+                color: color,
+                emissive: 0xffaa33,
+                emissiveIntensity: 0.8,
+                roughness: 0.1,
+                metalness: 0.1,
+            });
+            const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+            sphere.position.copy(pos);
+            const glowGeo = new THREE.SphereGeometry(0.32, 16, 16);
+            const glowMat = new THREE.MeshBasicMaterial({
+                color: 0xffaa44,
+                transparent: true,
+                opacity: 0.3,
+            });
+            const glow = new THREE.Mesh(glowGeo, glowMat);
+            sphere.add(glow);
+            return sphere;
+        }
+
+        function buildPointLabel(pos, text = 'M(r,θ,z)') {
+            const div = document.createElement('div');
+            div.textContent = text;
+            div.style.color = '#ffffff';
+            div.style.fontSize = '20px';
+            div.style.fontWeight = 'bold';
+            div.style.textShadow = '0 0 20px #000, 0 0 10px #3c6eff';
+            div.style.background = 'rgba(0,0,0,0.6)';
+            div.style.padding = '6px 16px';
+            div.style.borderRadius = '30px';
+            div.style.border = '1px solid rgba(255,255,255,0.3)';
+            div.style.backdropFilter = 'blur(4px)';
+            const label = new CSS2DObject(div);
+            label.position.copy(pos.clone().add(new THREE.Vector3(0.5, 0.5, 0.5)));
+            return label;
+        }
+
+        // 更新坐标显示
+        function updateCoordDisplay(r, theta, z_cyl) {
+            const newX = r * Math.cos(theta);
+            const newY = r * Math.sin(theta);
+            const newZ = z_cyl;
+
+            document.getElementById('cyl-coords').textContent =
+                `(${r.toFixed(2)}, ${theta.toFixed(2)}, ${z_cyl.toFixed(2)})`;
+            document.getElementById('cart-coords').textContent =
+                `(${newX.toFixed(2)}, ${newY.toFixed(2)}, ${newZ.toFixed(2)})`;
+        }
+
+        // 初始化场景
+        function initScene(r, theta, z_cyl) {
+            if (dynamicGroup.cylinder) scene.remove(dynamicGroup.cylinder);
+            if (dynamicGroup.thetaPlane) scene.remove(dynamicGroup.thetaPlane);
+            if (dynamicGroup.zPlane) scene.remove(dynamicGroup.zPlane);
+            if (dynamicGroup.point) scene.remove(dynamicGroup.point);
+            if (dynamicGroup.pointLabel) scene.remove(dynamicGroup.pointLabel);
+
+            const pointPos = new THREE.Vector3(
+                r * Math.sin(theta),
+                z_cyl,
+                r * Math.cos(theta)
+            );
+
+            const cyl = buildCylinder(r);
+            dynamicGroup.cylinder = cyl;
+            scene.add(cyl);
+
+            const tPlane = buildThetaPlane(theta);
+            dynamicGroup.thetaPlane = tPlane;
+            scene.add(tPlane);
+
+            const zPlane = buildZPlane(z_cyl);
+            dynamicGroup.zPlane = zPlane;
+            scene.add(zPlane);
+
+            const point = buildPoint(pointPos);
+            dynamicGroup.point = point;
+            scene.add(point);
+
+            const label = buildPointLabel(pointPos);
+            dynamicGroup.pointLabel = label;
+            scene.add(label);
+
+            updateCoordDisplay(r, theta, z_cyl);
+        }
+
+        function updateScene(r, theta, z_cyl) {
+            if (dynamicGroup.cylinder) scene.remove(dynamicGroup.cylinder);
+            if (dynamicGroup.thetaPlane) scene.remove(dynamicGroup.thetaPlane);
+            if (dynamicGroup.zPlane) scene.remove(dynamicGroup.zPlane);
+            if (dynamicGroup.point) scene.remove(dynamicGroup.point);
+            if (dynamicGroup.pointLabel) scene.remove(dynamicGroup.pointLabel);
+
+            const pointPos = new THREE.Vector3(
+                r * Math.sin(theta),
+                z_cyl,
+                r * Math.cos(theta)
+            );
+
+            const cyl = buildCylinder(r);
+            dynamicGroup.cylinder = cyl;
+            scene.add(cyl);
+
+            const tPlane = buildThetaPlane(theta);
+            dynamicGroup.thetaPlane = tPlane;
+            scene.add(tPlane);
+
+            const zPlane = buildZPlane(z_cyl);
+            dynamicGroup.zPlane = zPlane;
+            scene.add(zPlane);
+
+            const point = buildPoint(pointPos);
+            dynamicGroup.point = point;
+            scene.add(point);
+
+            const label = buildPointLabel(pointPos);
+            dynamicGroup.pointLabel = label;
+            scene.add(label);
+
+            updateCoordDisplay(r, theta, z_cyl);
+        }
+
+        // --- 绑定UI ---
+        const rSlider = document.getElementById('r-slider');
+        const thetaSlider = document.getElementById('theta-slider');
+        const zSlider = document.getElementById('z-slider');
+        const rVal = document.getElementById('r-value');
+        const thetaVal = document.getElementById('theta-value');
+        const zVal = document.getElementById('z-value');
+
+        let r = parseFloat(rSlider.value);
+        let theta = parseFloat(thetaSlider.value);
+        let z_cyl = parseFloat(zSlider.value);
+        initScene(r, theta, z_cyl);
+        rVal.textContent = r.toFixed(2);
+        thetaVal.textContent = theta.toFixed(2);
+        zVal.textContent = z_cyl.toFixed(2);
+
+        rSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            rVal.textContent = val.toFixed(2);
+            updateScene(val, parseFloat(thetaSlider.value), parseFloat(zSlider.value));
+        });
+        thetaSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            thetaVal.textContent = val.toFixed(2);
+            updateScene(parseFloat(rSlider.value), val, parseFloat(zSlider.value));
+        });
+        zSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            zVal.textContent = val.toFixed(2);
+            updateScene(parseFloat(rSlider.value), parseFloat(thetaSlider.value), val);
+        });
+
+        // --- 窗口自适应 ---
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // --- 动画循环 ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            stars.rotation.y += 0.0001;
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
