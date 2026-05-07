@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>质点系质心公式 · 标准数学形式 | 拖拽交互</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0a2a35 0%, #154e6b 100%);
+            font-family: 'Segoe UI', 'Roboto', 'SF Pro Text', system-ui, -apple-system, 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255, 255, 248, 0.96);
+            border-radius: 2.5rem;
+            box-shadow: 0 35px 55px -20px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 215, 150, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(105deg, #1a3e4c, #0c2a36);
+            padding: 1.2rem 2rem;
+            color: white;
+            border-bottom: 3px solid #ffb759;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .formula-badge {
+            font-family: monospace;
+            font-size: 1.1rem;
+            background: #ffb75930;
+            backdrop-filter: blur(6px);
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .sub {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 6px;
+        }
+
+        .content-split {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding: 1.8rem;
+        }
+
+        .canvas-area {
+            flex: 2.5;
+            min-width: 380px;
+            background: #fffef6;
+            border-radius: 2rem;
+            padding: 1rem;
+            box-shadow: 0 18px 28px -12px rgba(0, 0, 0, 0.2);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #fffffa;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            cursor: grab;
+            touch-action: none;
+        }
+        canvas:active { cursor: grabbing; }
+
+        .controls-area {
+            flex: 1.2;
+            min-width: 280px;
+            background: rgba(255, 255, 245, 0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 2rem;
+            padding: 1.2rem;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 质点列表 */
+        .mass-points-list {
+            margin: 0.5rem 0 1rem 0;
+            max-height: 360px;
+            overflow-y: auto;
+            padding-right: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .point-item {
+            background: #ffffffea;
+            border-radius: 1.2rem;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid;
+        }
+
+        /* 右侧色块较小 */
+        .point-color-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 26px;
+            background: red;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            border: 2px solid white;
+        }
+
+        .point-info {
+            flex: 2;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1a2f3c;
+        }
+        .coord-edit {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            background: #f0f2f5;
+            border-radius: 28px;
+            padding: 2px 8px;
+            margin-top: 4px;
+        }
+        .coord-edit input {
+            width: 48px;
+            font-size: 0.7rem;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 2px;
+            background: white;
+        }
+        .mass-slider {
+            flex: 1.5;
+            min-width: 110px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f6f2ea;
+            padding: 3px 8px;
+            border-radius: 48px;
+        }
+        .mass-slider label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #c96f0e;
+        }
+        input[type="range"] {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #ffcf9a;
+            border-radius: 8px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #f97316;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+        .mass-value {
+            font-weight: 800;
+            width: 36px;
+            text-align: center;
+            font-size: 0.7rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0 16px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #f0ede8;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #1f4a6e;
+            flex: 1;
+        }
+        button:hover {
+            background: #ffe2c1;
+            transform: scale(0.97);
+        }
+
+        /* 质心卡片 — 不使用 LaTeX，纯文本标准数学形式 */
+        .cm-info-card {
+            background: linear-gradient(115deg, #fff4e8, #fffaef);
+            border-radius: 1.5rem;
+            padding: 16px 12px;
+            margin-top: 16px;
+            text-align: center;
+            border: 1px solid #ffe0b0;
+        }
+        .std-formula {
+            font-family: 'Courier New', '等线', monospace;
+            font-size: 0.9rem;
+            background: #efe3d4;
+            padding: 8px 10px;
+            border-radius: 24px;
+            font-weight: 600;
+            margin: 6px 0;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        .component-line {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            font-family: monospace;
+            background: #fef3e6;
+            border-radius: 20px;
+            padding: 6px;
+        }
+        .footer-note {
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 0.8rem;
+            background: #eaf0f0;
+            color: #2a5f7a;
+            border-top: 1px solid #d4e2ea;
+        }
+        @media (max-width: 780px) {
+            .content-split { padding: 1rem; gap: 1rem; }
+            .point-item { flex-direction: column; align-items: stretch; }
+            .mass-slider { justify-content: space-between; }
+            h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="demo-container">
+    <div class="header">
+        <h1>
+            ⚛️ 质点系 · 质心公式 (分量形式)
+            <span class="formula-badge">Xc = Σ(mᵢ·xᵢ)/M , Yc = Σ(mᵢ·yᵢ)/M</span>
+        </h1>
+        <div class="sub">
+            🧲 直接拖拽彩色大质点移动 | 右侧也可调节坐标/质量 | 质心实时遵循加权平均
+        </div>
+    </div>
+
+    <div class="content-split">
+        <!-- 左侧画布：质点半径加大至34px，方便拖拽 -->
+        <div class="canvas-area">
+            <canvas id="massCanvas" width="1000" height="620" style="width:100%; height:auto; aspect-ratio:1000/620; background:#fefcf0"></canvas>
+            <div style="font-size:0.7rem; margin-top:10px; text-align:center; color:#b45f2b;">
+                ✨ 手指/鼠标拖拽任意彩色圆点 → 质心位置实时更新 | 质点尺寸加大，交互流畅
+            </div>
+        </div>
+
+        <div class="controls-area">
+            <div style="font-weight:700; margin-bottom:6px;">🎛️ 质点参数调节 (坐标+质量)</div>
+            <div class="mass-points-list" id="pointsListContainer"></div>
+            <div class="btn-group">
+                <button id="addPointBtn">➕ 添加质点</button>
+                <button id="resetDefaultBtn">🔄 重置系统</button>
+                <button id="clearAllBtn">🗑️ 清空多余</button>
+            </div>
+            <div class="cm-info-card">
+                <div style="font-weight:700; margin-bottom:6px;">📐 质心坐标 · 标准数学形式</div>
+                <div class="std-formula" id="cmStandardFormula">
+                    Xc = (Σ mᵢ·xᵢ) / Σ mᵢ &nbsp;&nbsp; Yc = (Σ mᵢ·yᵢ) / Σ mᵢ
+                </div>
+                <div id="cmCoordDisplay" style="font-size:1.4rem; font-weight:800; margin:8px 0; color:#e67e22;">(0.00, 0.00)</div>
+                <div id="cmFormulaPreview" class="component-line" style="font-size:0.7rem;"></div>
+                <div style="margin-top: 8px; font-size:0.7rem;">总质量 <strong>M</strong> = <span id="totalMassSpan" style="font-weight:800;">0.00</span> kg</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-note">
+        📐 <strong>质心横坐标、纵坐标公式</strong> &nbsp; Xc = (m₁·x₁ + m₂·x₂ + ... + mₙ·xₙ) / (m₁+m₂+...+mₙ) &nbsp;&nbsp; Yc = (m₁·y₁ + ... + mₙ·yₙ) / M_total
+        &nbsp;| 可拖拽质点 / 右侧微调坐标
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- 画布配置：左侧质点半径加大至34px (便于触摸拖拽) ----------
+        const canvas = document.getElementById('massCanvas');
+        const ctx = canvas.getContext('2d');
+        const CANVAS_W = 1000;
+        const CANVAS_H = 620;
+        canvas.width = CANVAS_W;
+        canvas.height = CANVAS_H;
+        
+        const POINT_RADIUS = 34;   // 质点直径68px，非常大，拖动友好
+        
+        let points = [];
+        let draggingIndex = -1;
+        let dragOffsetX = 0, dragOffsetY = 0;
+        
+        // 鲜艳配色
+        const colorPalette = [
+            "#f43f5e", "#f97316", "#eab308", "#10b981", "#3b82f6", "#8b5cf6", "#ec489a", "#14b8a6", "#f59e0b", "#d946ef", "#06b6d4"
+        ];
+        function getColorByIndex(idx) {
+            return colorPalette[idx % colorPalette.length];
+        }
+        
+        // 边界限制
+        function clampPosition(x, y) {
+            const margin = POINT_RADIUS + 6;
+            return {
+                x: Math.min(CANVAS_W - margin, Math.max(margin, x)),
+                y: Math.min(CANVAS_H - margin, Math.max(margin, y))
+            };
+        }
+        
+        // 更新质点坐标 (拖拽时调用)
+        function updatePointPosition(index, x, y) {
+            if(index < 0 || index >= points.length) return;
+            const clamped = clampPosition(x, y);
+            points[index].x = clamped.x;
+            points[index].y = clamped.y;
+            renderCanvas();
+            updateCMDisplay();
+            updatePointsListUI();   // 同步右侧坐标输入框显示
+        }
+        
+        // 通过右侧手动输入更新坐标
+        function updatePointCoordFromInput(index, newX, newY) {
+            if(index < 0 || index >= points.length) return;
+            let xVal = parseFloat(newX);
+            let yVal = parseFloat(newY);
+            if(isNaN(xVal)) xVal = points[index].x;
+            if(isNaN(yVal)) yVal = points[index].y;
+            const clamped = clampPosition(xVal, yVal);
+            points[index].x = clamped.x;
+            points[index].y = clamped.y;
+            renderCanvas();
+            updateCMDisplay();
+            updatePointsListUI();
+        }
+        
+        function updateMass(index, newMass) {
+            if(index < 0 || index >= points.length) return;
+            let massVal = parseFloat(newMass);
+            if(isNaN(massVal)) massVal = 1.0;
+            massVal = Math.min(9.5, Math.max(0.3, massVal));
+            points[index].mass = massVal;
+            updatePointsListUI();
+            renderCanvas();
+            updateCMDisplay();
+        }
+        
+        // 计算质心
+        function computeCentroid() {
+            if(points.length === 0) return { cx: CANVAS_W/2, cy: CANVAS_H/2, totalMass: 0 };
+            let totalMass = 0, sumX = 0, sumY = 0;
+            for(let p of points) {
+                totalMass += p.mass;
+                sumX += p.mass * p.x;
+                sumY += p.mass * p.y;
+            }
+            if(totalMass < 1e-9) return { cx: CANVAS_W/2, cy: CANVAS_H/2, totalMass: 0 };
+            return { cx: sumX / totalMass, cy: sumY / totalMass, totalMass: totalMass };
+        }
+        
+        // 更新UI：纯文本标准数学形式，不使用LaTeX
+        function updateCMDisplay() {
+            const { cx, cy, totalMass } = computeCentroid();
+            document.getElementById('totalMassSpan').innerText = totalMass.toFixed(2);
+            document.getElementById('cmCoordDisplay').innerHTML = `(${cx.toFixed(1)} , ${cy.toFixed(1)})`;
+            
+            const previewElem = document.getElementById('cmFormulaPreview');
+            if(points.length === 0 || totalMass < 1e-9) {
+                previewElem.innerHTML = `⚙️ 暂无有效质点，添加质点后显示加权求和细节`;
+                return;
+            }
+            // 生成标准数学形式式子 (不带LaTeX，纯字符)
+            let massSumTerms = points.map(p => `${p.mass.toFixed(1)}`).join(' + ');
+            let xSumTerms = points.map(p => `${p.mass.toFixed(1)}·${p.x.toFixed(0)}`).join(' + ');
+            let ySumTerms = points.map(p => `${p.mass.toFixed(1)}·${p.y.toFixed(0)}`).join(' + ');
+            if(xSumTerms.length > 55) xSumTerms = xSumTerms.slice(0, 52) + '…';
+            if(ySumTerms.length > 55) ySumTerms = ySumTerms.slice(0, 52) + '…';
+            if(massSumTerms.length > 48) massSumTerms = massSumTerms.slice(0, 45) + '…';
+            
+            previewElem.innerHTML = `Xc = (${xSumTerms}) / (${massSumTerms}) ≈ ${cx.toFixed(1)}<br>Yc = (${ySumTerms}) / (${massSumTerms}) ≈ ${cy.toFixed(1)}`;
+            
+            // 也可更新标准公式卡片
+            const stdCard = document.getElementById('cmStandardFormula');
+            stdCard.innerHTML = `Xc = ( Σ mᵢ·xᵢ ) / Σ mᵢ = ${cx.toFixed(2)} &nbsp;&nbsp; Yc = ( Σ mᵢ·yᵢ ) / Σ mᵢ = ${cy.toFixed(2)}`;
+        }
+        
+        // ---------- 渲染画布：质点超大、视觉醒目 ----------
+        function renderCanvas() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+            ctx.save();
+            ctx.strokeStyle = "#eeddbb";
+            ctx.lineWidth = 1;
+            for(let i = 0; i < CANVAS_W; i += 50) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, CANVAS_H);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(CANVAS_W, i);
+                ctx.stroke();
+            }
+            ctx.font = "bold 12px monospace";
+            ctx.fillStyle = "#a97c4a";
+            ctx.fillText("x →", CANVAS_W-35, 28);
+            ctx.fillText("↓ y", 15, CANVAS_H-12);
+            
+            // 质心到各质点连线
+            if(points.length > 0) {
+                const { cx, cy } = computeCentroid();
+                for(let p of points) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(cx, cy);
+                    ctx.strokeStyle = "#f0b87a99";
+                    ctx.setLineDash([6, 9]);
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制质点 (半径34px)
+            for(let i=0; i<points.length; i++) {
+                const p = points[i];
+                // 外光晕
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, POINT_RADIUS + 4, 0, 2*Math.PI);
+                ctx.fillStyle = p.color + "30";
+                ctx.fill();
+                // 主球体渐变
+                const grad = ctx.createRadialGradient(p.x-12, p.y-12, 6, p.x, p.y, POINT_RADIUS);
+                grad.addColorStop(0, p.color);
+                grad.addColorStop(1, p.color+"cc");
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, POINT_RADIUS, 0, 2*Math.PI);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, POINT_RADIUS, 0, 2*Math.PI);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                // 高光
+                ctx.beginPath();
+                ctx.arc(p.x-10, p.y-10, 8, 0, 2*Math.PI);
+                ctx.fillStyle = "#ffffffdd";
+                ctx.fill();
+                // 质量标签
+                ctx.font = "bold 18px 'Segoe UI'";
+                ctx.fillStyle = "#2d241a";
+                ctx.shadowBlur = 3;
+                ctx.shadowColor = "#fff0c0";
+                ctx.fillText(`${p.mass.toFixed(1)} kg`, p.x-34, p.y-26);
+                ctx.font = "bold 14px monospace";
+                ctx.fillStyle = "#c2410c";
+                ctx.fillText(`m = ${p.mass.toFixed(1)}`, p.x-28, p.y+44);
+                ctx.shadowBlur = 0;
+            }
+            
+            // 质心大星标
+            const { cx, cy, totalMass } = computeCentroid();
+            if(points.length > 0 && totalMass > 0) {
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = "#ffb347";
+                ctx.beginPath();
+                ctx.arc(cx, cy, 30, 0, 2*Math.PI);
+                ctx.fillStyle = "#ffb34740";
+                ctx.fill();
+                let spikes = 5;
+                let outerR = 26;
+                let innerR = 12;
+                let rot = Math.PI/2*3;
+                let step = Math.PI / spikes;
+                ctx.beginPath();
+                for(let i=0; i<spikes; i++) {
+                    let rad = rot + i * step * 2;
+                    let x1 = cx + Math.cos(rad) * outerR;
+                    let y1 = cy + Math.sin(rad) * outerR;
+                    if(i===0) ctx.moveTo(x1, y1);
+                    else ctx.lineTo(x1, y1);
+                    let rad2 = rad + step;
+                    let x2 = cx + Math.cos(rad2) * innerR;
+                    let y2 = cy + Math.sin(rad2) * innerR;
+                    ctx.lineTo(x2, y2);
+                }
+                ctx.closePath();
+                ctx.fillStyle = "#FFCF4A";
+                ctx.fill();
+                ctx.fillStyle = "#E67E22";
+                ctx.font = "bold 30px system-ui";
+                ctx.fillText("★", cx-17, cy+13);
+                ctx.font = "bold 15px 'Segoe UI'";
+                ctx.fillStyle = "#b74c0c";
+                ctx.fillText("质心", cx+24, cy-12);
+                ctx.shadowBlur = 0;
+            } else if(points.length === 0) {
+                ctx.font = "italic 20px system-ui";
+                ctx.fillStyle = "#b48c5c";
+                ctx.fillText("✨ 点击「添加质点」开始探索", CANVAS_W/2-200, CANVAS_H/2);
+            }
+            ctx.font = "bold 14px monospace";
+            ctx.fillStyle = "#d48c3a";
+            ctx.fillText(`总质量 M = ${totalMass.toFixed(2)} kg`, 22, 52);
+        }
+        
+        // ---------- 右侧质点列表：包含坐标输入框 + 质量滑块，示意小圆点已缩小 ----------
+        function updatePointsListUI() {
+            const container = document.getElementById('pointsListContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            if(points.length === 0) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'point-item';
+                emptyDiv.style.justifyContent = 'center';
+                emptyDiv.innerHTML = '🌱 暂无质点，点击按钮添加';
+                container.appendChild(emptyDiv);
+                return;
+            }
+            for(let idx=0; idx<points.length; idx++) {
+                const p = points[idx];
+                const div = document.createElement('div');
+                div.className = 'point-item';
+                div.style.borderLeftColor = p.color;
+                
+                // 小色块 (缩小)
+                const colorSpan = document.createElement('div');
+                colorSpan.className = 'point-color-badge';
+                colorSpan.style.backgroundColor = p.color;
+                colorSpan.style.width = '26px';
+                colorSpan.style.height = '26px';
+                
+                // 信息区 + 坐标手动调节
+                const infoSpan = document.createElement('div');
+                infoSpan.className = 'point-info';
+                infoSpan.innerHTML = `<strong>质点 ${idx+1}</strong><br>`;
+                const coordDiv = document.createElement('div');
+                coordDiv.className = 'coord-edit';
+                coordDiv.innerHTML = `
+                    <span style="font-size:0.65rem;">X:</span>
+                    <input type="number" step="5" value="${Math.round(p.x)}" class="coord-x-input" style="width:48px;">
+                    <span style="font-size:0.65rem;">Y:</span>
+                    <input type="number" step="5" value="${Math.round(p.y)}" class="coord-y-input" style="width:48px;">
+                    <button class="coord-update-btn" style="padding:2px 6px; font-size:0.6rem;">↵</button>
+                `;
+                infoSpan.appendChild(coordDiv);
+                
+                const xInput = coordDiv.querySelector('.coord-x-input');
+                const yInput = coordDiv.querySelector('.coord-y-input');
+                const updateBtn = coordDiv.querySelector('.coord-update-btn');
+                updateBtn.addEventListener('click', () => {
+                    let newX = parseFloat(xInput.value);
+                    let newY = parseFloat(yInput.value);
+                    if(isNaN(newX)) newX = p.x;
+                    if(isNaN(newY)) newY = p.y;
+                    updatePointCoordFromInput(idx, newX, newY);
+                });
+                
+                // 质量滑块
+                const sliderDiv = document.createElement('div');
+                sliderDiv.className = 'mass-slider';
+                const massLabel = document.createElement('label');
+                massLabel.innerText = '⚖️质量';
+                const range = document.createElement('input');
+                range.type = 'range';
+                range.min = 0.3;
+                range.max = 9.5;
+                range.step = 0.05;
+                range.value = p.mass;
+                const massValSpan = document.createElement('span');
+                massValSpan.className = 'mass-value';
+                massValSpan.innerText = p.mass.toFixed(2);
+                range.addEventListener('input', (e) => {
+                    const newVal = parseFloat(e.target.value);
+                    massValSpan.innerText = newVal.toFixed(2);
+                    updateMass(idx, newVal);
+                });
+                sliderDiv.appendChild(massLabel);
+                sliderDiv.appendChild(range);
+                sliderDiv.appendChild(massValSpan);
+                
+                // 单独删除按钮
+                const delBtn = document.createElement('button');
+                delBtn.innerText = '✖';
+                delBtn.style.width = '38px';
+                delBtn.style.background = '#ffe4dd';
+                delBtn.style.fontSize = '0.7rem';
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if(points.length <= 1) {
+                        alert("至少保留一个质点才能展示质心公式");
+                        return;
+                    }
+                    points.splice(idx, 1);
+                    updatePointsListUI();
+                    renderCanvas();
+                    updateCMDisplay();
+                });
+                
+                div.appendChild(colorSpan);
+                div.appendChild(infoSpan);
+                div.appendChild(sliderDiv);
+                div.appendChild(delBtn);
+                container.appendChild(div);
+            }
+        }
+        
+        // ---------- 质点增删重置 ----------
+        function addPoint() {
+            let randX = Math.min(CANVAS_W - POINT_RADIUS - 15, Math.max(POINT_RADIUS + 15, CANVAS_W/2 + (Math.random() - 0.5) * 280));
+            let randY = Math.min(CANVAS_H - POINT_RADIUS - 15, Math.max(POINT_RADIUS + 15, CANVAS_H/2 + (Math.random() - 0.5) * 240));
+            let newMass = parseFloat((Math.random() * 3 + 1.2).toFixed(1));
+            let newColor = getColorByIndex(points.length + 3);
+            points.push({ x: randX, y: randY, mass: newMass, color: newColor });
+            updatePointsListUI();
+            renderCanvas();
+            updateCMDisplay();
+        }
+        
+        function resetToDefault() {
+            points = [
+                { x: 200, y: 180, mass: 3.5, color: getColorByIndex(0) },
+                { x: 640, y: 150, mass: 2.6, color: getColorByIndex(1) },
+                { x: 470, y: 430, mass: 4.2, color: getColorByIndex(2) },
+                { x: 790, y: 510, mass: 1.8, color: getColorByIndex(3) },
+                { x: 320, y: 530, mass: 2.9, color: getColorByIndex(4) },
+                { x: 860, y: 280, mass: 1.5, color: getColorByIndex(5) }
+            ];
+            updatePointsListUI();
+            renderCanvas();
+            updateCMDisplay();
+        }
+        
+        function clearAllPoints() {
+            if(points.length === 0) return;
+            if(points.length <= 1) {
+                resetToDefault();
+                return;
+            }
+            points = [ { x: CANVAS_W/2, y: CANVAS_H/2, mass: 2.2, color: getColorByIndex(9) } ];
+            updatePointsListUI();
+            renderCanvas();
+            updateCMDisplay();
+        }
+        
+        // ---------- 拖拽交互 (鼠标+触摸) 保留一键拖拽核心 ----------
+        function getCanvasCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if(e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            let canvasX = (clientX - rect.left) * scaleX;
+            let canvasY = (clientY - rect.top) * scaleY;
+            canvasX = Math.min(CANVAS_W, Math.max(0, canvasX));
+            canvasY = Math.min(CANVAS_H, Math.max(0, canvasY));
+            return { x: canvasX, y: canvasY };
+        }
+        
+        function onPointerDown(e) {
+            e.preventDefault();
+            const { x, y } = getCanvasCoords(e);
+            for(let i=0; i<points.length; i++) {
+                const p = points[i];
+                const dist = Math.hypot(x - p.x, y - p.y);
+                if(dist < POINT_RADIUS + 12) {
+                    draggingIndex = i;
+                    dragOffsetX = p.x - x;
+                    dragOffsetY = p.y - y;
+                    canvas.style.cursor = 'grabbing';
+                    break;
+                }
+            }
+        }
+        
+        function onPointerMove(e) {
+            if(draggingIndex === -1) return;
+            e.preventDefault();
+            const { x, y } = getCanvasCoords(e);
+            let newX = x + dragOffsetX;
+            let newY = y + dragOffsetY;
+            updatePointPosition(draggingIndex, newX, newY);
+            updatePointsListUI();
+        }
+        
+        function onPointerUp(e) {
+            if(draggingIndex !== -1) {
+                draggingIndex = -1;
+                canvas.style.cursor = 'grab';
+                renderCanvas();
+            }
+        }
+        
+        function attachEvents() {
+            canvas.addEventListener('mousedown', onPointerDown);
+            window.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('mouseup', onPointerUp);
+            canvas.addEventListener('touchstart', onPointerDown, {passive: false});
+            window.addEventListener('touchmove', onPointerMove, {passive: false});
+            window.addEventListener('touchend', onPointerUp);
+            canvas.style.cursor = 'grab';
+            canvas.addEventListener('dragstart', (e) => e.preventDefault());
+        }
+        
+        function init() {
+            resetToDefault();
+            attachEvents();
+            document.getElementById('addPointBtn').addEventListener('click', addPoint);
+            document.getElementById('resetDefaultBtn').addEventListener('click', resetToDefault);
+            document.getElementById('clearAllBtn').addEventListener('click', clearAllPoints);
+        }
+        init();
+    })();
+</script>
+</body>
+</html>
