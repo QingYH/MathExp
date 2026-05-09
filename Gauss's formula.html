@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
+  <title>高斯公式：多源流出 | 三维教学演示 | 数值验证</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Microsoft YaHei', 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+    }
+    .info-panel {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      max-width: 500px;
+      background: rgba(8, 12, 22, 0.94);
+      backdrop-filter: blur(14px);
+      border-radius: 18px;
+      padding: 10px 16px;
+      color: #e8e8e8;
+      border-left: 3px solid #3a86ff;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+      pointer-events: auto;
+      z-index: 10;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.45;
+      transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .info-panel.hidden {
+      transform: translateX(-120%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    @media (min-width: 768px) {
+      .info-panel {
+        top: 18px;
+        left: 18px;
+        right: auto;
+        width: 460px;
+        font-size: 14px;
+        padding: 12px 18px;
+      }
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .panel-header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+      color: #ffaa66;
+    }
+    .hide-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #ccc;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 2px 10px;
+      border-radius: 16px;
+      transition: 0.2s;
+      pointer-events: auto;
+      line-height: 1.4;
+    }
+    .hide-btn:hover { background: rgba(255,255,255,0.3); color: #fff; }
+    .show-panel-btn {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid #3a86ff;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 30px;
+      z-index: 15;
+      transition: 0.2s;
+      display: none;
+    }
+    .show-panel-btn.visible { display: block; }
+    .show-panel-btn:hover { background: #3a86ff; }
+    .theorem-compact {
+      background: rgba(0,0,0,0.55);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin: 6px 0;
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .theorem-compact .math {
+      font-family: 'Courier New', monospace;
+      color: #33cc33;
+      font-weight: bold;
+      font-size: 1.05rem;
+      text-align: center;
+      margin: 4px 0;
+    }
+    .divergence-box {
+      background: rgba(0, 25, 50, 0.5);
+      border-left: 3px solid #ffaa66;
+      padding: 6px 12px;
+      margin: 6px 0;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+    .divergence-box .formula {
+      font-family: 'Courier New', monospace;
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #33cc33;
+      text-align: center;
+      margin: 2px 0;
+    }
+    .controls {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 20;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 30px;
+      padding: 5px 10px;
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    button {
+      background: #1e88e5;
+      border: none;
+      color: white;
+      padding: 5px 14px;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 12px;
+    }
+    button.active { background: #ff7043; box-shadow: 0 0 8px #ff7043; }
+    .flux-meter {
+      position: absolute;
+      bottom: 18px;
+      right: 18px;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      padding: 8px 14px;
+      border-radius: 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #88ffaa;
+      pointer-events: none;
+      z-index: 10;
+      border: 1px solid #88ffaa88;
+      text-align: left;
+      min-width: 240px;
+      line-height: 1.6;
+    }
+    .flux-meter .label {
+      color: #aaa;
+      font-size: 11px;
+    }
+    .flux-meter .value {
+      color: #ffcc44;
+      font-weight: bold;
+    }
+    .flux-meter .equal {
+      color: #33cc33;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    @media (max-width: 600px) {
+      button { padding: 4px 10px; font-size: 11px; }
+      .flux-meter { font-size: 11px; min-width: 200px; bottom: 12px; right: 12px; padding: 6px 10px; }
+      .info-panel { padding: 8px 12px; max-width: 92%; font-size: 13px; }
+      .theorem-compact { font-size: 0.8rem; }
+    }
+    .particle-note {
+      font-size: 12px;
+      margin-top: 6px;
+      opacity: 0.8;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 5px;
+    }
+    .green-tag { color: #6f6; font-weight: bold; background: rgba(0,255,0,0.15); padding: 0 4px; border-radius: 4px; }
+    .red-tag { color: #ffaaaa; font-weight: bold; background: rgba(255,80,80,0.2); padding: 0 4px; border-radius: 4px; }
+    .highlight { color: #ffaa66; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <button id="btnWater" class="active">💧 水流</button>
+    <button id="btnEM">⚡ 电磁场</button>
+  </div>
+
+  <button class="show-panel-btn" id="showPanelBtn">📋 定理</button>
+
+  <div class="info-panel" id="infoPanel">
+    <div class="panel-header">
+      <h1>📐 高斯公式 · 散度定理</h1>
+      <button class="hide-btn" id="hidePanelBtn">✕</button>
+    </div>
+    <div class="theorem-compact">
+      <span style="color:#88ccff;">设Ω由光滑闭曲面S围成，P,Q,R在Ω上一阶偏导连续：</span>
+      <div class="math">∯<sub>S</sub> P dy dz + Q dz dx + R dx dy = ∭<sub>Ω</sub> (∂P/∂x + ∂Q/∂y + ∂R/∂z) dV</div>
+    </div>
+    <div class="divergence-box">
+      <span style="font-size:0.85rem; color:#88ccff;">散度形式：</span>
+      <div class="formula">∯<sub>S</sub> <strong>F</strong>·<strong>n</strong> dS = ∭<sub>Ω</sub> div <strong>F</strong> dV</div>
+      <span style="font-size:0.75rem; opacity:0.7;">div <strong>F</strong> = ∂P/∂x + ∂Q/∂y + ∂R/∂z</span>
+    </div>
+    <p style="margin:6px 0; font-size:0.95rem;"><span class="highlight">核心：</span>闭合曲面通量 = 内部散度积分 = 内部源强度总和 × 4π。</p>
+    <p id="dynamicDesc" style="margin:4px 0; font-size:0.9rem;">🌊 <strong>水流演示：</strong>3个点源叠加，<span class="green-tag">深绿色粒子</span>代表水分子，穿过黄色球面流出。</p>
+    <div class="particle-note" id="particleNote">💧 <span class="green-tag">深绿色粒子</span> = 水分子/流体微团</div>
+  </div>
+
+  <div class="flux-meter" id="fluxMeter">
+    <div><span class="label">∯<sub>S</sub> F·n dS (曲面通量):</span> <span class="value" id="fluxValue">---</span></div>
+    <div><span class="label">4π·Σq<sub>i</sub> (体积分=源强度和×4π):</span> <span class="value" id="sourceValue">---</span></div>
+    <div style="text-align:center; margin-top:2px;"><span class="equal" id="equalSign">✅ 相等</span></div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050b1a);
+    scene.fog = new THREE.FogExp2(0x050b1a, 0.006);
+
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(3.5, 2.5, 4.2);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    labelRenderer.domElement.style.position = 'absolute';
+    labelRenderer.domElement.style.top = '0px';
+    labelRenderer.domElement.style.left = '0px';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    document.body.appendChild(labelRenderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.autoRotate = false;
+    controls.enableZoom = true;
+    controls.zoomSpeed = 1.0;
+    controls.rotateSpeed = 1.0;
+
+    const infoPanel = document.getElementById('infoPanel');
+    const hidePanelBtn = document.getElementById('hidePanelBtn');
+    const showPanelBtn = document.getElementById('showPanelBtn');
+    
+    hidePanelBtn.addEventListener('click', () => {
+      infoPanel.classList.add('hidden');
+      showPanelBtn.classList.add('visible');
+    });
+    showPanelBtn.addEventListener('click', () => {
+      infoPanel.classList.remove('hidden');
+      showPanelBtn.classList.remove('visible');
+    });
+
+    const gridHelper = new THREE.GridHelper(6, 20, 0x4488aa, 0x335577);
+    gridHelper.position.y = -1.3;
+    scene.add(gridHelper);
+    
+    const starGeometry = new THREE.BufferGeometry();
+    const starPos = [];
+    for (let i = 0; i < 1000; i++) {
+      starPos.push((Math.random() - 0.5) * 200);
+      starPos.push((Math.random() - 0.5) * 100);
+      starPos.push((Math.random() - 0.5) * 80 - 40);
+    }
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starPos), 3));
+    const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ color: 0xffffff, size: 0.06, transparent: true, opacity: 0.5 }));
+    scene.add(stars);
+
+    const sphereGeom = new THREE.SphereGeometry(1.3, 32, 32);
+    const waterSphereMat = new THREE.MeshPhongMaterial({ color: 0xffcc00, transparent: true, opacity: 0.32, side: THREE.DoubleSide, emissive: 0x332200 });
+    const emSphereMat = new THREE.MeshPhongMaterial({ color: 0xffcc00, transparent: true, opacity: 0.32, side: THREE.DoubleSide, emissive: 0x332200 });
+    let sphereMesh = new THREE.Mesh(sphereGeom, waterSphereMat);
+    scene.add(sphereMesh);
+    
+    const edgesGeo = new THREE.EdgesGeometry(sphereGeom);
+    const waterLineMat = new THREE.LineBasicMaterial({ color: 0xffdd44, transparent: true, opacity: 0.6 });
+    const emLineMat = new THREE.LineBasicMaterial({ color: 0xffdd44, transparent: true, opacity: 0.6 });
+    let wireframeLines = new THREE.LineSegments(edgesGeo, waterLineMat);
+    scene.add(wireframeLines);
+    
+    const surfaceGlowGeom = new THREE.BufferGeometry();
+    const glowCount = 600;
+    const glowPositions = [];
+    for (let i = 0; i < glowCount; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 1.31;
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.sin(phi) * Math.sin(theta);
+      const z = r * Math.cos(phi);
+      glowPositions.push(x, y, z);
+    }
+    surfaceGlowGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(glowPositions), 3));
+    const surfaceGlow = new THREE.Points(surfaceGlowGeom, new THREE.PointsMaterial({ color: 0xffdd44, size: 0.025, transparent: true, opacity: 0.5 }));
+    scene.add(surfaceGlow);
+    
+    const waterSources = [
+      { pos: new THREE.Vector3(0.45, 0.35, 0.2), strength: 1.2 },
+      { pos: new THREE.Vector3(-0.55, 0.25, -0.3), strength: 1.0 },
+      { pos: new THREE.Vector3(0.15, -0.65, 0.4), strength: 1.1 }
+    ];
+    const emSources = [
+      { pos: new THREE.Vector3(0.55, 0.45, 0.35), strength: 1.5 },
+      { pos: new THREE.Vector3(-0.45, -0.35, -0.55), strength: 1.2 }
+    ];
+    
+    let currentSources = waterSources;
+    let currentMode = 'water';
+    const sourceMeshes = [];
+    
+    function createSourceVisuals(sources, mode) {
+      sourceMeshes.forEach(m => { if(m && m.parent) scene.remove(m); });
+      sourceMeshes.length = 0;
+      sources.forEach((src) => {
+        const coreGeom = new THREE.SphereGeometry(0.18, 32, 32);
+        const material = new THREE.MeshStandardMaterial({ 
+          color: mode === 'water' ? 0x228B22 : 0xff3344, 
+          emissive: mode === 'water' ? 0x112211 : 0x441111, 
+          emissiveIntensity: 0.6 
+        });
+        const core = new THREE.Mesh(coreGeom, material);
+        core.position.copy(src.pos);
+        scene.add(core);
+        const glowGeom = new THREE.SphereGeometry(0.3, 24, 24);
+        const glowMat = new THREE.MeshBasicMaterial({ 
+          color: mode === 'water' ? 0x228B22 : 0xff3344, 
+          transparent: true, 
+          opacity: 0.3, 
+          side: THREE.BackSide 
+        });
+        const glow = new THREE.Mesh(glowGeom, glowMat);
+        glow.position.copy(src.pos);
+        scene.add(glow);
+        sourceMeshes.push(core, glow);
+        
+        const div = document.createElement('div');
+        div.textContent = mode === 'water' ? '💧' : '🔴';
+        div.style.color = '#fff';
+        div.style.fontSize = '14px';
+        div.style.background = 'rgba(0,0,0,0.5)';
+        div.style.padding = '2px 6px';
+        div.style.borderRadius = '16px';
+        const label = new CSS2DObject(div);
+        label.position.copy(src.pos.clone().add(new THREE.Vector3(0, 0.32, 0)));
+        scene.add(label);
+        sourceMeshes.push(label);
+      });
+    }
+    
+    function getCombinedField(p, sources) {
+      let result = new THREE.Vector3(0, 0, 0);
+      for (let src of sources) {
+        const rVec = p.clone().sub(src.pos);
+        const rLen = Math.max(rVec.length(), 0.2);
+        const magnitude = src.strength / (rLen * rLen);
+        const dir = rVec.clone().divideScalar(rLen);
+        result.add(dir.multiplyScalar(magnitude));
+      }
+      if (result.length() > 3.2) result.multiplyScalar(3.2 / result.length());
+      return result;
+    }
+    
+    const fieldParticleCount = 700;
+    const fieldParticleGeom = new THREE.BufferGeometry();
+    const fieldPositions = new Float32Array(fieldParticleCount * 3);
+    for (let i = 0; i < fieldParticleCount; i++) {
+      const r = 0.6 + Math.random() * 1.5;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      fieldPositions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+      fieldPositions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+      fieldPositions[i*3+2] = r * Math.cos(phi);
+    }
+    fieldParticleGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(fieldPositions), 3));
+    const fieldParticleMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.028, transparent: true, opacity: 0.35 });
+    const fieldParticles = new THREE.Points(fieldParticleGeom, fieldParticleMat);
+    scene.add(fieldParticles);
+    
+    const WATER_COLOR = 0x228B22;
+    const WATER_EMISSIVE = 0x88ff88;
+    const EM_COLOR = 0xff3344;
+    const EM_EMISSIVE = 0xff8888;
+    
+    const emittedCount = 600;
+    const emittedList = [];
+    const sphereGeomSmall = new THREE.SphereGeometry(0.045, 12, 12);
+    
+    for (let i = 0; i < emittedCount; i++) {
+      const material = new THREE.MeshStandardMaterial({ 
+        color: WATER_COLOR, 
+        emissive: WATER_EMISSIVE, 
+        emissiveIntensity: 0.7 
+      });
+      const particle = new THREE.Mesh(sphereGeomSmall, material);
+      particle.visible = false;
+      scene.add(particle);
+      emittedList.push({ 
+        mesh: particle, 
+        velocity: new THREE.Vector3(), 
+        life: 0, 
+        active: false, 
+        srcIdx: 0
+      });
+    }
+    
+    let lastEmitTime = 0;
+    
+    function setAllParticleColors(mode) {
+      const targetColor = mode === 'water' ? WATER_COLOR : EM_COLOR;
+      const targetEmissive = mode === 'water' ? WATER_EMISSIVE : EM_EMISSIVE;
+      for (let p of emittedList) {
+        if (p.mesh && p.mesh.material) {
+          p.mesh.material.color.setHex(targetColor);
+          p.mesh.material.emissive.setHex(targetEmissive);
+          p.mesh.material.needsUpdate = true;
+        }
+      }
+    }
+    
+    function updateEmittedParticles(deltaTime, sources, mode) {
+      if (!sources.length) return;
+      setAllParticleColors(mode);
+      
+      const now = performance.now() / 1000;
+      const emitRate = 55;
+      const interval = 1.0 / emitRate;
+      while (lastEmitTime + interval < now) {
+        lastEmitTime += interval;
+        const srcIdx = Math.floor(Math.random() * sources.length);
+        const src = sources[srcIdx];
+        for (let p of emittedList) {
+          if (!p.active) {
+            p.active = true;
+            p.life = 1.0;
+            p.srcIdx = srcIdx;
+            const offset = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+            p.mesh.position.copy(src.pos.clone().add(offset.multiplyScalar(0.28)));
+            const dir = p.mesh.position.clone().sub(src.pos).normalize();
+            const speed = 0.9 / (Math.random() * 0.8 + 0.6);
+            p.velocity = dir.multiplyScalar(speed);
+            p.mesh.visible = true;
+            if (mode === 'water') {
+              p.mesh.material.color.setHex(WATER_COLOR);
+              p.mesh.material.emissive.setHex(WATER_EMISSIVE);
+            } else {
+              p.mesh.material.color.setHex(EM_COLOR);
+              p.mesh.material.emissive.setHex(EM_EMISSIVE);
+            }
+            p.mesh.material.needsUpdate = true;
+            break;
+          }
+        }
+      }
+      
+      for (let p of emittedList) {
+        if (!p.active) continue;
+        p.life -= deltaTime * 0.55;
+        if (p.life <= 0 || p.mesh.position.length() > 2.25) {
+          p.active = false;
+          p.mesh.visible = false;
+          continue;
+        }
+        const pos = p.mesh.position;
+        const fieldVel = getCombinedField(pos, sources);
+        p.velocity.lerp(fieldVel, 0.12);
+        if (p.velocity.length() > 1.4) p.velocity.multiplyScalar(1.4 / p.velocity.length());
+        p.mesh.position.x += p.velocity.x * deltaTime * 0.65;
+        p.mesh.position.y += p.velocity.y * deltaTime * 0.65;
+        p.mesh.position.z += p.velocity.z * deltaTime * 0.65;
+        const rLen = p.mesh.position.length();
+        const fade = Math.min(1.0, (rLen - 0.4) / 1.6);
+        p.mesh.material.emissiveIntensity = 0.7 * (1 - fade);
+      }
+    }
+    
+    function updateFieldParticles(deltaTime, sources) {
+      const positionsAttr = fieldParticles.geometry.attributes.position;
+      const array = positionsAttr.array;
+      const speedFactor = 0.42 * deltaTime;
+      for (let i = 0; i < fieldParticleCount; i++) {
+        let px = array[i*3], py = array[i*3+1], pz = array[i*3+2];
+        let pos = new THREE.Vector3(px, py, pz);
+        let vel = getCombinedField(pos, sources);
+        let nx = px + vel.x * speedFactor;
+        let ny = py + vel.y * speedFactor;
+        let nz = pz + vel.z * speedFactor;
+        let newLen = Math.hypot(nx, ny, nz);
+        if (newLen > 2.3 || newLen < 0.3) {
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.acos(2 * Math.random() - 1);
+          const r = 0.7 + Math.random() * 1.4;
+          nx = r * Math.sin(phi) * Math.cos(theta);
+          ny = r * Math.sin(phi) * Math.sin(theta);
+          nz = r * Math.cos(phi);
+        }
+        array[i*3] = nx; array[i*3+1] = ny; array[i*3+2] = nz;
+      }
+      positionsAttr.needsUpdate = true;
+    }
+    
+    const arrowGroup = new THREE.Group();
+    scene.add(arrowGroup);
+    function rebuildArrows(sources, mode) {
+      while(arrowGroup.children.length) arrowGroup.remove(arrowGroup.children[0]);
+      const positions = [];
+      for (let i = 0; i < 36; i++) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const r = 0.95 + Math.random() * 1.15;
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+        positions.push(new THREE.Vector3(x, y, z));
+      }
+      positions.forEach(pos => {
+        const vel = getCombinedField(pos, sources);
+        if(vel.length() < 0.08) return;
+        const dir = vel.clone().normalize();
+        const len = Math.min(vel.length() * 0.4, 0.45);
+        const arrowColor = mode === 'water' ? 0x88aaff : 0xffaa88;
+        const arrowHelper = new THREE.ArrowHelper(dir, pos, len, arrowColor, 0.2, 0.1);
+        arrowHelper.line.material.transparent = true;
+        arrowHelper.line.material.opacity = 0.35;
+        arrowHelper.cone.material.transparent = true;
+        arrowHelper.cone.material.opacity = 0.35;
+        arrowGroup.add(arrowHelper);
+      });
+    }
+    
+    // 计算曲面通量 (蒙特卡洛) - 对于点源场 F = strength * r̂ / r²，通量 = 4π * Σstrength
+    function computeSurfaceFlux(sources, radius = 1.3, samples = 2000) {
+      let total = 0;
+      for (let i = 0; i < samples; i++) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        const x = radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.sin(phi) * Math.sin(theta);
+        const z = radius * Math.cos(phi);
+        const pos = new THREE.Vector3(x, y, z);
+        const field = getCombinedField(pos, sources);
+        const normal = pos.clone().normalize();
+        total += field.dot(normal);
+      }
+      const avgRadial = total / samples;
+      const area = 4 * Math.PI * radius * radius;
+      return avgRadial * area;
+    }
+    
+    // 计算体积分 (源强度和 × 4π)
+    function computeVolumeIntegral(sources) {
+      const sourceSum = sources.reduce((sum, src) => sum + src.strength, 0);
+      return 4 * Math.PI * sourceSum;
+    }
+    
+    const fluxValueSpan = document.getElementById('fluxValue');
+    const sourceValueSpan = document.getElementById('sourceValue');
+    const equalSignSpan = document.getElementById('equalSign');
+    const descDiv = document.getElementById('dynamicDesc');
+    const particleNote = document.getElementById('particleNote');
+    
+    function updateUI() {
+      const surfaceFlux = computeSurfaceFlux(currentSources);
+      const volumeIntegral = computeVolumeIntegral(currentSources);
+      
+      fluxValueSpan.innerText = surfaceFlux.toFixed(3);
+      sourceValueSpan.innerText = volumeIntegral.toFixed(3);
+      
+      // 计算相对误差
+      const diff = Math.abs(surfaceFlux - volumeIntegral);
+      const relError = volumeIntegral > 0 ? (diff / volumeIntegral * 100) : 0;
+      
+      if (relError < 2.0) {
+        equalSignSpan.innerHTML = `✅ 相等 (相对误差 ${relError.toFixed(1)}%)`;
+        equalSignSpan.style.color = '#33cc33';
+      } else if (relError < 5.0) {
+        equalSignSpan.innerHTML = `⚠️ 近似相等 (相对误差 ${relError.toFixed(1)}%)`;
+        equalSignSpan.style.color = '#ffaa00';
+      } else {
+        equalSignSpan.innerHTML = `❌ 误差较大 (${relError.toFixed(1)}%)`;
+        equalSignSpan.style.color = '#ff4444';
+      }
+      
+      const sourceSum = currentSources.reduce((s, src) => s + src.strength, 0);
+      
+      if (currentMode === 'water') {
+        document.getElementById('fluxMeter').style.borderColor = '#228B22';
+        descDiv.innerHTML = `🌊 <strong>水流：</strong>3个点源叠加(强度和=${sourceSum.toFixed(2)})，<span class="green-tag">深绿色粒子</span>代表水分子。曲面通量=体积分=4π×${sourceSum.toFixed(2)}≈${volumeIntegral.toFixed(2)}，验证高斯公式。`;
+        particleNote.innerHTML = '💧 <span class="green-tag">深绿色粒子</span> = 水分子/流体微团';
+        sphereMesh.material = waterSphereMat;
+        wireframeLines.material = waterLineMat;
+        surfaceGlow.material.color.setHex(0xffdd44);
+        fieldParticleMat.color.setHex(0x88aaff);
+      } else {
+        document.getElementById('fluxMeter').style.borderColor = '#ff8888';
+        descDiv.innerHTML = `⚡ <strong>电磁场：</strong>2个点电荷叠加(电荷和=${sourceSum.toFixed(2)})，<span class="red-tag">亮红色粒子</span>代表试探电荷。电通量=4π×${sourceSum.toFixed(2)}≈${volumeIntegral.toFixed(2)}，符合高斯定律。`;
+        particleNote.innerHTML = '🔴 <span class="red-tag">亮红色粒子</span> = 电场线微粒 / 试探电荷';
+        sphereMesh.material = emSphereMat;
+        wireframeLines.material = emLineMat;
+        surfaceGlow.material.color.setHex(0xffdd44);
+        fieldParticleMat.color.setHex(0xffaa88);
+      }
+      setAllParticleColors(currentMode);
+    }
+    
+    document.getElementById('btnWater').addEventListener('click', () => {
+      currentMode = 'water';
+      currentSources = waterSources;
+      document.getElementById('btnWater').classList.add('active');
+      document.getElementById('btnEM').classList.remove('active');
+      createSourceVisuals(currentSources, 'water');
+      rebuildArrows(currentSources, 'water');
+      updateUI();
+      lastEmitTime = performance.now() / 1000;
+    });
+    document.getElementById('btnEM').addEventListener('click', () => {
+      currentMode = 'em';
+      currentSources = emSources;
+      document.getElementById('btnEM').classList.add('active');
+      document.getElementById('btnWater').classList.remove('active');
+      createSourceVisuals(currentSources, 'em');
+      rebuildArrows(currentSources, 'em');
+      updateUI();
+      lastEmitTime = performance.now() / 1000;
+    });
+    
+    createSourceVisuals(waterSources, 'water');
+    rebuildArrows(waterSources, 'water');
+    updateUI();
+    
+    let timeAcc = 0;
+    let lastFrame = performance.now();
+    function animate() {
+      const now = performance.now();
+      let delta = Math.min(0.033, (now - lastFrame) / 1000);
+      lastFrame = now;
+      timeAcc += delta;
+      
+      sourceMeshes.forEach((obj, idx) => {
+        if (obj.isMesh && obj.geometry.type === 'SphereGeometry' && obj.material.emissiveIntensity !== undefined && obj.material.transparent === undefined) {
+          const s = 1 + Math.sin(timeAcc * 7 + idx) * 0.05;
+          obj.scale.set(s, s, s);
+        } else if (obj.isMesh && obj.material.transparent && !obj.material.wireframe) {
+          const s2 = 1 + Math.sin(timeAcc * 5 + idx) * 0.08;
+          obj.scale.set(s2, s2, s2);
+        }
+      });
+      
+      updateEmittedParticles(delta, currentSources, currentMode);
+      updateFieldParticles(delta, currentSources);
+      
+      stars.rotation.y += 0.0002;
+      surfaceGlow.rotation.y += 0.002;
+      surfaceGlow.rotation.x += 0.001;
+      
+      if (Math.floor(timeAcc * 1.2) % 40 === 1) {
+        rebuildArrows(currentSources, currentMode);
+      }
+      if (Math.floor(timeAcc * 2.2) > Math.floor((timeAcc - delta) * 2.2)) {
+        updateUI();
+      }
+      
+      controls.update();
+      renderer.render(scene, camera);
+      labelRenderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      labelRenderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
