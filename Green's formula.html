@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>格林公式 · 电磁统一场 | 边界环量纵轴±0.05 极限放大曲线</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Inter', 'Georgia', serif;
+        }
+        .ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        /* 主标题样式：大字号 + 背景色 */
+        .main-header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #0a1a2a, #071520);
+            padding: 12px 28px;
+            border-radius: 48px;
+            border-left: 4px solid #00ccff;
+            border-right: 1px solid #2c5a7a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            pointer-events: none;
+            z-index: 25;
+            backdrop-filter: blur(4px);
+        }
+        .main-header h1 {
+            margin: 0;
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, #88ddff, #ffcc88);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(0,160,255,0.3);
+        }
+        .main-header p {
+            margin: 4px 0 0;
+            font-size: 0.7rem;
+            color: #bbddff;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 侧边栏面板 */
+        .info-sidebar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 370px;
+            max-width: calc(100% - 40px);
+            background: rgba(8, 18, 28, 0.92);
+            backdrop-filter: blur(14px);
+            border-radius: 32px;
+            padding: 1.2rem;
+            border-left: 1px solid rgba(0, 255, 255, 0.5);
+            pointer-events: auto;
+            overflow-y: auto;
+            max-height: calc(100% - 40px);
+            font-size: 0.85rem;
+            font-family: 'Segoe UI', 'Inter', sans-serif;
+            color: #eef5ff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            z-index: 20;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        /* 隐藏状态类 */
+        .info-sidebar.hidden {
+            transform: translateX(110%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* 侧边栏开关按钮 */
+        .toggle-sidebar-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            background: rgba(0, 30, 50, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            border: 1px solid #00ccff;
+            color: #00ccff;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            pointer-events: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .toggle-sidebar-btn:hover {
+            background: #00ccff20;
+            transform: scale(1.05);
+            border-color: #ffaa66;
+            color: #ffaa66;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffcc77, #ffaa66);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        .formula-card {
+            background: rgba(0, 20, 40, 0.7);
+            border-radius: 28px;
+            padding: 0.9rem;
+            border: 1px solid #2c7cb0;
+            margin-bottom: 12px;
+        }
+        .math-display {
+            font-family: 'Courier New', monospace;
+            background: #021a2c;
+            padding: 8px;
+            border-radius: 18px;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+        .story-text {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #ccdeff;
+            text-align: justify;
+        }
+        .chart-container {
+            background: #02101ecc;
+            border-radius: 24px;
+            padding: 8px;
+            border: 1px solid #3b82f6;
+            margin: 10px 0;
+        }
+        canvas.curve-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #01131f;
+            border-radius: 16px;
+            margin-bottom: 6px;
+        }
+        .legend-inline {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 4px;
+            font-size: 0.65rem;
+        }
+        .legend-color {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .status-badge {
+            background: #1e2a3a;
+            border-radius: 40px;
+            padding: 6px 10px;
+            font-size: 0.7rem;
+            color: #0ff;
+            text-align: center;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        .green-2d-canvas {
+            background: #01131f;
+            border-radius: 24px;
+            padding: 10px;
+            border: 1px solid #0ff;
+            margin-top: 8px;
+        }
+        canvas#greenPlaneCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #01131f;
+            border-radius: 16px;
+        }
+        .footer-note {
+            font-size: 0.6rem;
+            text-align: center;
+            border-top: 1px solid #2c5a7a;
+            padding-top: 8px;
+            margin-top: 8px;
+            color: #8ab3d0;
+        }
+        @media (max-width: 700px) {
+            .info-sidebar { width: 280px; padding: 0.8rem; top: 10px; right: 10px; max-height: 90%; }
+            .section-title { font-size: 1.1rem; }
+            .main-header h1 { font-size: 1.3rem; }
+            .main-header { top: 10px; left: 10px; padding: 6px 16px; }
+            .toggle-sidebar-btn { top: 14px; right: 14px; width: 38px; height: 38px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部主标题 -->
+    <div class="main-header">
+        <h1>📐 格林公式及场论理解</h1>
+        <p>边界环量 ∮  ⇄ 内部旋度通量 ∬ curl·dA  |  电磁感应中的统一之美</p>
+    </div>
+    
+    <!-- 侧边栏开关按钮 -->
+    <div id="toggleSidebarBtn" class="toggle-sidebar-btn" title="隐藏/显示面板">◀</div>
+    
+    <div class="ui-overlay">
+        <div id="infoSidebar" class="info-sidebar">
+            <div class="section-title">📜 格林公式 · 场论统一</div>
+            <div class="formula-card">
+                <div class="math-display">
+                    <span style="font-size:1rem; font-weight:bold;">∮<sub>∂D</sub> (P dx + Q dy) = ∬<sub>D</sub> (∂Q/∂x − ∂P/∂y) dA</span>
+                </div>
+                <div class="math-display" style="margin-top: 5px;">
+                    <span style="font-size:0.9rem; font-weight:bold;">∮<sub>L</sub> <span style="color:#ffaa66;">E</span>·d<strong>l</strong> = – <span style="color:#0ff;">dΦ<sub>B</sub>/dt</span></span>
+                </div>
+                <div class="story-text">
+                    <strong>🧲 乔治·格林 (1793–1841)</strong> 磨坊主之子，自学成才。1828年提出格林公式，统一边界积分与内部旋度通量。<br>
+                    💡 <span class="green-highlight" style="color:#88ffaa;">边界环量 = 内部旋度源代数和</span> —— 电磁感应中即感应电动势 = 磁通变化率负值。
+                </div>
+            </div>
+            <div class="formula-card">
+                <div class="story-text">
+                    <strong>⚡ 右手定则 & 感应电流方向 (修正后)</strong><br>
+                    线圈绕<span style="color:#ffaa66;">X轴（南北方向）</span>旋转切割竖直磁感线，磁通量 Φ(t) = B·A·cosθ 正弦变化。<br>
+                    <span style="color:#ff66cc;">紫色流动虚线</span>方向随感应电动势极性实时切换，严格符合楞次定律。
+                </div>
+            </div>
+            <div class="status-badge" id="liveValues">
+                🧲 磁通量 Φ = 0.0000  |  ⚡ 感应电势 ε = -dΦ/dt = 0.0000
+            </div>
+            
+            <div class="chart-container">
+                <div style="font-weight:bold; font-size:0.75rem;">📈 内部旋度通量 (磁通量) Φ(t)</div>
+                <canvas id="fluxCanvas" class="curve-canvas" width="500" height="120" style="height:120px;"></canvas>
+                <div class="legend-inline">
+                    <span><span class="legend-color" style="background: #3b82f6;"></span> Φ(t) = ∬<sub>D</sub> curl·dA = B·A·cosθ</span>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <div style="font-weight:bold; font-size:0.75rem;">📈 边界环量 ∮E·dl 与 感应电势 ε(t)  <span style="color:#ffcc88;">| 纵轴范围 [-0.05, 0.05] 极限放大</span></div>
+                <canvas id="emfCanvas" class="curve-canvas" width="500" height="120" style="height:120px;"></canvas>
+                <div class="legend-inline">
+                    <span><span class="legend-color" style="background: #ffaa66;"></span> 感应电势 ε(t) = –dΦ/dt</span>
+                    <span><span class="legend-color" style="background: #ff66cc;"></span> 边界环量 ∮E·dl (完全重合)</span>
+                </div>
+            </div>
+
+            <div class="green-2d-canvas">
+                <div style="font-weight:bold; font-size:0.75rem;">📐 格林公式平面示意 (环量 ⇄ 旋度通量)</div>
+                <canvas id="greenPlaneCanvas" width="400" height="160" style="width:100%; height:auto;"></canvas>
+                <div class="legend-inline">
+                    <span><span class="legend-color" style="background: #ff8888;"></span> 边界环量 ∮ F·dr</span>
+                    <span><span class="legend-color" style="background: #44ff88;"></span> 内部旋度源 (curl F)</span>
+                    <span><span class="legend-color" style="background: #66ffff;"></span> 通量方向指示</span>
+                </div>
+            </div>
+            <div class="footer-note">
+                🖱️ 鼠标拖拽旋转 | 线圈绕X轴(南北)旋转切割磁感线 | 紫色流动方向随ε极性切换(楞次定律)
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // ========= 面板隐藏/再现功能 =========
+        const sidebar = document.getElementById('infoSidebar');
+        const toggleBtn = document.getElementById('toggleSidebarBtn');
+        let isPanelHidden = false;
+        
+        function togglePanel() {
+            if (isPanelHidden) {
+                sidebar.classList.remove('hidden');
+                toggleBtn.innerHTML = '◀';
+                toggleBtn.title = '隐藏面板';
+            } else {
+                sidebar.classList.add('hidden');
+                toggleBtn.innerHTML = '▶';
+                toggleBtn.title = '显示面板';
+            }
+            isPanelHidden = !isPanelHidden;
+        }
+        toggleBtn.addEventListener('click', togglePanel);
+        
+        // 整体向左偏移
+        const globalShiftX = -2.65;
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x030712);
+        scene.fog = new THREE.FogExp2(0x030712, 0.005);
+        
+        const worldGroup = new THREE.Group();
+        worldGroup.position.set(globalShiftX, 0, 0);
+        scene.add(worldGroup);
+        
+        const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(4.0, 3.0, 5.8);
+        camera.lookAt(globalShiftX, 0.1, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+        
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none';
+        document.body.appendChild(labelRenderer.domElement);
+        
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.06;
+        controls.target.set(globalShiftX, 0.1, 0);
+        
+        // 灯光
+        const ambient = new THREE.AmbientLight(0x334455);
+        scene.add(ambient);
+        const mainLight = new THREE.DirectionalLight(0xfff5e0, 1.2);
+        mainLight.position.set(3, 5, 2);
+        scene.add(mainLight);
+        const fillLight = new THREE.PointLight(0x6688aa, 0.5);
+        fillLight.position.set(-2, 2, 3);
+        scene.add(fillLight);
+        const rim = new THREE.PointLight(0xffaa77, 0.45);
+        rim.position.set(1, 1.2, -2);
+        scene.add(rim);
+        
+        const gridHelper = new THREE.GridHelper(9, 20, 0x3b82f6, 0x2c3e66);
+        gridHelper.position.y = -1.3;
+        gridHelper.material.transparent = true;
+        gridHelper.material.opacity = 0.18;
+        scene.add(gridHelper);
+        
+        // 星空粒子
+        const starGeo = new THREE.BufferGeometry();
+        const starsPos = [];
+        for (let i = 0; i < 800; i++) {
+            starsPos.push((Math.random() - 0.5) * 200);
+            starsPos.push((Math.random() - 0.5) * 100);
+            starsPos.push((Math.random() - 0.5) * 80 - 40);
+        }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(starsPos), 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0x88aaff, size: 0.06, transparent: true });
+        const stars = new THREE.Points(starGeo, starsMat);
+        scene.add(stars);
+        
+        // ========= 1. 条形磁铁 (两极间距增大，无大红色箭头) =========
+        const magnetGroup = new THREE.Group();
+        const poleOffsetY = 1.68;
+        // N极 (红色，上方)
+        const nGeo = new THREE.BoxGeometry(1.08, 0.58, 1.08);
+        const nMat = new THREE.MeshStandardMaterial({ color: 0xdd5555, metalness: 0.3, emissive: 0x331100, roughness: 0.4 });
+        const nPole = new THREE.Mesh(nGeo, nMat);
+        nPole.position.y = poleOffsetY;
+        magnetGroup.add(nPole);
+        
+        // S极 (蓝色，下方)
+        const sGeo = new THREE.BoxGeometry(1.08, 0.58, 1.08);
+        const sMat = new THREE.MeshStandardMaterial({ color: 0x5599ff, metalness: 0.3, emissive: 0x001133, roughness: 0.4 });
+        const sPole = new THREE.Mesh(sGeo, sMat);
+        sPole.position.y = -poleOffsetY;
+        magnetGroup.add(sPole);
+        
+        // 极细半透明轴线
+        const axisLineMat = new THREE.LineBasicMaterial({ color: 0x88aacc, transparent: true, opacity: 0.2 });
+        const axisPoints = [new THREE.Vector3(0, poleOffsetY + 0.3, 0), new THREE.Vector3(0, -poleOffsetY - 0.3, 0)];
+        const axisGeo = new THREE.BufferGeometry().setFromPoints(axisPoints);
+        const axisLine = new THREE.Line(axisGeo, axisLineMat);
+        magnetGroup.add(axisLine);
+        
+        const makeLabel = (txt, color, yOff) => {
+            const div = document.createElement('div');
+            div.textContent = txt;
+            div.style.color = color;
+            div.style.fontSize = '20px';
+            div.style.fontWeight = 'bold';
+            div.style.background = 'rgba(0,0,0,0.45)';
+            div.style.padding = '0px 5px';
+            div.style.borderRadius = '30px';
+            div.style.border = `1px solid ${color}`;
+            const label = new CSS2DObject(div);
+            label.position.set(0, yOff, 0.85);
+            return label;
+        };
+        magnetGroup.add(makeLabel('N', '#ff8888', poleOffsetY + 0.28));
+        magnetGroup.add(makeLabel('S', '#88aaff', -poleOffsetY - 0.28));
+        magnetGroup.position.set(0, -0.05, 0);
+        worldGroup.add(magnetGroup);
+        
+        // ========= 2. 磁力线箭头颜色调淡 (内侧箭头淡化) =========
+        const dashMaterialLine = new THREE.LineBasicMaterial({ color: 0x88aacc, transparent: true, opacity: 0.28 });
+        const arrowColorLight = 0xaaccff;
+        const radiiSet = [1.12, 1.48];
+        const anglesPerRing = 12;
+        for (let rIdx = 0; rIdx < radiiSet.length; rIdx++) {
+            const radius = radiiSet[rIdx];
+            for (let i = 0; i < anglesPerRing; i++) {
+                const angle = (i / anglesPerRing) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+                const points = [];
+                for (let t = 0; t <= 1; t += 0.04) {
+                    const y = (poleOffsetY + 0.2) - t * (2 * poleOffsetY + 0.4);
+                    const bulge = Math.sin(t * Math.PI) * 0.52 * (radius / 1.35);
+                    const offsetX = Math.cos(angle) * bulge;
+                    const offsetZ = Math.sin(angle) * bulge;
+                    points.push(new THREE.Vector3(x + offsetX, y, z + offsetZ));
+                }
+                const curve = new THREE.CatmullRomCurve3(points);
+                const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(48));
+                const dashLine = new THREE.Line(lineGeo, dashMaterialLine);
+                worldGroup.add(dashLine);
+                for (let aIdx = 1; aIdx <= 2; aIdx++) {
+                    const tArrow = aIdx / 3;
+                    const arrowPoint = curve.getPoint(tArrow);
+                    const tangent = curve.getTangent(tArrow).normalize();
+                    const arrow = new THREE.ArrowHelper(tangent, arrowPoint, 0.22, arrowColorLight, 0.1, 0.06);
+                    worldGroup.add(arrow);
+                }
+            }
+        }
+        // 内圈磁力线
+        const innerRad = 0.85;
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const x = Math.cos(angle) * innerRad;
+            const z = Math.sin(angle) * innerRad;
+            const points = [];
+            for (let t = 0; t <= 1; t += 0.04) {
+                const y = (poleOffsetY + 0.2) - t * (2 * poleOffsetY + 0.4);
+                const bulge = Math.sin(t * Math.PI) * 0.32;
+                const offsetX = Math.cos(angle) * bulge;
+                const offsetZ = Math.sin(angle) * bulge;
+                points.push(new THREE.Vector3(x + offsetX, y, z + offsetZ));
+            }
+            const curve = new THREE.CatmullRomCurve3(points);
+            const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(40));
+            const line = new THREE.Line(lineGeo, dashMaterialLine);
+            worldGroup.add(line);
+            const arrowPoint = curve.getPoint(0.6);
+            const tangent = curve.getTangent(0.6);
+            const arrow = new THREE.ArrowHelper(tangent, arrowPoint, 0.2, arrowColorLight, 0.08, 0.05);
+            worldGroup.add(arrow);
+        }
+        
+        // ========= 3. 线圈模型：绕X轴旋转（南北方向） =========
+        const w = 2.4, h = 2.05, corner = 0.48;
+        const rectPts = [
+            new THREE.Vector3( w/2 - corner,  h/2, 0), new THREE.Vector3( w/2,  h/2, 0),
+            new THREE.Vector3( w/2,  h/2 - corner, 0), new THREE.Vector3( w/2, -h/2 + corner, 0),
+            new THREE.Vector3( w/2, -h/2, 0), new THREE.Vector3( w/2 - corner, -h/2, 0),
+            new THREE.Vector3(-w/2 + corner, -h/2, 0), new THREE.Vector3(-w/2, -h/2, 0),
+            new THREE.Vector3(-w/2, -h/2 + corner, 0), new THREE.Vector3(-w/2,  h/2 - corner, 0),
+            new THREE.Vector3(-w/2,  h/2, 0), new THREE.Vector3(-w/2 + corner,  h/2, 0)
+        ];
+        rectPts.push(rectPts[0]);
+        const smoothCurve = new THREE.CatmullRomCurve3(rectPts);
+        smoothCurve.curveType = 'centripetal';
+        smoothCurve.closed = true;
+        
+        const tubeGeo = new THREE.TubeGeometry(smoothCurve, 240, 0.078, 14, true);
+        const greenMat = new THREE.MeshStandardMaterial({ color: 0x66cc77, metalness: 0.5, roughness: 0.45, transparent: true, opacity: 0.52, emissive: 0x226622, emissiveIntensity: 0.07 });
+        const coilMesh = new THREE.Mesh(tubeGeo, greenMat);
+        const coilGroup = new THREE.Group();
+        coilGroup.add(coilMesh);
+        worldGroup.add(coilGroup);
+        
+        // 紫色虚线框轮廓
+        const dashPointsOutline = [];
+        for (let i = 0; i <= 240; i++) dashPointsOutline.push(smoothCurve.getPoint(i / 240));
+        const dashGeoLine = new THREE.BufferGeometry().setFromPoints(dashPointsOutline);
+        const dashMatLine = new THREE.LineBasicMaterial({ color: 0xcc66ff, transparent: true, opacity: 0.75 });
+        const outlineDashed = new THREE.Line(dashGeoLine, dashMatLine);
+        coilGroup.add(outlineDashed);
+        
+        function getSmoothPoint(t) { return smoothCurve.getPoint(t); }
+        
+        // 流动虚线
+        const dashCount = 3;
+        const dashLen = 0.12;
+        let phases = [0, 0.33, 0.66];
+        let flowSegments = [null, null, null];
+        let currentFlowDirection = 1;
+        
+        function createFlowSegmentWithDirection(startT, endT, direction) {
+            const pts = [];
+            let steps = 48;
+            let tValues = [];
+            if (direction > 0) {
+                for (let i = 0; i <= steps; i++) {
+                    let tv = startT + i * ((endT - startT) / steps);
+                    if (tv > 1) tv -= 1;
+                    if (tv < 0) tv += 1;
+                    tValues.push(tv);
+                }
+            } else {
+                for (let i = 0; i <= steps; i++) {
+                    let tv = endT - i * ((endT - startT) / steps);
+                    if (tv > 1) tv -= 1;
+                    if (tv < 0) tv += 1;
+                    tValues.push(tv);
+                }
+            }
+            for (let tv of tValues) {
+                pts.push(getSmoothPoint(tv));
+            }
+            const curve = new THREE.CatmullRomCurve3(pts);
+            const geometry = new THREE.TubeGeometry(curve, 80, 0.05, 8, false);
+            const material = new THREE.MeshStandardMaterial({ color: 0xff66cc, emissive: 0xcc44aa, emissiveIntensity: 0.9 });
+            return new THREE.Mesh(geometry, material);
+        }
+        
+        function updateFlowing(emfValue) {
+            const newDirection = (emfValue >= 0) ? 1 : -1;
+            if (newDirection !== currentFlowDirection) {
+                currentFlowDirection = newDirection;
+                for (let i = 0; i < dashCount; i++) {
+                    if (flowSegments[i]) coilGroup.remove(flowSegments[i]);
+                }
+            }
+            for (let i = 0; i < dashCount; i++) {
+                phases[i] += 0.012 * currentFlowDirection;
+                if (phases[i] > 1) phases[i] -= 1;
+                if (phases[i] < 0) phases[i] += 1;
+            }
+            for (let i = 0; i < dashCount; i++) {
+                let start = phases[i];
+                let end = start + dashLen;
+                if (flowSegments[i]) coilGroup.remove(flowSegments[i]);
+                let seg;
+                if (end > 1) {
+                    end = end % 1.0;
+                    const pts1 = [], pts2 = [];
+                    let stepsSeg = 30;
+                    if (currentFlowDirection > 0) {
+                        for (let j = 0; j <= stepsSeg; j++) pts1.push(getSmoothPoint(start + j * ((1.0 - start) / stepsSeg)));
+                        for (let j = 0; j <= stepsSeg; j++) pts2.push(getSmoothPoint(j * (end / stepsSeg)));
+                    } else {
+                        for (let j = 0; j <= stepsSeg; j++) pts2.push(getSmoothPoint(start - j * (start / stepsSeg)));
+                        for (let j = 0; j <= stepsSeg; j++) pts1.push(getSmoothPoint(1 - j * ((1 - end) / stepsSeg)));
+                    }
+                    const allPts = currentFlowDirection > 0 ? [...pts1, ...pts2] : [...pts2, ...pts1];
+                    const curve = new THREE.CatmullRomCurve3(allPts);
+                    const tubeGeo = new THREE.TubeGeometry(curve, 110, 0.05, 8, false);
+                    const material = new THREE.MeshStandardMaterial({ color: 0xff66cc, emissive: 0xcc44aa, emissiveIntensity: 0.9 });
+                    seg = new THREE.Mesh(tubeGeo, material);
+                } else {
+                    seg = createFlowSegmentWithDirection(start, end, currentFlowDirection);
+                }
+                flowSegments[i] = seg;
+                coilGroup.add(seg);
+            }
+        }
+        
+        let angle = 0;
+        const rotSpeed = 0.024;
+        const fluxAmp = 1.0;
+        const omega = rotSpeed;
+        
+        // 曲线图相关
+        const fluxCanvas = document.getElementById('fluxCanvas');
+        const emfCanvas = document.getElementById('emfCanvas');
+        let fluxCtx = fluxCanvas.getContext('2d');
+        let emfCtx = emfCanvas.getContext('2d');
+        let times = [], fluxes = [], emfs = [];
+        let simTime = 0;
+        const liveDiv = document.getElementById('liveValues');
+        
+        function drawXAxisLabel(ctx, w, h) {
+            ctx.save();
+            ctx.font = 'italic 9px "Segoe UI"';
+            ctx.fillStyle = '#bbddff';
+            ctx.fillText('时间 t →', w - 52, h - 5);
+            ctx.restore();
+        }
+        
+        function drawFluxChart() {
+            if (!fluxCtx || times.length < 2) return;
+            const w = fluxCanvas.clientWidth;
+            const h = 120;
+            fluxCanvas.width = w; fluxCanvas.height = h;
+            fluxCtx = fluxCanvas.getContext('2d');
+            fluxCtx.clearRect(0, 0, w, h);
+            fluxCtx.fillStyle = '#01131f';
+            fluxCtx.fillRect(0, 0, w, h);
+            
+            const maxY = 1.2, minY = -1.2;
+            const tMin = times[0];
+            const tMax = times[times.length-1];
+            const rangeT = tMax - tMin;
+            const leftPad = 45, rightPad = 18;
+            const graphWidth = w - leftPad - rightPad;
+            const mapX = (t) => leftPad + ((t - tMin) / rangeT) * graphWidth;
+            const mapY = (val) => h/2 - (Math.min(maxY, Math.max(minY, val)) / maxY) * (h/2.6);
+            
+            fluxCtx.strokeStyle = '#88aaff';
+            fluxCtx.lineWidth = 0.8;
+            fluxCtx.beginPath();
+            fluxCtx.moveTo(leftPad-2, h/2); fluxCtx.lineTo(w-rightPad+5, h/2);
+            fluxCtx.moveTo(leftPad-2, 10); fluxCtx.lineTo(leftPad-2, h-10);
+            fluxCtx.stroke();
+            fluxCtx.fillStyle = '#aaccff';
+            fluxCtx.font = '8px "Segoe UI"';
+            for (let i = 0; i <= 4; i++) {
+                const tVal = tMin + (i / 4) * rangeT;
+                const xTick = mapX(tVal);
+                fluxCtx.beginPath();
+                fluxCtx.moveTo(xTick, h/2 - 3); fluxCtx.lineTo(xTick, h/2 + 3);
+                fluxCtx.stroke();
+                fluxCtx.fillText(tVal.toFixed(1), xTick - 8, h/2 + 12);
+            }
+            fluxCtx.beginPath();
+            fluxCtx.strokeStyle = '#3b82f6';
+            fluxCtx.lineWidth = 2.5;
+            let first = true;
+            for (let i=0; i<times.length; i++) {
+                const x = mapX(times[i]), y = mapY(fluxes[i]);
+                if (first) { fluxCtx.moveTo(x, y); first=false; }
+                else fluxCtx.lineTo(x, y);
+            }
+            fluxCtx.stroke();
+            drawXAxisLabel(fluxCtx, w, h);
+        }
+        
+        function drawEmfChart() {
+            if (!emfCtx || times.length < 2) return;
+            const w = emfCanvas.clientWidth;
+            const h = 120;
+            emfCanvas.width = w; emfCanvas.height = h;
+            emfCtx = emfCanvas.getContext('2d');
+            emfCtx.clearRect(0, 0, w, h);
+            emfCtx.fillStyle = '#01131f';
+            emfCtx.fillRect(0, 0, w, h);
+            const maxY = 0.05, minY = -0.05;
+            const tMin = times[0], tMax = times[times.length-1];
+            const rangeT = tMax - tMin;
+            const leftPad = 45, rightPad = 18;
+            const graphWidth = w - leftPad - rightPad;
+            const mapX = (t) => leftPad + ((t - tMin) / rangeT) * graphWidth;
+            const mapY = (val) => h/2 - (Math.min(maxY, Math.max(minY, val)) / maxY) * (h/2.6);
+            
+            emfCtx.strokeStyle = '#88aaff';
+            emfCtx.beginPath();
+            emfCtx.moveTo(leftPad-2, h/2); emfCtx.lineTo(w-rightPad+5, h/2);
+            emfCtx.moveTo(leftPad-2, 10); emfCtx.lineTo(leftPad-2, h-10);
+            emfCtx.stroke();
+            emfCtx.fillStyle = '#aaccff';
+            emfCtx.font = '8px "Segoe UI"';
+            for (let i = 0; i <= 4; i++) {
+                const tVal = tMin + (i / 4) * rangeT;
+                const xTick = mapX(tVal);
+                emfCtx.beginPath();
+                emfCtx.moveTo(xTick, h/2 - 3); emfCtx.lineTo(xTick, h/2 + 3);
+                emfCtx.stroke();
+                emfCtx.fillText(tVal.toFixed(1), xTick - 8, h/2 + 12);
+            }
+            emfCtx.beginPath();
+            emfCtx.strokeStyle = '#ffaa66';
+            emfCtx.lineWidth = 2.8;
+            let first = true;
+            for (let i=0; i<times.length; i++) {
+                const x = mapX(times[i]), y = mapY(emfs[i]);
+                if (first) { emfCtx.moveTo(x, y); first=false; }
+                else emfCtx.lineTo(x, y);
+            }
+            emfCtx.stroke();
+            emfCtx.beginPath();
+            emfCtx.strokeStyle = '#ff66cc';
+            emfCtx.lineWidth = 2.2;
+            emfCtx.setLineDash([6, 8]);
+            first = true;
+            for (let i=0; i<times.length; i++) {
+                const x = mapX(times[i]), y = mapY(emfs[i]);
+                if (first) { emfCtx.moveTo(x, y); first=false; }
+                else emfCtx.lineTo(x, y);
+            }
+            emfCtx.stroke();
+            emfCtx.setLineDash([]);
+            drawXAxisLabel(emfCtx, w, h);
+        }
+        
+        function updatePhysics(dt) {
+            const flux = fluxAmp * Math.cos(angle);
+            const emf = fluxAmp * omega * Math.sin(angle);
+            liveDiv.innerHTML = `🧲 磁通量 Φ = ${flux.toFixed(4)} Wb &nbsp;|&nbsp; ⚡ 感应电势 ε = ${emf.toFixed(4)} V<br><span style="font-size:0.65rem;">线圈绕X轴旋转切割竖直磁感线 | 紫色箭头方向遵循楞次定律</span>`;
+            simTime += dt;
+            times.push(simTime);
+            fluxes.push(flux);
+            emfs.push(emf);
+            if (times.length > 400) { times.shift(); fluxes.shift(); emfs.shift(); }
+            drawFluxChart();
+            drawEmfChart();
+            updateFlowing(emf);
+        }
+        
+        // 格林公式平面示意图 (增强标注)
+        const planeCanvas = document.getElementById('greenPlaneCanvas');
+        let planeCtx;
+        function drawPlaneDiagram() {
+            if (!planeCanvas) return;
+            const w = planeCanvas.clientWidth, h = planeCanvas.clientHeight;
+            planeCanvas.width = w; planeCanvas.height = h;
+            planeCtx = planeCanvas.getContext('2d');
+            planeCtx.clearRect(0, 0, w, h);
+            planeCtx.fillStyle = '#01131f';
+            planeCtx.fillRect(0, 0, w, h);
+            
+            const cx = w/2, cy = h/2;
+            const rad = Math.min(w, h) * 0.3;
+            // 边界曲线
+            planeCtx.beginPath();
+            planeCtx.ellipse(cx, cy, rad, rad*0.85, 0, 0, Math.PI*2);
+            planeCtx.strokeStyle = '#ff8888';
+            planeCtx.lineWidth = 2.5;
+            planeCtx.stroke();
+            planeCtx.fillStyle = '#ff888820';
+            planeCtx.fill();
+            // 沿边界箭头 (环量方向)
+            for (let ang = 0; ang < Math.PI*2; ang += Math.PI/4) {
+                const x1 = cx + rad * Math.cos(ang);
+                const y1 = cy + rad*0.85 * Math.sin(ang);
+                const x2 = cx + (rad+12) * Math.cos(ang);
+                const y2 = cy + (rad*0.85+12) * Math.sin(ang);
+                planeCtx.beginPath();
+                planeCtx.moveTo(x1, y1);
+                planeCtx.lineTo(x2, y2);
+                planeCtx.strokeStyle = '#ffaa77';
+                planeCtx.stroke();
+                const angleDir = ang;
+                const arrX = x2 - 5*Math.cos(angleDir);
+                const arrY = y2 - 5*Math.sin(angleDir);
+                planeCtx.beginPath();
+                planeCtx.moveTo(x2, y2);
+                planeCtx.lineTo(arrX - 4*Math.sin(angleDir), arrY + 4*Math.cos(angleDir));
+                planeCtx.lineTo(arrX + 4*Math.sin(angleDir), arrY - 4*Math.cos(angleDir));
+                planeCtx.fillStyle = '#ffaa77';
+                planeCtx.fill();
+            }
+            // 内部旋度源
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    const xc = cx + i*rad*0.55;
+                    const yc = cy + j*rad*0.6;
+                    planeCtx.beginPath();
+                    planeCtx.arc(xc, yc, 6, 0, Math.PI*2);
+                    planeCtx.fillStyle = '#88ffaa';
+                    planeCtx.fill();
+                    planeCtx.beginPath();
+                    planeCtx.moveTo(xc+5, yc);
+                    planeCtx.lineTo(xc+2, yc-2);
+                    planeCtx.lineTo(xc+2, yc+2);
+                    planeCtx.fillStyle = '#44ff88';
+                    planeCtx.fill();
+                }
+            }
+            // 文字标注
+            planeCtx.font = 'bold 9px "Segoe UI"';
+            planeCtx.fillStyle = '#ffaaaa';
+            planeCtx.fillText('∮ 边界环量', cx + rad + 5, cy - 8);
+            planeCtx.fillStyle = '#aaffaa';
+            planeCtx.fillText('旋度 curl F', cx - rad - 45, cy - 12);
+            planeCtx.fillStyle = '#88ddff';
+            planeCtx.fillText('通量 ∬ curl·dA', cx - 30, cy + rad - 5);
+            planeCtx.font = 'italic 7px monospace';
+            planeCtx.fillStyle = '#ccddff';
+            planeCtx.fillText('格林公式: 边界积分 = 内部旋度通量', cx-75, cy + rad + 18);
+        }
+        
+        // 预填充数据
+        for (let i = 0; i <= 200; i++) {
+            let t = i * 0.033;
+            times.push(t);
+            fluxes.push(fluxAmp * Math.cos(t * rotSpeed));
+            emfs.push(fluxAmp * rotSpeed * Math.sin(t * rotSpeed));
+        }
+        simTime = times[times.length-1];
+        drawFluxChart();
+        drawEmfChart();
+        drawPlaneDiagram();
+        
+        let lastTime = performance.now();
+        function animate() {
+            const now = performance.now();
+            let dt = Math.min(0.033, (now - lastTime) / 1000);
+            lastTime = now;
+            angle += rotSpeed;
+            coilGroup.rotation.x = angle;
+            updatePhysics(dt);
+            drawPlaneDiagram();
+            stars.rotation.y += 0.0005;
+            controls.update();
+            renderer.render(scene, camera);
+            labelRenderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        
+        updateFlowing(0);
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+            drawFluxChart();
+            drawEmfChart();
+            drawPlaneDiagram();
+        });
+        
+        console.log('面板可隐藏/再现，线圈绕X轴旋转，通量/环量正确，删除大红箭头，磁力线更淡，示意图强化标注');
+    </script>
+</body>
+</html>
